@@ -1,0 +1,7 @@
+#Thu Dec 01 02:28:30 IST 2011
+IGNORE_MISSING_EXECUTABLE=true
+BUILDWRAPPER_EXECUTABLE=/home/shlomi/.cabal/bin/buildwrapper
+eclipse.preferences.version=1
+net.sf.eclipsefp.haskell.ui.customtemplates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates/>
+SCION_BROWSER_SERVER_EXECUTABLE=/home/shlomi/.cabal/bin/scion-browser
+SCION_BROWSER_HACKAGE_QUESTION_ANSWERED=true

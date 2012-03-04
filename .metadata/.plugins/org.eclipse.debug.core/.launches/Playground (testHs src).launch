@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<launchConfiguration type="net.sf.eclipsefp.haskell.debug.core.internal.launch.HaskellLaunchDelegate">
+<stringAttribute key="ARGUMENTS" value="--interactive &quot;/home/shlomi/maabada/testHs/src/Playground.hs&quot;"/>
+<stringAttribute key="DELEGATE" value="net.sf.eclipsefp.haskell.debug.ui.internal.launch.ghci.GhciLaunchOperationDelegate"/>
+<stringAttribute key="EXECUTABLE" value="/usr/bin/ghc"/>
+<listAttribute key="FILES">
+<listEntry value="src/Playground.hs"/>
+</listAttribute>
+<stringAttribute key="FIRST_SELECTED_RESOURCE" value="Playground.hs"/>
+<stringAttribute key="PROJECT_NAME" value="testHs"/>
+<booleanAttribute key="RELOAD" value="true"/>
+<stringAttribute key="RELOAD_COMMAND" value=":r"/>
+<stringAttribute key="WORKING_DIRECTORY" value="/home/shlomi/maabada/testHs"/>
+</launchConfiguration>

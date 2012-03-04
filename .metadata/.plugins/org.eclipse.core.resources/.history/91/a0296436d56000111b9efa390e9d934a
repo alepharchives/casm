@@ -1,0 +1,16 @@
+#ifndef DDLINK
+#define DDLINK
+
+#include <stdlib.h>
+
+typedef struct Cons {
+	void* data;
+	struct Cons* next, *prev;
+} List;
+
+List** mkList();
+
+void addLast(List** l, void* data);
+List* append(void* head, List* list);
+
+#endif

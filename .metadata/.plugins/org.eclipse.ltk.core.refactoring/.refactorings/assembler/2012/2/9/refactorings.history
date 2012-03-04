@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename resource &apos;assembler/src/DoubleLinkedList&apos; to &apos;DoubleLinkedList.c&apos;" description="Rename resource &apos;DoubleLinkedList&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="src/DoubleLinkedList" name="DoubleLinkedList.c" stamp="1330299126436" updateReferences="true"/>
+</session>

@@ -1,0 +1,3 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">&#x0A;<refactoring comment="Rename resource &apos;assembler&apos; to &apos;assembler playgrounf&apos;" description="Rename resource &apos;assembler&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/assembler" name="assembler playgrounf" stamp="1328910585309" updateReferences="true"/>&#x0A;<refactoring comment="Rename resource &apos;assembler playgrounf&apos; to &apos;assembler playground&apos;" description="Rename resource &apos;assembler playgrounf&apos;" flags="7" id="org.eclipse.ltk.core.refactoring.rename.resource" input="/assembler playgrounf" name="assembler playground" stamp="1328910590785" updateReferences="true"/>
+</session>

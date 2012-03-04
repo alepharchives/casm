@@ -1,0 +1,61 @@
+/*
+ * main.c
+ *
+ *  Created on: Dec 26, 2011
+ *      Author: shlomi 039014220
+ *
+ *  maman 22
+ *
+ * In this solution i have essentially created a small scale DSL (domain specific language)
+ * that lets us easily describe interactive operations within our domain (namely matrix manipulation).
+ *
+ * parser.c and parser.h contains the code that parses a given line of user input.
+ * it is heavily influenced by parser combinators, but since C cannot use lambda
+ * expressions, the implementation is not really functional in style. more details on
+ * the technique i used is found in these files.
+ *
+ * matdsl.c and matdsl.h contains the definitions of all dsl's directives. these were
+ * designed to be as composable as possible under the restriction of the C language,
+ * and to achieve that i had to slightly abuse the #define keyword. again, further details
+ * are given in these files. the real magic happens in matdsl.c!
+ *
+ * main.c file contains the simple logic for our program - read one line at a time,
+ * and declaratively define the interactions the user can have.
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "mat.h"
+#include "matdsl.h"
+
+/* define our global matrices */
+Mat Mats[MAX_MATS];
+
+int main(void) {
+
+	char line[1000];
+
+	/* endlessly read lines, stripping whitespace from the left */
+	while (1) {
+		getline(line, sizeof(line));
+
+		PARSE(line)
+		TRY(read_mat)
+		TRY(add_mat)
+		TRY(sub_mat)
+		TRY(mul_mat)
+		TRY(mul_scalar)
+		TRY(trans_mat)
+		TRY(print_mat)
+		TRY(stop)
+		ELSE("no such command")
+
+		/* declarative definition of the interactions, detailed description found near their definition
+		DO(read_mat) OR(add_mat) OR(print_mat) OR(sub_mat) OR(mul_mat) OR(trans_mat) OR(mul_scalar)
+		QUIT(stop) ELSE("no such command")*/
+	}
+
+	return 0;
+}

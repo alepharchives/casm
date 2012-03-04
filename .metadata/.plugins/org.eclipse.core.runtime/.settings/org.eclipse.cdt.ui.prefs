@@ -1,0 +1,10 @@
+#Wed Dec 28 00:59:42 IST 2011
+useQuickDiffPrefPage=true
+wizard.preferred.toolchains=cdt.managedbuild.toolchain.gnu.exe.debug
+useAnnotationsPrefPage=true
+properties.multi.write.mode=4
+spelling_locale_initialized=true
+eclipse.preferences.version=1
+properties.multi.displ.mode=1
+content_assist_disabled_computers=org.eclipse.cdt.ui.parserProposalCategory\u0000org.eclipse.cdt.ui.textProposalCategory\u0000
+spelling_user_dictionary_encoding=

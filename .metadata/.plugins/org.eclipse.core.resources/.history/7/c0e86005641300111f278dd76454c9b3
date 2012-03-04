@@ -1,0 +1,11 @@
+/*
+ * test.c
+ *
+ *  Created on: Nov 20, 2011
+ *      Author: shlomi
+ */
+
+int main() {
+	printf("jhjhg");
+	return 0;
+}

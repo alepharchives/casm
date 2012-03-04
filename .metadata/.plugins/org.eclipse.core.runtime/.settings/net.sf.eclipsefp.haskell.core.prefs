@@ -1,0 +1,10 @@
+#Thu Dec 01 01:18:15 IST 2011
+cabalImplementations/1/installVersion=0.10.2
+SELECTED_HS_IMPLEMENTATION=GHC 7.0.3
+cabalImplementations/defaultImpl=cabal-0.10.2
+cabalImplementations/1/libraryVersion=1.10.1.0
+eclipse.preferences.version=1
+HS_IMPLEMENTATIONS=<?xml version\="1.0" encoding\="UTF-8"?>\n<hsImpls>\n  <hsImpl name\="GHC 7.0.3" binDir\="/usr/bin" version\="7.0.3" type\="GHC"/>\n</hsImpls>\n
+cabalImplementations/1/name=cabal-0.10.2
+cabalImplementations/1/executable=/usr/bin/cabal
+cabalImplementations/numImpls=1

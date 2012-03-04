@@ -1,0 +1,6 @@
+#Sun Nov 20 12:46:58 IST 2011
+macros/workspace=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?>\n<macros/>\n
+org.eclipse.cdt.core.showSourceRootsAtTopLevelOfProject=true
+eclipse.preferences.version=1
+org.eclipse.cdt.core.taskTags=TODO,FIXME,XXX
+org.eclipse.cdt.core.taskPriorities=normal,normal,normal

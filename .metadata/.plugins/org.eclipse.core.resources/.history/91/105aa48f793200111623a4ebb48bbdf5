@@ -1,0 +1,114 @@
+/*
+ ============================================================================
+ Name        : assembler.c
+ Author      : shlomi vaknin
+ Version     :
+ Copyright   :
+ Description : Hello World in C, Ansi-style
+ ============================================================================
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
+#define I int
+#define A int
+#define R return
+#define DO(n,l) {I _i;for(_i=0;_i<l;_i++){l;}}
+#define V1(f) A f(A w)
+#define V2(f) A f(A a, A w)
+
+V1(square){R w*w;}
+
+
+
+int strcmp1(char* a, char* b) {
+	int r, i=0;
+	while (!(r=((a[i]-b[i]))) && a[i] && b[i++]); return r;
+}
+
+#define FIND(l,n,w) {DO(n, !strcmp1(l[_i],w))}
+
+
+#define BIND(v,f) {char v[100];f}
+#define PUT(s)
+
+#define GET() scanf("%s")
+
+
+char* (*f[10])(char*) = {NULL};
+char* fv[10] = {NULL};
+char* fp[10] = {NULL};
+
+
+#define PUT(s)
+char* put(char* f) {
+	printf("%s", f);
+	return f;
+}
+
+char* get(char* f) {
+	scanf("%s", f);
+	return f;
+}
+
+
+char* ret(char* f) {
+	return f;
+}
+
+int main( )
+{
+
+	int i=0;
+	f[i]=put;
+	fv[i]="text";
+
+	i++;
+	f[i]=get;
+	fv[i]=NULL;
+
+	i++;
+	f[i]=ret;
+	fv[i]=malloc(10);
+
+	fv[1]=(f[0])(fv[0]);
+	fv[2]=f[1](fv[1]);
+	fv[3]=f[2](fv[2]);
+
+	printf(fv[3]);
+	/*
+	DO(doFunc)
+	BIND(_, PUT("name: "))
+	BIND(_, GET())
+	BIND(x, RETURN(x))
+	END
+
+	a->a->m b->m b
+	*/
+
+
+	{
+		printf("text");
+		{
+			char s[1000];
+			scanf("%s", s);
+			{
+				printf("%s", s);
+			}
+		}
+	}
+
+
+/*
+	char* a[] = {"ASS", "FOO", "MORE"};
+
+	printf("%d\n", strcmp1("ASS33", "ASS3"));
+
+	FIND(a, 2, "ASS");
+
+	DO(5, printf("ASS"));
+	printf("\n %d", square(3));
+    return 0;*/
+}

@@ -1,0 +1,41 @@
+#include <stdlib.h>
+#include <stdio.h>
+#include "DoubleLinkedList.h"
+
+
+void insertHead(node* new) {
+	node** scan = &root;
+	new->next = *scan;
+	if (*scan != NULL) (*scan)->prev = new;
+	*scan=new;
+}
+
+void insertSorted(node* new){
+	node** scan = &root;
+	while (*scan != NULL && (*scan)->data<new->data)
+		scan = &(*scan)->next;
+
+	new->prev=*scan;
+	new->next=(*scan)->next;
+	*scan=new;
+}
+
+void print() {
+	node** scan = &root;
+	while (scan!=NULL) {
+		printf("%d ", (*scan)->data);
+		scan = &(*scan)->next;
+	}
+}
+
+void printBackwards() {
+	node** scan=&root;
+	while(*scan!=NULL && (*scan)->next!=NULL) {
+		scan = &(*scan)->next;
+	}
+
+	while (*scan!=NULL && (*scan)->prev!=NULL) {
+		printf("%d ", (*scan)->data);
+		scan = &(*scan)->prev;
+	}
+}
