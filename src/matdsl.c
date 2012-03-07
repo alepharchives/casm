@@ -2,7 +2,7 @@
  * matdsl.c
  *
  *  Created on: Dec 28, 2011
- *      Author: shlomi vaknin (039014220)
+ *      Author: shlomi vaknin
  *
  *  all dsl commands implementations
  */

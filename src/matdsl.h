@@ -2,7 +2,7 @@
  * matdsl.h
  *
  *  Created on: Dec 28, 2011
- *      Author: shlomi vaknin (039014220)
+ *      Author: shlomi vaknin
  *
  *  Our DSL definition. the dsl is made up of two layers:
  *  directives - the dsl commands, such as PARSE, FMAT, CMD etc. these divide into two categories:

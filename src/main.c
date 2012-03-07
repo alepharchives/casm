@@ -2,7 +2,7 @@
  * main.c
  *
  *  Created on: Dec 26, 2011
- *      Author: shlomi vaknin (039014220)
+ *      Author: shlomi vaknin
  *
  *  maman 22
  *

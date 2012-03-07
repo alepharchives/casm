@@ -2,7 +2,7 @@
  * mat.h
  *
  *  Created on: Nov 21, 2011
- *      Author: shlomi vaknin (039014220)
+ *      Author: shlomi vaknin
  */
 
 #ifndef MAT_H_

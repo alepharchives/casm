@@ -2,7 +2,7 @@
  * parser.h
  *
  *  Created on: Dec 22, 2011
- *      Author: shlomi vaknin (039014220)
+ *      Author: shlomi vaknin
  *
  *  This file contains the implementation of our parser-combinator-like parser utility.
  *  since C is not functional at all, we couldnt really use combinators techniques, but

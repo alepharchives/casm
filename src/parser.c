@@ -2,7 +2,7 @@
  * parser.h
  *
  *  Created on: Dec 22, 2011
- *      Author: shlomi vaknin (039014220)
+ *      Author: shlomi vaknin
  *
  *  this is the implementation of the pseudo-parser-combinator style parser.
  */
