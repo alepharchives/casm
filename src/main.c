@@ -116,6 +116,15 @@ void printMe(int r, int i) {
 	printf("Shouldn't get here, use ERR!");
 }
 
+#define DEF { \
+  #define A 1 \
+}
+
+#define F { \
+	DEF; \
+	A; \
+}
+
 int main(void) {
 
 	char line[1000];
@@ -123,6 +132,10 @@ int main(void) {
 	int f = 0;
 	char *l;
 	char *p;
+
+	int i;
+
+	F;
 
 	/* endlessly read lines, passing them to our dsl.
 	 * since the code is so declarative, i see no reason to comment this file any more :) */
