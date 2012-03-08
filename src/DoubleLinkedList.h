@@ -4,16 +4,14 @@
 #include <stdlib.h>
 
 typedef struct node {
-	int data;
+	void* data;
 	struct node* next, *prev;
-} node;
+} node, *list;
 
-node* root;
-
-void insertHead(node* new);
-void insertSorted(node* new);
-void print();
-void freeList();
-void printBackwards();
+list insertHead(list l, node* new);
+list insertSorted(list l,node* new);
+void print(list l);
+void freeList(list l);
+void printBackwards(list l);
 
 #endif

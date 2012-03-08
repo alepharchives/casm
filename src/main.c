@@ -43,6 +43,8 @@ typedef enum {
 	reg
 } addressingE;
 
+typedef char* label;
+
 typedef struct {
 	addressingE kind;
 	void *d1,*d2,*d3; /* data holders according with kind */
@@ -103,6 +105,25 @@ typedef struct {
 	code;\
 }
 
+#define INDEX(v, code) {\
+	int v;\
+	\
+}
+
+#define LABEL2D(index, label, reg, code) { \
+	int i = -1; \
+	if (B) { \
+		l = charIs(strip(p," "),'#');\
+		if (l!=NULL) { \
+			l = getInteger(strip(l," "),&i, &err); \
+			if (l!=NULL) { \
+				l++; \
+				p=l; \
+			} \
+		}\
+	}\
+	code;\
+}
 
 void printMe(int r, int i) {
 	if (r!=-1) {
@@ -116,6 +137,48 @@ void printMe(int r, int i) {
 	printf("Shouldn't get here, use ERR!");
 }
 
+#define OR2(A,B,code) { \
+	int a[2] = {-1,-1}; \
+	int pi=0;			\
+	A;B;				\
+	code;				\
+}
+
+#define REG2 \
+	if (l==NULL) { \
+		l = charIs(strip(p," "), 'r'); \
+			if (l!=NULL) { \
+				if (isDigit(l)) { \
+					a[pi] = 0; \
+					a[pi] = (char)*(l)-'0'; \
+				} \
+				else l = NULL; \
+			if (l!=NULL){ \
+				l++;\
+				pi++; \
+				p=l;\
+			}\
+		}\
+	}
+
+
+#define CONST2  \
+	if (l==NULL) { \
+		l = charIs(strip(p," "),'#');\
+		if (l!=NULL) { \
+			l = getInteger(strip(l," "),&a[pi], &err); \
+			if (l!=NULL) { \
+				l++; \
+				pi++;\
+				p=l; \
+			} \
+		}\
+	}\
+}
+
+#define OR3(A,B,C,code) 2
+#define OR4(A,B,C,D,code) 3
+
 int main(void) {
 
 	char line[1000];
@@ -123,6 +186,20 @@ int main(void) {
 	int f = 0;
 	char *l;
 	char *p;
+	node* n;
+	list labels = NULL;
+
+	n = malloc(sizeof(node));
+	n->data = (char*)malloc(10);
+	strcpy(n->data, "ass");
+
+	labels = insertHead(labels, n);
+	n = malloc(sizeof(node));
+	n->data = (char*)malloc(10);
+	strcpy(n->data, "123123");
+	labels = insertHead(labels, n);
+
+	printBackwards(labels);
 
 	/* endlessly read lines, passing them to our dsl.
 	 * since the code is so declarative, i see no reason to comment this file any more :) */
@@ -131,9 +208,14 @@ int main(void) {
 		p = line;
 		l=NULL;
 
-		REG(DO, r1, CONST(OR, c1, ERR(OR, "bad input\n", printMe(r1,c1))));
+		/* REG(DO, r1, CONST(OR, c1, ERR(OR, "bad input\n", printMe(r1,c1)))); */
+
+		OR2(REG2, CONST2, DO2(printMe()))
+
+
 
 		/*
+		LABEL(INDEX(pre), l, INDEX(post))
 		 PARSE(line)
 		 TRY(read_mat)
 		 TRY(add_mat)
