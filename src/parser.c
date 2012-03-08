@@ -66,6 +66,13 @@ char* isDigit(char* p) {
 	return NULL;
 }
 
+/* isDigit succeeds iff head of p is a digit */
+char* isAlpha(char* p) {
+	if (*p == '\0') return NULL;
+	if ((*p>='a'&&*p<='z') || (*p>='A'&&*p<='Z') ) return p+1;
+	return NULL;
+}
+
 /* this parser consumes the input string, as long as the head is a digits.
  * it returns the rest of the string, where the head is certain to be a non-digit char */
 char* allDigits(char *p) {
@@ -85,10 +92,9 @@ char* getInteger(char*p, int* res, int* err) {
 	if (p==NULL || *p == '\0') return NULL;
 
 	/* a nice trick by using or parser */
-	e = or(oneOf(p, "+-"), p);
-	e = allDigits(e);
+	e = allDigits(or(oneOf(p, "+-"), p));
 
-	/* at the end of the previous 4 lines, we could have numbers in the following format -1, 1,  */
+	/* at the end of the previous 4 lines, we could have numbers in the following format -1, 1, +1 */
 
 	/* if any of the above parsers had failed, return failure */
 	if (e == NULL) 	return e;

@@ -5,6 +5,7 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../src/DoubleLinkedList.c \
+../src/asmdsl.c \
 ../src/main.c \
 ../src/mat.c \
 ../src/matdsl.c \
@@ -12,6 +13,7 @@ C_SRCS += \
 
 OBJS += \
 ./src/DoubleLinkedList.o \
+./src/asmdsl.o \
 ./src/main.o \
 ./src/mat.o \
 ./src/matdsl.o \
@@ -19,6 +21,7 @@ OBJS += \
 
 C_DEPS += \
 ./src/DoubleLinkedList.d \
+./src/asmdsl.d \
 ./src/main.d \
 ./src/mat.d \
 ./src/matdsl.d \

@@ -41,6 +41,8 @@ int main(void) {
 	int err = 0;
 	int f = 0;
 	char *l;
+
+	/*
 	node* n;
 
 	int i = 42;
@@ -87,16 +89,45 @@ int main(void) {
 	printBackwards();
 
 	freeList();
+	*/
 	/* endlessly read lines, passing them to our dsl.
 	 * since the code is so declarative, i see no reason to comment this file any more :) */
 	while (1) {
 		getline(line, sizeof(line));
+		l = line;
+		{
+			char *p = l;
+			{ /* register */
+				char r=-1;
+				l = charIs(strip(p," "), 'r');
+				if (l!=NULL) {
+					if (isDigit(l)){
+						r = (char)*l;
+					}
+					if (l!=NULL){
+						l++;
+						p=l;
+					}
+				}
+			}
+			if (l==NULL) {
+				int i=-1; /*constant*/
+				l = charIs(strip(p," "),'#');
+				if (l!=NULL) {
+					l = getInteger(strip(l," "),&i, &err);
+					if (l!=NULL){
+						l++;
+						p=l;
+					}
+				}
+			}
+			if (l==NULL) { /*label*/
 
-		l = getInteger(charIs(line, '#'), &f, &err);
-		l = isDigit(charIs(line, 'r'));
+			}
 
-		printf("%d\n", f);
 
+			printf("%d\n", f);
+		}
 		/*
 		 PARSE(line)
 		 TRY(read_mat)

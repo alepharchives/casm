@@ -23,19 +23,19 @@ endif
 # Add inputs and outputs from these tool invocations to the build variables 
 
 # All Target
-all: assembler
+all: casm
 
 # Tool invocations
-assembler: $(OBJS) $(USER_OBJS)
+casm: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "assembler" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc  -o "casm" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) assembler
+	-$(RM) $(OBJS)$(C_DEPS)$(EXECUTABLES) casm
 	-@echo ' '
 
 .PHONY: all clean dependents
