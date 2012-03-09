@@ -42,23 +42,31 @@ typedef enum {
 	label_with_index,
 	label_with_two_indices,
 	reg
-} addressingE;
+} addr;
+
+#define MAX_LABEL 100
+
+typedef union {
+	int reg;
+	int constant;
+	char direct[MAX_LABEL];
+	struct  {
+		char label[MAX_LABEL];
+		char index[MAX_LABEL];
+	} label_with_index;
+	struct  {
+		char index[MAX_LABEL];
+		char label[MAX_LABEL];
+		int reg;
+	} label_with_two_indices;
+} asmInput;
 
 typedef char* label;
 
 typedef struct {
-	addressingE kind;
+	addr kind;
 	void *d1,*d2,*d3; /* data holders according with kind */
 } addressing;
-
-#define TWO (A,B,code ){ \
-	addressing op1; \
-	addressing op2; \
-					\
-	A(&op1);		\
-	B(&p2);			\
-	code;			\
-}
 
 #define ERR( B , S ,code) { \
 	if (B) { \
@@ -111,7 +119,7 @@ typedef struct {
 	\
 }
 
-#define LABEL2D(index, label, reg, code) { \
+#define LABEL(index, label, reg, code) { \
 	int i = -1; \
 	if (B) { \
 		l = charIs(strip(p," "),'#');\
@@ -138,7 +146,7 @@ void printMe(int r, int i) {
 	printf("Shouldn't get here, use ERR!");
 }
 
-void printMe2(addressingE kind, int v) {
+void printMe2(addr kind, int v) {
 	switch (kind) {
 		case reg:
 			printf("got register %i\n", v);
@@ -151,17 +159,17 @@ void printMe2(addressingE kind, int v) {
 			break;
 	}
 }
+
 #define DO_(c) \
 		int count=c;		 \
-		addressingE kind=none, kinds[c];\
+		addr kind=none, kinds[c];\
 		int a[c] ;		    \
-		int pi;			\
+		int pi=0,i;			\
 		int val=-1;			\
-		for (pi=0;pi<count;pi++) { a[pi]=-1;kinds[pi]=none; } \
-		pi=0;
+		for (i=0;i<count;i++) { a[i]=-1;kinds[i]=none; }
 
 #define FIN_OR(code) \
-		for (pi=0;val==-1&&pi<count;pi++) {val=a[pi];kind=kinds[pi];} \
+		for (i=0;val==-1&&i<count;i++) {val=a[i];kind=kinds[i];} \
 		if (kind != none) { \
 			code;			\
 		};
@@ -169,7 +177,25 @@ void printMe2(addressingE kind, int v) {
 #define FIN_AND(code) \
 		code;
 
+#define REMOVE_WARNS val++;pi++;a[0]++;kind++;kinds[0]++;	 /* a silly line just to remove annoying "unused" warnings*/
+
+#define _AND2(A,B,code) { \
+		 /*_AND2*/			\
+	addr theKinds[2]; \
+	int theVals[2],val=-1; \
+	addr kinds[2], kind; \
+	int a[2];\
+	int pi=0;\
+	l=NULL;	\
+	{A;theKinds[0]=kind;theVals[0]=val;}\
+	l=NULL;				\
+	{B;theKinds[1]=kind;theVals[1]=val;}	\
+	FIN_AND(code)		\
+	REMOVE_WARNS		\
+}
+
 #define AND2(A,B,code) { \
+		 /*AND2*/ \
 	int ai = 0; \
 	addressingE theKinds[2]; \
 	int theVals[2]		   ; \
@@ -178,77 +204,78 @@ void printMe2(addressingE kind, int v) {
 	FIN_AND(code)		\
 }
 
-#define AND3(A,B,code) { \
-	DO_(3)				\
+#define OR2(A,B)   \
+    /*OR2*/ 		    \
+    DO_(2)		        \
+    l = NULL;			\
 	A;B;				\
-	FIN_AND(code)		\
-}
+	l = NULL;
 
-#define OR2(A,B,code) { \
-	DO_(2)				\
-	A;B;				\
-	FIN_OR(code)		\
-}
-
-#define OR3(A,B,C,code) { \
-	DO_(3)			\
+#define OR3(A,B,C,code) \
+    /*OR3*/ 		    \
+    DO_(3)		        \
+    l = NULL;			\
 	A;B;C;				\
-	FIN_OR(code)		\
-}
+	l = NULL;			\
+	FIN_OR(code)
 
-#define OR4(A,B,C,D,code) { \
-	DO_(4)			\
-	A;B;C;D;			\
-	FIN_OR(code)		\
-}
 
-#define KIND kind
-#define VAL val
-#define GET_VAL(i) theVals[i-1]
-#define GET_KIND(i) theKinds[i-1]
-#define _(i)	a[i-1]
-#define _K(i)	kinds[i-1]
+#define VAL(i) theVals[i-1]
+#define KIND(i) theKinds[i-1]
 
-#define REG2 \
-	if (l==NULL) { \
+#define REG2  \
+	if (l==NULL) /*reg2*/ { \
 		char* n; \
 		l = charIs(strip(p," "), 'r'); \
 			if (l!=NULL) { \
-				if (n=oneOf(strip(isDigit(l), " "),",\n")) { \
+				if ((n=oneOf(strip(isDigit(l), " "),",\n"))) { \
 					a[pi] = 0; \
-					a[pi] = (char)*(l)-'0'; \
-					kinds[pi] = reg;\
+					a[pi] = val = (char)*(l)-'0'; \
+					kinds[pi] = kind = reg;\
+					p=n;\
 				} \
 				else l = NULL; \
-			if (l!=NULL){ \
-				p=n;\
-			}\
 		}\
 	}\
 	pi++; \
 
 
 #define CONST2  \
-	if (l==NULL) { \
+	if (l==NULL) /*const2*/ { \
 		l = charIs(strip(p," "),'#');\
 		if (l!=NULL) { \
 			l = oneOf(getInteger(strip(l," "),&a[pi], &err), ",\n"); \
 			if (l!=NULL) { \
-				kinds[pi] = constant;\
+				val = a[pi];\
+				kind = kinds[pi] = constant;\
 				p=l; \
 			} \
 		}\
 	}\
     pi++;\
 
-#define NOP theVals[ai]=val;theKinds[ai]=kind;
+#define _ ;
 
 /*for (pi=0;pi<count;pi++) {theVals[pi]=a[pi];theKinds[pi]=kinds[pi];}
 */
 
-void func(addressingE kind1, int v1, addressingE kind2, int v2) {
+void func(addr kind1, int v1, addr kind2, int v2) {
 	printMe2(kind1, v1);
 	printMe2(kind2, v2);
+}
+
+#define TWO _AND2
+#define ONE(A, code) { \
+		 /*_AND2*/			\
+	addr theKinds[2]; \
+	int theVals[2],val=-1; \
+	addr kinds[2], kind; \
+	int a[2];\
+	int pi=0;\
+	l=NULL;	\
+	{A;theKinds[0]=kind;theVals[0]=val;}\
+	FIN_AND(code)		\
+	REMOVE_WARNS		\
 }
 
 int main(void) {
@@ -284,17 +311,16 @@ int main(void) {
 		/* REG(DO, r1, CONST(OR, c1, ERR(OR, "bad input\n", printMe(r1,c1)))); */
 
 		/* new attempt.. */
-		/* get one of two values */
+		/* get one of two values
 		printf("get first one: ");
 		OR2(REG2, CONST2, printMe(_(1), _(2)));
-
+*/
 		p = line;
-		l=NULL;
 		/* get two values, each one could be one of two values
 		 */
 
 		printf("full get:");
-		AND2(OR2(REG2, CONST2, NOP),OR2(REG2, CONST2, NOP), func(GET_KIND(1), GET_VAL(1), GET_KIND(2), GET_VAL(2)));
+		/*AND2(OR2(REG2, CONST2, NOP),OR2(REG2, CONST2, NOP), func(GET_KIND(1), GET_VAL(1), AND_GET_KIND(2), GET_VAL(2)));
 
 		p = line;
 		l=NULL;
@@ -303,6 +329,34 @@ int main(void) {
 		AND2(REG2 ,OR2(REG2, CONST2, NOP), func(_K(1), _(1), GET_KIND(2), GET_VAL(2)));
 
 
+		 */
+		p = line;
+		printf("\n");
+		TWO(OR2(REG2, CONST2), OR2(REG2, CONST2), func(KIND(1), VAL(1), KIND(2), VAL(2)));
+		printf("\n");
+		p = line;
+
+		TWO(OR2(REG2, CONST2) , CONST2  , func(KIND(1), VAL(1), KIND(2), VAL(2)));
+
+		printf("\n");
+		p = line;
+		TWO(REG2, OR2(REG2, CONST2) , func(KIND(1), VAL(1), KIND(2), VAL(2)));
+
+		p = line;
+		printf("\n");
+
+		TWO(REG2 , CONST2 , func(KIND(1), VAL(1), KIND(2), VAL(2)));
+
+		p = line;
+			printf("\n");
+
+		ONE(OR2(REG2, CONST2), printMe2(KIND(1), VAL(1)));
+
+
+
+/*
+
+*/
 		/*
 		LABEL(INDEX(pre), l, INDEX(post))
 		 PARSE(line)
@@ -321,116 +375,6 @@ int main(void) {
 	return 0;
 }
 
-void v()	 {
-	char line[1000];
-	int err = 0;
-	int f = 0;
-	char *l;
-	char *p;
-	node* n;
-	list labels = NULL;
-
-	{
-		int count=2;
-			addressingE kind=none, kinds[2];
-			int a[2] ;
-			int pi;
-			int val=-1;
-			for (pi=0,a[0]=-1,kinds[0]=none;pi<count;pi++,a[pi]=-1,kinds[pi]=none);
-		{
-		int count=3;
-			addressingE kind=none, kinds[3];
-			int a[3] ;
-			int pi;
-			int val=-1;
-			for (pi=0,a[0]=-1,kinds[0]=none;pi<count;pi++,a[pi]=-1,kinds[pi]=none);
-		if (l==((void *)0)) {
-			l = charIs(strip(p," "), 'r');
-				if (l!=((void *)0)) {
-					if (isDigit(l)) {
-						a[pi] = 0;
-						a[pi] = (char)*(l)-'0';
-						kinds[pi] = reg;
-					}
-					else l = ((void *)0);
-				if (l!=((void *)0)){
-					l++;
-					p=l;
-				}
-			}
-		}
-		pi++;;if (l==((void *)0)) {
-			l = charIs(strip(p," "),'#');
-			if (l!=((void *)0)) {
-				l = getInteger(strip(l," "),&a[pi], &err);
-				if (l!=((void *)0)) {
-					kinds[pi] = constant;
-					l++;
-					p=l;
-				}
-			}
-		}
-	    pi++;
-	;if (l==((void *)0)) {
-			l = charIs(strip(p," "),'#');
-			if (l!=((void *)0)) {
-				l = getInteger(strip(l," "),&a[pi], &err);
-				if (l!=((void *)0)) {
-					kinds[pi] = constant;
-					l++;
-					p=l;
-				}
-			}
-		}
-	    pi++;
-	;
-		if (kind != none) {
-				for (pi=0,val=a[0],kind=kinds[0];val==-1&&pi<count;pi++,val=a[pi],kind=kinds[pi]);	;;;
-			};
-	};{
-		int count=2;
-			addressingE kind=none, kinds[2];
-			int a[2] ;
-			int pi;
-			int val=-1;
-			for (pi=0,a[0]=-1,kinds[0]=none;pi<count;pi++,a[pi]=-1,kinds[pi]=none);
-		if (l==((void *)0)) {
-			l = charIs(strip(p," "), 'r');
-				if (l!=((void *)0)) {
-					if (isDigit(l)) {
-						a[pi] = 0;
-						a[pi] = (char)*(l)-'0';
-						kinds[pi] = reg;
-					}
-					else l = ((void *)0);
-				if (l!=((void *)0)){
-					l++;
-					p=l;
-				}
-			}
-		}
-		pi++;;if (l==((void *)0)) {
-			l = charIs(strip(p," "),'#');
-			if (l!=((void *)0)) {
-				l = getInteger(strip(l," "),&a[pi], &err);
-				if (l!=((void *)0)) {
-					kinds[pi] = constant;
-					l++;
-					p=l;
-				}
-			}
-		}
-	    pi++;
-	;
-		if (kind != none) {
-				for (pi=0,val=a[0],kind=kinds[0];val==-1&&pi<count;pi++,val=a[pi],kind=kinds[pi]);	;;;
-			};
-	};
-		if (kind != none) {
-				func(kinds[1-1], a[1-1], kinds[2-1], a[2-1]);
-			};
-	}
-}
 /*
 node* n;
 
