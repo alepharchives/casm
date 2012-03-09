@@ -2,16 +2,18 @@
 #include <stdio.h>
 #include "DoubleLinkedList.h"
 
-void insertHead(node* new) {
-	node** scan = &root;
+list insertHead(list l, node* new) {
+	node** scan = &l;
 	new->next = *scan;
 	if (*scan != NULL)
 		(*scan)->prev = new;
 	*scan = new;
+	return new;
 }
 
-void insertSorted(node* new) {
-	node** scan = &root;
+list insertSorted(list l, node* new) {
+	node** scan = &l, **head = &l;
+
 	while (*scan != NULL && (*scan)->data < new->data) {
 		new->prev = *scan;
 		scan = &(*scan)->next;
@@ -20,36 +22,38 @@ void insertSorted(node* new) {
 	if (*scan != NULL)
 		(*scan)->prev = new;
 	*scan = new;
+	return *head;
 }
 
-void print() {
-	node** scan = &root;
+void print(list l) {
+	node** scan = &l;
 	while (*scan != NULL) {
-		printf("%d ", (*scan)->data);
+		printf("%s ", (char*)(*scan)->data);
 		scan = &(*scan)->next;
 	}
 	printf("\n");
 }
 
-void printBackwards() {
-	node** scan = &root;
+void printBackwards(list l) {
+	node** scan = &l;
 	while (*scan != NULL && (*scan)->next != NULL) {
 		scan = &(*scan)->next;
 	}
 
 	while (*scan != NULL) {
-		printf("%d ", (*scan)->data);
+		printf("%s ", (char*)(*scan)->data);
 		scan = &(*scan)->prev;
 	}
 	printf("\n");
 }
 
-void freeList() {
-	node** scan = &root;
+void freeList(list l) {
+	node** scan = &l;
 	while (*scan != NULL && (*scan)->next != NULL) {
 		node *temp;
 		temp = *scan;
 		scan = &(*scan)->next;
+		free(temp->data);
 		free(temp);
 	}
 
