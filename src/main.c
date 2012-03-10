@@ -279,7 +279,7 @@ void func(addr kind1, int v1, addr kind2, int v2) {
 }
 
 int main(void) {
-
+	char label[10][MAX_LABEL];
 	char line[1000];
 	int err = 0;
 	int f = 0;
@@ -317,9 +317,9 @@ int main(void) {
 */
 		p = line;
 		/* get two values, each one could be one of two values
+		printf("full get:");
 		 */
 
-		printf("full get:");
 		/*AND2(OR2(REG2, CONST2, NOP),OR2(REG2, CONST2, NOP), func(GET_KIND(1), GET_VAL(1), AND_GET_KIND(2), GET_VAL(2)));
 
 		p = line;
@@ -330,7 +330,17 @@ int main(void) {
 
 
 		 */
+
+
 		p = line;
+
+		p = charIs(getAllAlphas(charIs(strip(p, " "), '['), label[0]), ']');
+		p = getAllAlphas(p, label[1]);
+		p = charIs(getDigit(charIs(charIs(p, '['), 'r'), label[2]), ']');
+		if (p!=NULL) printf("got %s %s %c", label[0], label[1], *label[2]);
+
+
+		continue;
 		printf("\n");
 		TWO(OR2(REG2, CONST2), OR2(REG2, CONST2), func(KIND(1), VAL(1), KIND(2), VAL(2)));
 		printf("\n");
