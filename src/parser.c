@@ -66,11 +66,38 @@ char* isDigit(char* p) {
 	return NULL;
 }
 
+char* getDigit(char* p, char* d) {
+	if (*p == '\0') return NULL;
+	if (*p>='0'&&*p<='9') {
+		*d = *p;
+		return p+1;
+	}
+	return NULL;
+}
+
 /* isDigit succeeds iff head of p is a digit */
+
 char* isAlpha(char* p) {
 	if (*p == '\0') return NULL;
 	if ((*p>='a'&&*p<='z') || (*p>='A'&&*p<='Z') ) return p+1;
 	return NULL;
+}
+
+char* allAlphas(char *p) {
+	if (p==NULL || *p=='\0') return NULL;
+	if (!isAlpha(p)) return p;
+	return allAlphas(p+1);
+}
+
+char* getAllAlphas(char *p, char* out) {
+	char *e = p, o;
+	p = allAlphas(p);
+	if (p==NULL || *p=='\0') return NULL;
+	o = *p;
+	*p = '\0';
+	strcpy(out, e);
+	*p = o;
+	return p;
 }
 
 /* this parser consumes the input string, as long as the head is a digits.

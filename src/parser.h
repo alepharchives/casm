@@ -75,4 +75,9 @@ char* strip(char* p,char* c);
 /* a parser that succeeds iff either parsers that were given to it as parameters succeeded */
 char* or (char* p1, char* p2);
 
+char* getDigit(char* p, char* d);
+char* allAlphas(char *p);
+char* isAlpha(char* p);
+char* getAllAlphas(char *p, char* out);
+
 #endif /* PARSER_H_ */
