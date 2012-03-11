@@ -79,5 +79,8 @@ char* getDigit(char* p, char* d);
 char* allAlphas(char *p);
 char* isAlpha(char* p);
 char* getAllAlphas(char *p, char* out);
+char* getAllAlphasDigits(char *p, char* out);
+char* allAlphasOrDigit(char *p);
+
 
 #endif /* PARSER_H_ */

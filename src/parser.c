@@ -67,7 +67,7 @@ char* isDigit(char* p) {
 }
 
 char* getDigit(char* p, char* d) {
-	if (*p == '\0') return NULL;
+	if (p==NULL || *p == '\0') return NULL;
 	if (*p>='0'&&*p<='9') {
 		*d = *p;
 		return p+1;
@@ -89,9 +89,29 @@ char* allAlphas(char *p) {
 	return allAlphas(p+1);
 }
 
+char* allAlphasOrDigit(char *p) {
+	if (p==NULL || *p=='\0') return NULL;
+	if (!isAlpha(p) && !isDigit(p)) return p;
+	return allAlphas(p+1);
+}
+
 char* getAllAlphas(char *p, char* out) {
 	char *e = p, o;
+	if (p==NULL || *p=='\0') return NULL;
 	p = allAlphas(p);
+	if (p==NULL || *p=='\0') return NULL;
+	o = *p;
+	*p = '\0';
+	strcpy(out, e);
+	*p = o;
+	return p;
+}
+
+char* getAllAlphasDigits(char *p, char* out) {
+	char *e = p, o;
+	if (p==NULL || *p=='\0') return NULL;
+	p = isAlpha(p);
+	p = allAlphasOrDigit(p);
 	if (p==NULL || *p=='\0') return NULL;
 	o = *p;
 	*p = '\0';
