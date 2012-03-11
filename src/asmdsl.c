@@ -8,10 +8,22 @@
 
 #include "asmdsl.h"
 
-CMD(mov) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), func(VAL(1), VAL(2), label));
+void cmp_func(Operand oper1, Operand oper2, Label label) {
+	printf("CMP\n");
+	if (label[0]!='\0')	printf("label %s\n", label);
+	debugPrint(oper1);
+	debugPrint(oper2);
+}
 
+void mov_func(Operand oper1, Operand oper2, Label label) {
+	printf("MOV\n");
+	if (label[0]!='\0')	printf("label %s\n", label);
+	debugPrint(oper1);
+	debugPrint(oper2);
+}
 
-void func(Operand oper1, Operand oper2, Label label) {
+void add_func(Operand oper1, Operand oper2, Label label) {
+	printf("ADD\n");
 	if (label[0]!='\0')	printf("label %s\n", label);
 	debugPrint(oper1);
 	debugPrint(oper2);
@@ -39,3 +51,23 @@ void debugPrint(Operand oper) {
 	}
 }
 
+/* code in the table on page 33 */
+CMD(cmp) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR5(REG, DIRECT, LABEL1, LABEL2, CONST),  cmp_func(VAL(1), VAL(2), label))
+CMD(mov) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		mov_func(VAL(1), VAL(2), label))
+CMD(add) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		add_func(VAL(1), VAL(2), label))
+CMD(sub) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		add_func(VAL(1), VAL(2), label))
+CMD(lea) TWO(OR3(DIRECT, LABEL1, LABEL2),             OR4(REG, DIRECT, LABEL1, LABEL2), 		add_func(VAL(1), VAL(2), label))
+
+
+CMD(prm) ONE(OR5(REG, DIRECT, CONST,  LABEL1, LABEL2),		debugPrint(VAL(1)))
+CMD(not) ONE(OR4(REG, DIRECT, LABEL1, LABEL2),				debugPrint(VAL(1)))
+CMD(clr) ONE(OR4(REG, DIRECT, LABEL1, LABEL2),				debugPrint(VAL(1)))
+CMD(inc) ONE(OR4(REG, DIRECT, LABEL1, LABEL2),				debugPrint(VAL(1)))
+CMD(dec) ONE(OR4(REG, DIRECT, LABEL1, LABEL2),				debugPrint(VAL(1)))
+CMD(jmp) ONE(OR4(REG, DIRECT, LABEL1, LABEL2),				debugPrint(VAL(1)))
+CMD(bne) ONE(OR4(REG, DIRECT, LABEL1, LABEL2),				debugPrint(VAL(1)))
+CMD(red) ONE(OR4(REG, DIRECT, LABEL1, LABEL2),				debugPrint(VAL(1)))
+CMD(jsr) ONE(DIRECT,										debugPrint(VAL(1)))
+
+CMD(rts)  NONE(printf("rts!"))
+CMD(stop) NONE(printf("stop!"))

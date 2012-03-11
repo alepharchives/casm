@@ -91,8 +91,8 @@ char* allAlphas(char *p) {
 
 char* allAlphasOrDigit(char *p) {
 	if (p==NULL || *p=='\0') return NULL;
-	if (!isAlpha(p) && !isDigit(p)) return p;
-	return allAlphas(p+1);
+	if (!(isAlpha(p) || isDigit(p))) return p;
+	return allAlphasOrDigit(p+1);
 }
 
 char* getAllAlphas(char *p, char* out) {
@@ -218,6 +218,3 @@ char* matchWordD(char* p, char* m) {
 	return oneOf((e=matchWord(p, m)), "\n ") ? e : NULL;
 }
 
-char* word(char*p) {
-
-}

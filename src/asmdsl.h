@@ -11,12 +11,12 @@
 #include "parser.h"
 
 typedef enum {
-	none = 0,
 	constant,
 	direct,
 	label_with_index,
 	label_with_two_indices,
-	reg
+	reg,
+	none
 } addr;
 
 #define MAX_LABEL 30
@@ -58,9 +58,6 @@ typedef struct {
 		if (val.kind != none) { \
 			code;			\
 		};
-
-#define FIN_AND(code) \
-		code;
 
 #define REMOVE_WARNS pi=val.get.constant;pi++;pi=a[0].get.constant; /* a silly line just to remove annoying "unused" warnings*/
 
@@ -171,26 +168,32 @@ typedef struct {
 	Operand a[2];\
 	int pi=0;\
 	char* l=NULL;	\
+	if (p==NULL) return NULL; \
 	{A;theVals[0]=val;} \
 	l=NULL;				\
 	if (theVals[0].kind==none) return NULL;\
 	{B;theVals[1]=val;}	\
 	if (theVals[1].kind==none) return NULL;\
-	FIN_AND(code)		\
+	code;		\
 	REMOVE_WARNS		\
 	return p; \
 }
 
 #define ONE(A, code) { \
-		Operand theVals[2],val; /*ONE*/ \
+		Operand theVals[2],val; /*ONE*/	\
 		Operand a[2];\
 		int pi=0;\
 		char* l=NULL;	\
+		if (p==NULL) return NULL; \
 		{A;theVals[0]=val;} \
-		FIN_AND(code)		\
+		l=NULL;				\
+		if (theVals[0].kind==none) return NULL;\
+		code;		\
 		REMOVE_WARNS		\
 		return p; \
 }
+
+#define NONE(code) {if (p==NULL) return NULL; code; return p;}
 
 #define GET_LINE_LABEL { \
 	char* o=line; \
@@ -206,5 +209,22 @@ void debugPrint(Operand oper);
 
 #define CMD(name) char* name(char* p, int* err, char* label)
 
+CMD(cmp);
 CMD(mov);
+CMD(add);
+CMD(sub);
+CMD(lea);
+
+
+CMD(prm);
+CMD(not);
+CMD(clr);
+CMD(inc);
+CMD(dec);
+CMD(jmp);
+CMD(bne);
+CMD(red);
+CMD(jsr);
+CMD(rts);
+CMD(stop);
 #endif /* ASMDSL_H_ */

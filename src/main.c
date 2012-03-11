@@ -37,81 +37,30 @@ Mat Mats[MAX_MATS];
 
 int main(void) {
 	char line[1000];
-	int err = 0;
-	int f = 0;
-	char *l;
-	char *p;
-	node* n;
-
 	/*
 	 endlessly read lines, passing them to our dsl.
 	 * since the code is so declarative, i see no reason to comment this file any more :) */
 	while (1) {
 		getline(line, sizeof(line));
-		p = line;
-		l=NULL;
-		p = line;
 
-		/*{int err=0;Label label;char*l;
-		{ \
-			char* o=line; \
-			if(!(isAlpha(line) && (l=charIs(getAllAlphasDigits(line, label), ':')))) {
-				label[0]='\0'; l=o;} \
-		};
-		l=strip(l, " ");if(0) {}
-		*/
 		PARSE(line)
+		 TRY(cmp)
 		 TRY(mov)
-		ELSE("no such command")
-
-/*
-		TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR3(REG, CONST, DIRECT), func(VAL(1), VAL(2)));
-		printf("\n");
-		fflush(stdout);
-		p = line;
-
-		TWO(OR3(REG, CONST, LABEL1) , CONST  , func(VAL(1), VAL(2)));
-
-		printf("\n");
-		fflush(stdout);
-		p = line;
-
-		TWO(LABEL1, OR2(REG, CONST) , func(VAL(1), VAL(2)));
-
-		printf("\n");
-		fflush(stdout);
-		p = line;
-
-
-		TWO(LABEL1 , CONST , func(VAL(1), VAL(2)));
-*/
-		printf("\n");
-		fflush(stdout);
-		p = line;
-
-
-		/*ONE(OR3(REG, LABEL1, CONST), debugPrint(VAL(1)));*/
-
-		printf("\n");
-		fflush(stdout);
-		p = line;
-
-/*
-
-*/
-		/*
-		LABEL(INDEX(pre), l, INDEX(post))
-		 PARSE(line)
-		 TRY(read_mat)
-		 TRY(add_mat)
-		 TRY(sub_mat)
-		 TRY(mul_mat)
-		 TRY(mul_scalar)
-		 TRY(trans_mat)
-		 TRY(print_mat)
+		 TRY(add)
+		 TRY(sub)
+		 TRY(lea)
+		 TRY(prm)
+		 TRY(not)
+		 TRY(clr)
+		 TRY(inc)
+		 TRY(dec)
+		 TRY(jmp)
+		 TRY(bne)
+		 TRY(red)
+		 TRY(jsr)
+		 TRY(rts)
 		 TRY(stop)
-		 ELSE("no such command")
-		 */
+		ELSE("no such command")
 	}
 
 	return 0;
