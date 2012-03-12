@@ -227,4 +227,10 @@ CMD(red);
 CMD(jsr);
 CMD(rts);
 CMD(stop);
+
+/*
+   addLabel(label); // add this label to the labels list
+   updateAsmList(label, op, word1, word2, resolves); \*/
+
+
 #endif /* ASMDSL_H_ */

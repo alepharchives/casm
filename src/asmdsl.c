@@ -71,3 +71,4 @@ CMD(jsr) ONE(DIRECT,										debugPrint(VAL(1)))
 
 CMD(rts)  NONE(printf("rts!"))
 CMD(stop) NONE(printf("stop!"))
+

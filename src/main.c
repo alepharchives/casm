@@ -35,8 +35,40 @@
 Mat Mats[MAX_MATS];
 */
 
+typedef char byte;
+
+typedef struct {
+	byte op_code, extra1, extra2;
+	byte offset;
+} asm_node ;
+
+#define ASM(n) ((asm_node*)n->data)
+node* newNode() {
+	node* n = malloc(sizeof(node));
+	n->prev=NULL;
+	n->data=malloc(sizeof(asm_node));
+	ASM(n)->op_code=0;
+	ASM(n)->extra1=0;
+	ASM(n)->extra2=0;
+	ASM(n)->offset=0;
+	return n;
+}
 int main(void) {
 	char line[1000];
+	node* n;
+	list l = NULL;
+
+	n = newNode();
+	ASM(n)->extra1 = 3;
+	ASM(n)->op_code = 10;
+	l = append(l, n);
+
+	n = newNode();
+	ASM(n)->extra1 = 4;
+	l = append(l, n);
+
+
+
 	/*
 	 endlessly read lines, passing them to our dsl.
 	 * since the code is so declarative, i see no reason to comment this file any more :) */

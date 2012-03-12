@@ -13,5 +13,6 @@ list insertSorted(list l,node* new);
 void print(list l);
 void freeList(list l);
 void printBackwards(list l);
+list append(list l, node* new);
 
 #endif

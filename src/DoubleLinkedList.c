@@ -11,6 +11,20 @@ list insertHead(list l, node* new) {
 	return new;
 }
 
+list append(list l, node* new) {
+	node** scan = &l, **head = &l;
+
+	while (*scan != NULL) {
+		new->prev = *scan;
+		scan = &(*scan)->next;
+	}
+	new->next = *scan;
+	if (*scan != NULL)
+		(*scan)->prev = new;
+	*scan = new;
+	return *head;
+}
+
 list insertSorted(list l, node* new) {
 	node** scan = &l, **head = &l;
 
