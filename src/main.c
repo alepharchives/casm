@@ -42,8 +42,15 @@ typedef struct {
 	byte offset;
 } asm_node ;
 
+typedef struct {
+	void (*f)(byte*, char*);
+	byte* into;
+	char* label;
+}defered_node;
+
 #define ASM(n) ((asm_node*)n->data)
-node* newNode() {
+#define INVOKE(n) ((defered_node*)n->data)->f((((defered_node*)n->data)->into), (((defered_node*)n->data)->label))
+node* newAsmNode() {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
 	n->data=malloc(sizeof(asm_node));
@@ -53,21 +60,53 @@ node* newNode() {
 	ASM(n)->offset=0;
 	return n;
 }
+
+node* newDeferedNode(void (*f)(byte*, char*), byte* into, char* label) {
+	node* n = malloc(sizeof(node));
+	defered_node* d = malloc(sizeof(defered_node));
+	d->f = f;
+	d->into=into;
+	d->label=label;
+	n->prev=NULL;
+	n->data=d;
+	return n;
+}
+
+void deferLabelAddrResolution(byte* into, char* label) {
+	*into = 3;
+}
+
+void deferLabelPositionResolution(byte* into, char* label) {
+	*into = 5;
+}
+
+void (*f(byte*, char*));
+
 int main(void) {
 	char line[1000];
 	node* n;
 	list l = NULL;
+	byte b;
+	char* r="ass";
 
-	n = newNode();
+	l = append(l, newDeferedNode(deferLabelAddrResolution,&b,r));
+	l = append(l, newDeferedNode(deferLabelPositionResolution,&b,r));
+	INVOKE(l);
+	l=l->next;
+	INVOKE(l);
+
+/*
+	l = append(l,newDeferedNode(deferLabelAddrResolution()));
+	n = newAsmNode();
 	ASM(n)->extra1 = 3;
 	ASM(n)->op_code = 10;
 	l = append(l, n);
 
-	n = newNode();
+	n = newAsmNode();
 	ASM(n)->extra1 = 4;
 	l = append(l, n);
 
-
+*/
 
 	/*
 	 endlessly read lines, passing them to our dsl.
