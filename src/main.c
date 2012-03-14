@@ -35,10 +35,11 @@
 Mat Mats[MAX_MATS];
 */
 
-typedef char byte;
+typedef unsigned char byte;
 
 typedef struct {
-	byte op_code, extra1, extra2;
+	int op_code, word1, word2;
+	byte size;
 	byte offset;
 } asm_node ;
 
@@ -55,8 +56,9 @@ node* newAsmNode() {
 	n->prev=NULL;
 	n->data=malloc(sizeof(asm_node));
 	ASM(n)->op_code=0;
-	ASM(n)->extra1=0;
-	ASM(n)->extra2=0;
+	ASM(n)->word1=0;
+	ASM(n)->word2=0;
+	ASM(n)->size=0;
 	ASM(n)->offset=0;
 	return n;
 }
@@ -81,20 +83,95 @@ void deferLabelPositionResolution(byte* into, char* label) {
 }
 
 void (*f(byte*, char*));
+typedef struct Foo {
+    int flag    : 1;
+    int counter : 15;
+} Foo;
+typedef
+	union {
+	int code;
+	struct {
+		int destReg:3;
+		int destKind:3;
+		int sourceReg:3;
+		int sourceKind:3;
+		int op:4;
+	}bit;
+} OpCode ;
+
+#define REGISTER(T) \
+	code.bit.T ## Kind = theOperand->kind; /* REGISTER */ \
+	code.bit.T ## Reg  = theOperand->get.reg;
+
+#define CONSTANT(T)  \
+	code.bit.T ## Kind = theOperand->kind; /* CONSTANT */\
+	code.bit.T ## Reg  = 0;\
+	*theWord=theOperand->get.constant; \
+	size++;theWord++; \
+
+#define MOV(OP1, OP2) { \
+	OpCode code;\
+	int words[2]={0,0}, *theWord=words;\
+	byte size=1; \
+	code.bit.op=0;\
+	Operand* theOperand=&operand1;\
+	code.code=0;\
+	OP1; \
+	theOperand=&operand2;\
+	OP2; \
+	\
+	node* n = newAsmNode(); \
+	codeList = append(codeList, n);\
+	ASM(n)->op_code = code.code; \
+	ASM(n)->word1 = words[0];\
+	ASM(n)->word2 = words[1];\
+	ASM(n)->size=size; \
+}
 
 int main(void) {
 	char line[1000];
 	node* n;
-	list l = NULL;
+	list codeList = NULL;
 	byte b;
-	char* r="ass";
+/*	char* r="ass";
 
 	l = append(l, newDeferedNode(deferLabelAddrResolution,&b,r));
 	l = append(l, newDeferedNode(deferLabelPositionResolution,&b,r));
 	INVOKE(l);
 	l=l->next;
 	INVOKE(l);
+*/
 
+
+	/* MOV #45, r2 */
+	Operand operand1, operand2;
+	operand1.kind = constant;
+	operand1.get.constant = 45;
+	operand2.kind = reg;
+	operand2.get.reg = 2;
+
+	MOV(CONSTANT(source), REGISTER(dest))
+
+	MOV(CONSTANT(source), CONSTANT(dest))
+/*
+	{
+		OpCode code={0,0,0,0,0};
+		byte word1;
+		printf("%d\n", sizeof(code));
+		fflush(stdout);
+		code.op=0;
+		code.destReg=operand2.get.reg;
+		code.destKind = operand2.kind;
+
+		code.sourceKind=operand1.kind;
+		code.sourceReg=0;
+		word1 = operand1.get.constant;
+
+		printf("%d\n", code);
+		fflush(stdout);
+	}
+
+*/
 /*
 	l = append(l,newDeferedNode(deferLabelAddrResolution()));
 	n = newAsmNode();

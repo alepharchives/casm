@@ -11,11 +11,11 @@
 #include "parser.h"
 
 typedef enum {
-	constant,
-	direct,
-	label_with_index,
-	label_with_two_indices,
-	reg,
+	constant=0,
+	direct=1,
+	label_with_index=2,
+	label_with_two_indices=3,
+	reg=4,
 	none
 } addr;
 
