@@ -44,9 +44,10 @@ typedef struct {
 } asm_node ;
 
 typedef struct {
-	void (*f)(byte*, char*);
-	byte* into;
-	char* label;
+	void (*f)(list* l, int*, char*);
+	int* into;
+	list* list;
+	char label[MAX_LABEL];
 }defered_node;
 
 typedef struct {
@@ -57,11 +58,10 @@ typedef struct {
 
 #define LABEL(n) ((label_node*)n->data)
 #define ASM(n) ((asm_node*)n->data)
-#define INVOKE(n) ((defered_node*)n->data)->f((((defered_node*)n->data)->into), (((defered_node*)n->data)->label))
+#define INVOKE(n) ((defered_node*)n->data)->f((((defered_node*)n->data)->list), (((defered_node*)n->data)->into), (((defered_node*)n->data)->label))
 
 int findLabel(node* n, void* label) {
-	char* c = label;
-	return strcmp(LABEL(n)->label, c);
+	return strcmp(LABEL(n)->label, (char*)label);
 }
 
 node* newLabel(char* label, int offset) {
@@ -85,22 +85,28 @@ node* newAsmNode() {
 	return n;
 }
 
-node* newDeferedNode(void (*f)(byte*, char*), byte* into, char* label) {
+node* newDeferedNode(void (*f)(list* l, int*, char*), list* l, int* into, char* label) {
 	node* n = malloc(sizeof(node));
 	defered_node* d = malloc(sizeof(defered_node));
 	d->f = f;
 	d->into=into;
-	d->label=label;
+	d->list=l;
+	strcpy(d->label,label);
 	n->prev=NULL;
 	n->data=d;
 	return n;
 }
 
-void deferLabelAddrResolution(byte* into, char* label) {
-	*into = 3;
+void deferLabelAddrResolution(list* l, int* into, char* label) {
+	node* n = find(*l, findLabel, label);
+	if (n==NULL) {
+		printf("label %s not defined!", label);
+	} else {
+		*into = LABEL(n)->offset;
+	}
 }
 
-void deferLabelPositionResolution(byte* into, char* label) {
+void deferLabelPositionResolution(list* l, int* into, char* label) {
 	*into = 5;
 }
 
@@ -126,36 +132,47 @@ typedef
 	code.bit.T ## Kind = theOperand->kind; /* REGISTER */ \
 	code.bit.T ## Reg  = theOperand->get.reg;
 
+#define USE_EXTRA_WORD size++;theWord++;
+
 #define CONSTANT(T)  \
 	code.bit.T ## Kind = theOperand->kind; /* CONSTANT */\
 	code.bit.T ## Reg  = 0;\
-	*theWord=theOperand->get.constant; \
-	size++;theWord++; \
+	**theWord=theOperand->get.constant; \
+	USE_EXTRA_WORD
 
-/*#define DECODE_OFFSET \
-		find(LABEL, theOperand->get.)
-*/
+#define GET_LABEL_OFFSET(word) { \
+		node* label = find(allLabels, findLabel, theOperand->get.direct); /* GET_LABEL_OFFSET */ \
+		if (label == NULL) { \
+			deferred = append(deferred, newDeferedNode(deferLabelAddrResolution,&allLabels, *word, theOperand->get.direct)); \
+		} else **word = LABEL(label)->offset; \
+	}
+
+
 #define DIRECT_LABEL(T) \
-		code.bit.T ## Kind = theOperand->kind; /* DIRECT_LABEL*/ \
-		code.bit.T ## Reg  = 0;\
-		*theWord = LABEL(find(allLabels, findLabel, theOperand->get.direct))->offset;
+	code.bit.T ## Kind = theOperand->kind; /* DIRECT_LABEL*/ \
+	code.bit.T ## Reg  = 0;\
+	GET_LABEL_OFFSET(theWord);\
+	USE_EXTRA_WORD
 
 #define MOV(OP1, OP2) { \
 	OpCode code;\
-	int words[2]={0,0}, *theWord=words;\
+	Operand* theOperand;\
+	int *words[2];\
+	int **theWord=words;\
+	node* n;\
 	byte size=1; \
 	code.bit.op=0;\
-	Operand* theOperand=&operand1;\
 	code.code=0;\
+	theOperand=&operand1;\
+	n  = newAsmNode(); \
+	words[0]= &ASM(n)->word1;\
+	words[1]= &ASM(n)->word2;\
 	OP1; \
 	theOperand=&operand2;\
 	OP2; \
 	\
-	node* n = newAsmNode(); \
 	codeList = append(codeList, n);\
 	ASM(n)->op_code = code.code; \
-	ASM(n)->word1 = words[0];\
-	ASM(n)->word2 = words[1];\
 	ASM(n)->size=size; \
 }
 
@@ -164,6 +181,7 @@ int main(void) {
 	node* n;
 	list codeList = NULL;
 	list allLabels  = NULL;
+	list deferred = NULL;
 	byte b;
 /*	char* r="ass";
 
@@ -176,16 +194,29 @@ int main(void) {
 
 		/* MOV #45, r2 */
 	Operand operand1, operand2;
-	operand1.kind = constant;
-	operand1.get.constant = 45;
+	operand1.kind = direct;
+	/*operand1.get.constant = 45;*/
+	strcpy(operand1.get.direct, "label");
 	operand2.kind = direct;
 	strcpy(operand2.get.direct, "ass");
 
+
+
 	allLabels = append(allLabels, newLabel("ass", 40));
 
+
+
+	MOV(DIRECT_LABEL(source), DIRECT_LABEL(dest))
+/*
 	MOV(CONSTANT(source), DIRECT_LABEL(dest))
 	MOV(CONSTANT(source), CONSTANT(dest))
+*/
+	allLabels = append(allLabels, newLabel("label", 50));
+
+	INVOKE(deferred);
+
 /*
+	INVOKE(deferred->next);
 	{
 		OpCode code={0,0,0,0,0};
 		byte word1;
