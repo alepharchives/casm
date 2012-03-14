@@ -70,5 +70,10 @@ void freeList(list l) {
 		free(temp->data);
 		free(temp);
 	}
+}
 
+node* find(list l, int p(node*, void*), void* data) {
+	node** scan = &l;
+	while (*scan != NULL && !p(*scan, data)) scan = &(*scan)->next;
+	return *scan;
 }

@@ -40,7 +40,7 @@ typedef unsigned char byte;
 typedef struct {
 	int op_code, word1, word2;
 	byte size;
-	byte offset;
+	int offset;
 } asm_node ;
 
 typedef struct {
@@ -49,8 +49,30 @@ typedef struct {
 	char* label;
 }defered_node;
 
+typedef struct {
+	char label[MAX_LABEL];
+	int offset;
+}label_node;
+
+
+#define LABEL(n) ((label_node*)n->data)
 #define ASM(n) ((asm_node*)n->data)
 #define INVOKE(n) ((defered_node*)n->data)->f((((defered_node*)n->data)->into), (((defered_node*)n->data)->label))
+
+int findLabel(node* n, void* label) {
+	char* c = label;
+	return strcmp(LABEL(n)->label, c);
+}
+
+node* newLabel(char* label, int offset) {
+	node* n = malloc(sizeof(node));
+	n->prev=NULL;
+	n->data=malloc(sizeof(label_node));
+	strcpy(LABEL(n)->label, label);
+	LABEL(n)->offset=offset;
+	return n;
+}
+
 node* newAsmNode() {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
@@ -87,6 +109,7 @@ typedef struct Foo {
     int flag    : 1;
     int counter : 15;
 } Foo;
+
 typedef
 	union {
 	int code;
@@ -108,6 +131,14 @@ typedef
 	code.bit.T ## Reg  = 0;\
 	*theWord=theOperand->get.constant; \
 	size++;theWord++; \
+
+/*#define DECODE_OFFSET \
+		find(LABEL, theOperand->get.)
+*/
+#define DIRECT_LABEL(T) \
+		code.bit.T ## Kind = theOperand->kind; /* DIRECT_LABEL*/ \
+		code.bit.T ## Reg  = 0;\
+		*theWord = LABEL(find(allLabels, findLabel, theOperand->get.direct))->offset;
 
 #define MOV(OP1, OP2) { \
 	OpCode code;\
@@ -132,6 +163,7 @@ int main(void) {
 	char line[1000];
 	node* n;
 	list codeList = NULL;
+	list allLabels  = NULL;
 	byte b;
 /*	char* r="ass";
 
@@ -142,16 +174,16 @@ int main(void) {
 	INVOKE(l);
 */
 
-
-	/* MOV #45, r2 */
+		/* MOV #45, r2 */
 	Operand operand1, operand2;
 	operand1.kind = constant;
 	operand1.get.constant = 45;
-	operand2.kind = reg;
-	operand2.get.reg = 2;
+	operand2.kind = direct;
+	strcpy(operand2.get.direct, "ass");
 
-	MOV(CONSTANT(source), REGISTER(dest))
+	allLabels = append(allLabels, newLabel("ass", 40));
 
+	MOV(CONSTANT(source), DIRECT_LABEL(dest))
 	MOV(CONSTANT(source), CONSTANT(dest))
 /*
 	{
