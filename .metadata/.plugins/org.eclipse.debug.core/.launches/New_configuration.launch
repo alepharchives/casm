@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<launchConfiguration type="net.sf.eclipsefp.haskell.debug.core.internal.launch.ExecutableHaskellLaunchDelegate">
-<stringAttribute key="WORKING_DIRECTORY" value="/home/shlomi/maabada/testHs"/>
-</launchConfiguration>

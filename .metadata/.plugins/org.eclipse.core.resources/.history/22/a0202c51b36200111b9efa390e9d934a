@@ -1,8 +1,0 @@
-#include <stdlib.h>
-#include "DoubleLinkedList.h"
-
-void insertHead(node* new) {
-	node** scan = &root;
-	new->next = scan;
-	*scan=new;
-}
