@@ -55,7 +55,7 @@ void debugPrint(Operand oper) {
 CMD(cmp) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR5(REG, DIRECT, LABEL1, LABEL2, CONST),  cmp_func(VAL(1), VAL(2), label))
 
 
-
+/* try*/
 
 CMD(mov) /* TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		mov_func(VAL(1), VAL(2), label)) */
 { \
