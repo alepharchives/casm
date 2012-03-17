@@ -183,7 +183,8 @@ int main(void) {
 	list allLabels  = NULL;
 	list deferred = NULL;
 	byte b;
-/*	char* r="ass";
+
+	/*	char* r="ass";
 
 	l = append(l, newDeferedNode(deferLabelAddrResolution,&b,r));
 	l = append(l, newDeferedNode(deferLabelPositionResolution,&b,r));
@@ -272,7 +273,10 @@ int main(void) {
 		 TRY(rts)
 		 TRY(stop)
 		ELSE("no such command")
+
+		fflush(stdout);
 	}
+
 
 	return 0;
 }
