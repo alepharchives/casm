@@ -25,8 +25,10 @@ node* newAsmNode() {
 	n->prev=NULL;
 	n->data=malloc(sizeof(asm_node));
 	ASM(n)->op_code=0;
-	ASM(n)->word1=0;
-	ASM(n)->word2=0;
+	ASM(n)->word[0]=0;
+	ASM(n)->word[1]=0;
+	ASM(n)->word[2]=0;
+	ASM(n)->word[3]=0;
 	ASM(n)->size=0;
 	ASM(n)->offset=0;
 	return n;

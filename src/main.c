@@ -50,6 +50,9 @@ int main(void) {
 		operand1.get.reg = 4;
 		operand2.kind = direct;
 		strcpy(operand2.get.direct, "label");
+
+		MOV(REGISTER(source), DIRECT_LABEL(dest))
+
 	}
 
 		/* mov label, ass

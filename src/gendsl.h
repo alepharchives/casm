@@ -22,7 +22,7 @@ int findLabel(node* n, void* label);
 
 
 typedef struct {
-	int op_code, word1, word2;
+	int op_code, word[4];
 	/*char op*/
 	byte size;
 	int offset;
@@ -74,36 +74,34 @@ typedef
 #define CONSTANT(T)  \
 	code.bit.T ## Kind = theOperand->kind; /* CONSTANT */\
 	code.bit.T ## Reg  = 0;\
-	**theWord=theOperand->get.constant; \
+	*theWord=theOperand->get.constant; \
 	USE_EXTRA_WORD
 
-#define GET_LABEL_OFFSET(word) { \
+#define GET_LABEL_OFFSET { \
 		node* label = find(allLabels, findLabel, theOperand->get.direct); /* GET_LABEL_OFFSET */ \
 		if (label == NULL) { \
-			deferred = append(deferred, newDeferedNode(deferLabelAddrResolution,&allLabels, *word, theOperand->get.direct)); \
-		} else **word = LABEL(label)->offset; \
+			deferred = append(deferred, newDeferedNode(deferLabelAddrResolution,&allLabels, theWord, theOperand->get.direct)); \
+		} else *theWord = LABEL(label)->offset; \
 	}
 
 
 #define DIRECT_LABEL(T) \
 	code.bit.T ## Kind = theOperand->kind; /* DIRECT_LABEL*/ \
 	code.bit.T ## Reg  = 0;\
-	GET_LABEL_OFFSET(theWord);\
+	GET_LABEL_OFFSET;\
 	USE_EXTRA_WORD
 
 #define MOV(OP1, OP2) { \
 	OpCode code;\
 	Operand* theOperand;\
-	int *words[2];\
-	int **theWord=words;\
+	int *theWord;\
 	node* n;\
 	byte size=1; \
 	code.code=0;\
 	code.bit.op=0;\
 	theOperand=&operand1;\
 	n  = newAsmNode(); \
-	words[0]= &ASM(n)->word1;\
-	words[1]= &ASM(n)->word2;\
+	theWord = ASM(n)->word;\
 	OP1; \
 	theOperand=&operand2;\
 	OP2; \
