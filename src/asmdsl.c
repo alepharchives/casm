@@ -85,8 +85,8 @@ CMD(jsr) ONE(DIRECT,										debugPrint(VAL(1)))
 CMD(rts)  NONE(printf("rts!"))
 CMD(stop) NONE(printf("stop!"))
 
-CMD(entry) ONE(DIRECT, debugPrint(VAL(1)))
-CMD(_extern) ONE(DIRECT, debugPrint(VAL(1)))
+CMD(entry) ONE(DIRECT, genEntry(label, VAL(1), context))
+CMD(_extern) ONE(DIRECT, genExtern(label, VAL(1), context))
 
-CMD(data) MANY_NUMBERS(debugNums(label, nums, count))
+CMD(data) MANY_NUMBERS(genData(label, nums, count, context))
 CMD(string) STRING(debugString(label, text))

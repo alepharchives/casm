@@ -28,23 +28,23 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "lists.h"
+#include "DoubleLinkedList.h"
 
 #include "asmdsl.h"
 #include "gendsl.h"
-#include "lists.h"
 #include "parser.h"
-#include "DoubleLinkedList.h"
-
-list codeList = NULL;
-list allLabels  = NULL;
-list deferred = NULL;
-list dataList = NULL;
-
 
 int main(void) {
 	char line[1000];
 	node* n;
 	byte b;
+
+	list codeList = NULL;
+	list allLabels  = NULL;
+	list deferred = NULL;
+	list dataList = NULL;
+	Context context = {NULL, NULL, NULL, NULL};\
 
 		/* MOV #45, r2 */
 	/*operand1.get.constant = 45;*/
@@ -56,7 +56,7 @@ int main(void) {
 		operand2.kind = direct;
 		strcpy(operand2.get.direct, "label");
 
-		MOV(REGISTER(source), DIRECT_LABEL(dest))
+		/*MOV(REGISTER(source), DIRECT_LABEL(dest))*/
 
 	}
 
@@ -122,6 +122,8 @@ int main(void) {
 		 TRY_DOT(data)
 		 TRY_DOT(string)
 		ELSE("no such command")
+
+
 
 		fflush(stdout);
 	}

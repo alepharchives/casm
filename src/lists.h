@@ -17,7 +17,7 @@ node* newDeferedNode(void (*f)(list* l, int*, char*), list* l, int* into, char* 
 node* newAsmNode();
 node* newLabel(char* label, int offset);
 node* newExtern(char* label);
-node* newEntry(char* label, int offset);
+node* newEntry(char* label);
 node* newData(int* nums);
 
 int findLabelText(node* n, void* label);
@@ -41,6 +41,7 @@ typedef struct {
 
 #define STRING_KIND 1
 #define DATA_KIND 2
+
 typedef struct {
 	byte kind;
 	union {

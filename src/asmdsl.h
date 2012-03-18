@@ -12,40 +12,7 @@
 #include "parser.h"
 #include "DoubleLinkedList.h"
 #include "lists.h"
-
-typedef enum {
-	constant=0,
-	direct=1,
-	label_with_index=2,
-	label_with_two_indices=3,
-	reg=4,
-	none=7
-} addr;
-
-typedef int Reg;
-typedef int Constant;
-typedef char Label[MAX_LABEL];
-typedef Label Direct;
-typedef struct  {
-		Label label;
-		Label index;
-	} LabelOneIndex;
-typedef struct  {
-		Label index;
-		Label label;
-		Reg reg;
-	} LabelTwoIndice;
-
-typedef struct {
-	addr kind;
-	union {
-		Reg reg;
-		Constant constant;
-		Direct direct;
-		LabelOneIndex oneIndex;
-		LabelTwoIndice twoIndice;
-	} get;
-} Operand;
+#include "gendsl.h"
 
 #define DO_(c) \
 		int count=c;		 \
@@ -226,15 +193,22 @@ typedef struct {
 	if(!(isAlpha(line) && (l=charIs(getAllAlphasDigits(line, label), ':')))) { label[0]='\0'; l=o;} \
 }
 
-#define PARSE(line)  {int err=0;Label label;char*l;GET_LINE_LABEL;l=strip(l, " ");if(0) {}
-#define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &err, label)) {}
-#define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &err, label)) {}
+#define PARSE(line)  { \
+	int err=0; \
+	Label label;\
+	char*l;\
+	GET_LINE_LABEL;\
+	l=strip(l, " ");\
+	if(0) {}
+
+#define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &context, &err, label)) {}
+#define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &context, &err, label)) {}
 #define ELSE(msg)     else if (!err){ printf("%s\n",msg);}}
 
 void func(Operand oper1, Operand oper2, Label label);
 void debugPrint(Operand oper);
 
-#define CMD(name) char* name(char* p, int* err, char* label)
+#define CMD(name) char* name(char* p, Context* context, int* err, char* label)
 
 CMD(data);
 

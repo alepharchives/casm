@@ -13,31 +13,8 @@
 #include "lists.h"
 #include "DoubleLinkedList.h"
 
-
-
 void deferLabelDistanceResolution(list* l, int* into, char* label);
 void deferLabelAddrResolution(list* l, int* into, char* label);
-
-
-
-
-void (*f(byte*, char*));
-typedef struct Foo {
-    int flag    : 1;
-    int counter : 15;
-} Foo;
-
-typedef
-	union {
-	int code;
-	struct {
-		int destReg:3;
-		int destKind:3;
-		int sourceReg:3;
-		int sourceKind:3;
-		int op:4;
-	}bit;
-} OpCode ;
 
 #define REGISTER(T) \
 	code.bit.T ## Kind = theOperand->kind; /* REGISTER */ \
@@ -52,9 +29,9 @@ typedef
 	USE_EXTRA_WORD
 
 #define GET_LABEL_OFFSET { \
-		node* label = find(allLabels, findLabelText, theOperand->get.direct); /* GET_LABEL_OFFSET */ \
+		node* label = find(context->allLabels, findLabelText, theOperand->get.direct); /* GET_LABEL_OFFSET */ \
 		if (label == NULL) { \
-			deferred = append(deferred, newDeferedNode(deferLabelAddrResolution,&allLabels, theWord, theOperand->get.direct)); \
+			context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct)); \
 		} else *theWord = LABEL(label)->offset; \
 	}
 
@@ -80,11 +57,21 @@ typedef
 	theOperand=&operand2;\
 	OP2; \
 	\
-	codeList = append(codeList, n);\
+	context->codeList = append(context->codeList, n);\
 	ASM(n)->op_code = code.code; \
 	ASM(n)->size=size; \
 }
 
+void init(void(*fs[5][4])(Context*, Operand, Operand, char*), void(*f)(Context*, Operand, Operand, char*), addr from, addr to);
+
+#define GEN(name) void name(Context* context, Operand operand1, Operand operand2, char* label)
+#define DEFAULT(name) void name(Operand operand1, Operand operand2, char* label)
+#define ASSIGN2(mat, name, code, from, to) GEN(name##from##to) code \
+		init(movs, name##from##to, from, to);
 
 
+
+void genExtern(char* label, Operand oper, Context* context);
+void genEntry(char* label, Operand oper, Context* context);
+void genData(char* label, int* nums, int count, Context* context);
 #endif /* GENDSL_H_ */

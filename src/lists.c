@@ -31,8 +31,8 @@ node* newExtern(char* label) {
 	return _newLabel(label,0,1,0);
 }
 
-node* newEntry(char* label, int offset) {
-	return _newLabel(label,offset,0,1);
+node* newEntry(char* label) {
+	return _newLabel(label,-1,0,1);
 }
 
 node* newData(int* nums) {
