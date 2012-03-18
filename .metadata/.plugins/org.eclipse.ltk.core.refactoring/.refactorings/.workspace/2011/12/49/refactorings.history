@@ -1,3 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">&#x0A;<refactoring comment="Delete resource &apos;empty/empty.cabal&apos;" deleteContents="false" description="Delete resource &apos;empty/empty.cabal&apos;" element1="/empty/empty.cabal" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1322700632649"/>&#x0A;<refactoring comment="Delete resource &apos;empty/Setup.hs&apos;" deleteContents="false" description="Delete resource &apos;empty/Setup.hs&apos;" element1="/empty/Setup.hs" flags="7" id="org.eclipse.ltk.core.refactoring.delete.resources" resources="1" stamp="1322700639373"/>
-</session>

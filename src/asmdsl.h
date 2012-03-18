@@ -16,7 +16,7 @@ typedef enum {
 	label_with_index=2,
 	label_with_two_indices=3,
 	reg=4,
-	none
+	none=7
 } addr;
 
 #define MAX_LABEL 30
@@ -26,13 +26,13 @@ typedef int Constant;
 typedef char Label[MAX_LABEL];
 typedef Label Direct;
 typedef struct  {
-		char label[MAX_LABEL];
-		char index[MAX_LABEL];
+		Label label;
+		Label index;
 	} LabelOneIndex;
 typedef struct  {
-		char index[MAX_LABEL];
-		char label[MAX_LABEL];
-		int reg;
+		Label index;
+		Label label;
+		Reg reg;
 	} LabelTwoIndice;
 
 typedef struct {
@@ -180,8 +180,8 @@ typedef struct {
 }
 
 #define ONE(A, code) { \
-		Operand theVals[2],val; /*ONE*/	\
-		Operand a[2];\
+		Operand theVals[1],val; /*ONE*/	\
+		Operand a[1];\
 		int pi=0;\
 		char* l=NULL;	\
 		if (p==NULL) return NULL; \
@@ -227,7 +227,6 @@ CMD(red);
 CMD(jsr);
 CMD(rts);
 CMD(stop);
-
 
 
 #endif /* ASMDSL_H_ */
