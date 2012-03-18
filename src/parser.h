@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 /* this is used to by the parser error mechanism */
 #define NO_ERR 0
@@ -81,6 +82,8 @@ char* isAlpha(char* p);
 char* getAllAlphas(char *p, char* out);
 char* getAllAlphasDigits(char *p, char* out);
 char* allAlphasOrDigit(char *p);
-
+char* getAllString(char *p, char* out);
+char* allString(char *p);
+char* isStringChar(char* p);
 
 #endif /* PARSER_H_ */

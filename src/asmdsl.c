@@ -28,6 +28,20 @@ void add_func(Operand oper1, Operand oper2, Label label) {
 	debugPrint(oper1);
 	debugPrint(oper2);
 }
+
+void debugNums(char* label, int* nums, int size) {
+	if (label[0]!='\0')	printf("label %s\n", label);
+	int i=0;
+	while (i<size) {
+		printf("%d, ", nums[i++]);
+	}
+}
+
+void debugString(char* label, char* text) {
+	if (label[0]!='\0')	printf("label %s\n", label);
+	printf("%s\n", text);
+}
+
 void debugPrint(Operand oper) {
 	switch (oper.kind) {
 		case reg:
@@ -71,3 +85,8 @@ CMD(jsr) ONE(DIRECT,										debugPrint(VAL(1)))
 CMD(rts)  NONE(printf("rts!"))
 CMD(stop) NONE(printf("stop!"))
 
+CMD(entry) ONE(DIRECT, debugPrint(VAL(1)))
+CMD(_extern) ONE(DIRECT, debugPrint(VAL(1)))
+
+CMD(data) MANY_NUMBERS(debugNums(label, nums, count))
+CMD(string) STRING(debugString(label, text))

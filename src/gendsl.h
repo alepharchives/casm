@@ -8,43 +8,17 @@
 #ifndef GENDSL_H_
 #define GENDSL_H_
 
+#include "commons.h"
 #include "asmdsl.h"
+#include "lists.h"
 #include "DoubleLinkedList.h"
 
-typedef unsigned char byte;
+
 
 void deferLabelDistanceResolution(list* l, int* into, char* label);
 void deferLabelAddrResolution(list* l, int* into, char* label);
-node* newDeferedNode(void (*f)(list* l, int*, char*), list* l, int* into, char* label);
-node* newAsmNode();
-node* newLabel(char* label, int offset);
-int findLabel(node* n, void* label);
 
 
-typedef struct {
-	int op_code, word[4];
-	/*char op*/
-	byte size;
-	int offset;
-} asm_node ;
-
-typedef struct {
-	void (*f)(list* l, int*, char*);
-	int* into;
-	list* list;
-	char label[MAX_LABEL];
-}defered_node;
-
-typedef struct {
-	char label[MAX_LABEL];
-	int offset;
-	int isExtern;
-}label_node;
-
-
-#define LABEL(n) ((label_node*)n->data)
-#define ASM(n) ((asm_node*)n->data)
-#define INVOKE(n) ((defered_node*)n->data)->f((((defered_node*)n->data)->list), (((defered_node*)n->data)->into), (((defered_node*)n->data)->label))
 
 
 void (*f(byte*, char*));
@@ -78,7 +52,7 @@ typedef
 	USE_EXTRA_WORD
 
 #define GET_LABEL_OFFSET { \
-		node* label = find(allLabels, findLabel, theOperand->get.direct); /* GET_LABEL_OFFSET */ \
+		node* label = find(allLabels, findLabelText, theOperand->get.direct); /* GET_LABEL_OFFSET */ \
 		if (label == NULL) { \
 			deferred = append(deferred, newDeferedNode(deferLabelAddrResolution,&allLabels, theWord, theOperand->get.direct)); \
 		} else *theWord = LABEL(label)->offset; \

@@ -23,22 +23,27 @@
  * and try out all of our commands on that line. if all fails, an error is printed.
  */
 
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
+
 #include "asmdsl.h"
 #include "gendsl.h"
+#include "lists.h"
 #include "parser.h"
 #include "DoubleLinkedList.h"
+
+list codeList = NULL;
+list allLabels  = NULL;
+list deferred = NULL;
+list dataList = NULL;
 
 
 int main(void) {
 	char line[1000];
 	node* n;
-	list codeList = NULL;
-	list allLabels  = NULL;
-	list deferred = NULL;
 	byte b;
 
 		/* MOV #45, r2 */
@@ -111,6 +116,10 @@ int main(void) {
 		 TRY(jsr)
 		 TRY(rts)
 		 TRY(stop)
+		 TRY_DOT(_extern)
+		 TRY_DOT(entry)
+		 TRY_DOT(data)
+		 TRY_DOT(string)
 		ELSE("no such command")
 
 		fflush(stdout);

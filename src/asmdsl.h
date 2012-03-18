@@ -8,7 +8,10 @@
 #ifndef ASMDSL_H_
 #define ASMDSL_H_
 
+#include "commons.h"
 #include "parser.h"
+#include "DoubleLinkedList.h"
+#include "lists.h"
 
 typedef enum {
 	constant=0,
@@ -18,8 +21,6 @@ typedef enum {
 	reg=4,
 	none=7
 } addr;
-
-#define MAX_LABEL 30
 
 typedef int Reg;
 typedef int Constant;
@@ -195,6 +196,31 @@ typedef struct {
 
 #define NONE(code) {if (p==NULL) return NULL; code; return p;}
 
+#define MANY_NUMBERS(code) { \
+	char* l; \
+	int i,count=0;\
+	if (p==NULL) return NULL; \
+	l = p = strip(p," ");\
+	while ((l=oneOf(getInteger(l, &i, err), ",\n"))!=((void *)0)) {count++;}\
+	int* nums = (int*)malloc(sizeof(int)*count);\
+	i=0;\
+	l=p;\
+	while ((l=oneOf(getInteger(l, &nums[i++], err), ",\n"))!=((void *)0));\
+	code; \
+	return p; \
+}
+
+#define STRING(code) { \
+	char* text,*l; \
+	if (p==NULL) return NULL; \
+	p = strip(p," "); \
+	l = charIs(allString(charIs(p, '"')), '"') ; \
+	text = malloc((int)l-(int)p); \
+	l = charIs(getAllString(charIs(p, '"'), text), '"') ; \
+	code; \
+	return p; \
+}
+
 #define GET_LINE_LABEL { \
 	char* o=line; \
 	if(!(isAlpha(line) && (l=charIs(getAllAlphasDigits(line, label), ':')))) { label[0]='\0'; l=o;} \
@@ -202,6 +228,7 @@ typedef struct {
 
 #define PARSE(line)  {int err=0;Label label;char*l;GET_LINE_LABEL;l=strip(l, " ");if(0) {}
 #define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &err, label)) {}
+#define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &err, label)) {}
 #define ELSE(msg)     else if (!err){ printf("%s\n",msg);}}
 
 void func(Operand oper1, Operand oper2, Label label);
@@ -209,12 +236,13 @@ void debugPrint(Operand oper);
 
 #define CMD(name) char* name(char* p, int* err, char* label)
 
+CMD(data);
+
 CMD(cmp);
 CMD(mov);
 CMD(add);
 CMD(sub);
 CMD(lea);
-
 
 CMD(prm);
 CMD(not);
@@ -227,6 +255,8 @@ CMD(red);
 CMD(jsr);
 CMD(rts);
 CMD(stop);
-
+CMD(_extern);
+CMD(entry);
+CMD(string);
 
 #endif /* ASMDSL_H_ */

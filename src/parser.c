@@ -120,6 +120,30 @@ char* getAllAlphasDigits(char *p, char* out) {
 	return p;
 }
 
+char* isStringChar(char* p) {
+	if (*p == '\0' || *p=='"') return NULL;
+	if ((isprint(*p)) ) return p+1;
+	return NULL;
+}
+
+char* allString(char *p) {
+	if (p==NULL || *p=='\0') return NULL;
+	if (!isStringChar(p)) return p;
+	return allString(p+1);
+}
+
+char* getAllString(char *p, char* out) {
+	char *e = p, o;
+	if (p==NULL || *p=='\0') return NULL;
+	p = allString(p);
+	if (p==NULL || *p=='\0') return NULL;
+	o = *p;
+	*p = '\0';
+	strcpy(out, e);
+	*p = o;
+	return p;
+}
+
 /* this parser consumes the input string, as long as the head is a digits.
  * it returns the rest of the string, where the head is certain to be a non-digit char */
 char* allDigits(char *p) {
