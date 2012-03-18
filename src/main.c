@@ -116,6 +116,7 @@ int main(void) {
 		 TRY(jsr)
 		 TRY(rts)
 		 TRY(stop)
+
 		 TRY_DOT(_extern)
 		 TRY_DOT(entry)
 		 TRY_DOT(data)

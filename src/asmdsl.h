@@ -255,8 +255,10 @@ CMD(red);
 CMD(jsr);
 CMD(rts);
 CMD(stop);
+
 CMD(_extern);
 CMD(entry);
+CMD(data);
 CMD(string);
 
 #endif /* ASMDSL_H_ */
