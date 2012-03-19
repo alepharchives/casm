@@ -16,8 +16,8 @@
 #define FIRST_ARG_IS_INVALID 4001
 #define SECOND_ARG_IS_INVALID 4002
 
-void deferLabelDistanceResolution(list* l, int* into, char* label);
-void deferLabelAddrResolution(list* l, int* into, char* label);
+void deferLabelDistanceResolution(list* l, addrVal* into, char* label);
+void deferLabelAddrResolution(list* l, addrVal* into, char* label);
 
 #define REGISTER(T) \
 	code.bit.T ## Kind = theOperand->kind; /* REGISTER */ \
@@ -28,7 +28,8 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 #define CONSTANT(T)  \
 	code.bit.T ## Kind = theOperand->kind; /* CONSTANT */\
 	code.bit.T ## Reg  = 0;\
-	*theWord=theOperand->get.constant; \
+	theWord->val=theOperand->get.constant; \
+	theWord->type=a; \
 	USE_EXTRA_WORD
 
 #define GET_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct)); \
@@ -45,7 +46,7 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 #define OPER(CODE, OP1, OP2) { \
 	OpCode code;\
 	Operand* theOperand;\
-	int *theWord;\
+	addrVal *theWord;\
 	node* n;\
 	byte size=1; \
 	code.code=0;\
@@ -79,5 +80,5 @@ void genEntry(char* label, Operand oper, Context* context);
 void genData(char* label, int* nums, int count, Context* context);
 void genString(char* label, char* str, Context* context);
 
-void nothing(int* i);
+void nothing(addrVal* i);
 #endif /* GENDSL_H_ */

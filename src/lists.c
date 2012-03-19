@@ -62,16 +62,20 @@ node* newAsmNode() {
 	n->prev=NULL;
 	n->data=malloc(sizeof(asm_node));
 	ASM(n)->op_code=0;
-	ASM(n)->word[0]=0;
-	ASM(n)->word[1]=0;
-	ASM(n)->word[2]=0;
-	ASM(n)->word[3]=0;
+	ASM(n)->word[0].val=0;
+	ASM(n)->word[1].val=0;
+	ASM(n)->word[2].val=0;
+	ASM(n)->word[3].val=0;
+	ASM(n)->word[0].type=a;
+	ASM(n)->word[1].type=a;
+	ASM(n)->word[2].type=a;
+	ASM(n)->word[3].type=a;
 	ASM(n)->size=0;
 	ASM(n)->offset=0;
 	return n;
 }
 
-node* newDeferedNode(void (*f)(list* l, int*, char*), list* l, int* into, char* label) {
+node* newDeferedNode(void (*f)(list* l, addrVal*, char*), list* l, addrVal* into, char* label) {
 	node* n = malloc(sizeof(node));
 	defered_node* d = malloc(sizeof(defered_node));
 	d->f = f;
@@ -137,16 +141,16 @@ void intToBin(int i, char* out) {
 }
 
 void printOneAsm(asm_node* n) {
-	char off[20], bits[20];
+	char off[17], bits[17];
 	int j;
 	intToBin(n->offset, off);
 	intToBin(n->op_code, bits);
-	printf("offset %s (%d) : data %s\n", off, n->offset, bits);
+	printf("offset %s (%d) : code %s a\n", off, n->offset, bits);
 	for (j=1;j<n->size;j++) {
 		int of = n->offset+j;
 		intToBin(of, off);
-		intToBin(n->word[j-1], bits);
-		printf("offset %s (%d) : data %s\n", off, of, bits);
+		intToBin(n->word[j-1].val, bits);
+		printf("offset %s (%d) : code %s %c\n", off, of, bits, n->word[j-1].type);
 	}
 }
 

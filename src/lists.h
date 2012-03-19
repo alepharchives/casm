@@ -13,7 +13,7 @@
 #include "commons.h"
 #include "DoubleLinkedList.h"
 
-node* newDeferedNode(void (*f)(list* l, int*, char*), list* l, int* into, char* label);
+node* newDeferedNode(void (*f)(list* l, addrVal*, char*), list* l, addrVal* into, char* label);
 node* newAsmNode();
 node* newLabel(char* label, int offset);
 node* newExtern(char* label);
@@ -29,16 +29,17 @@ void execDeffered(list* l);
 void printAsm(list* l);
 void printData(list* l);
 
+
 typedef struct {
-	int op_code, word[4];
-	/*char op*/
+	int op_code;
+	addrVal word[4];
 	byte size;
 	int offset;
 } asm_node ;
 
 typedef struct {
-	void (*f)(list* l, int*, char*);
-	int* into;
+	void (*f)(list* l, addrVal*, char*);
+	addrVal* into;
 	list* list;
 	char label[MAX_LABEL];
 }defered_node;
