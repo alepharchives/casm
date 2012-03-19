@@ -46,9 +46,24 @@ int main(void) {
 	list dataList = NULL;
 	Context context = {NULL, NULL, NULL, NULL};\
 
+
+	/* mov label[%ass], r3*/
+	Operand operand1, operand2;
+	operand1.kind = label_with_index;
+//	operand1.get.oneIndex = 4;
+	operand2.kind = direct;
+	strcpy(operand2.get.direct, "label");
+
+	//MOV(REGISTER(source), DIRECT_LABEL(dest))
+
+
+
+
+
+
 		/* MOV #45, r2 */
 	/*operand1.get.constant = 45;*/
-	allLabels = append(allLabels, newLabel("ass", 40));
+/*	allLabels = append(allLabels, newLabel("ass", 40));
 	{
 		Operand operand1, operand2;
 		operand1.kind = reg;
@@ -56,9 +71,9 @@ int main(void) {
 		operand2.kind = direct;
 		strcpy(operand2.get.direct, "label");
 
-		/*MOV(REGISTER(source), DIRECT_LABEL(dest))*/
+		MOV(REGISTER(source), DIRECT_LABEL(dest))
 
-	}
+	}*/
 
 		/* mov label, ass
 			MOV(REGISTER(source), DIRECT_LABEL(dest))
@@ -68,15 +83,15 @@ int main(void) {
    MOV(LABEL1D(source), REGISTER(dest));
 */
 
-	{
+/*	{
 			Operand operand1, operand2;
 			operand1.kind = label_with_index;
 			strcpy(operand1.get.oneIndex.label, "label"); /* resolve offset*/
-			strcpy(operand1.get.oneIndex.index, "ass"); /* has to defer a call to resolve distance*/
-			operand1.get.reg = 4;
+			/*strcpy(operand1.get.oneIndex.index, "ass"); /* has to defer a call to resolve distance*/
+			/*operand1.get.reg = 4;
 			operand2.kind = direct;
 			strcpy(operand2.get.direct, "label");
-		}
+	}*/
 
 /* these two has to work!
 
@@ -122,10 +137,6 @@ int main(void) {
 		 TRY_DOT(data)
 		 TRY_DOT(string)
 		ELSE("no such command")
-
-
-
-
 		fflush(stdout);
 	}
 
