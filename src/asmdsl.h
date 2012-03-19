@@ -215,8 +215,8 @@
 
 char* trimNewline(char* line);
 
-#define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &context, &err, label)) {}
-#define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &context, &err, label)) {}
+#define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &context, &err, label, lineCounter, line)) {}
+#define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &context, &err, label,lineCounter, line)) {}
 #define ELSE(msg)     else if (!err){ printf("%s\n",msg);}\
 					  else if (err) { \
 						  switch(err) { \
@@ -228,7 +228,7 @@ char* trimNewline(char* line);
 void func(Operand oper1, Operand oper2, Label label);
 void debugPrint(Operand oper);
 
-#define CMD(name) char* name(char* p, Context* context, int* err, char* label)
+#define CMD(name) char* name(char* p, Context* context, int* err, char* label, int lineNumber, char* originalLine)
 
 CMD(data);
 

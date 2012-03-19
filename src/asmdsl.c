@@ -70,8 +70,8 @@ void debugPrint(Operand oper) {
 }
 
 /* code in the table on page 33 */
-CMD(cmp) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR5(REG, DIRECT, LABEL1, LABEL2, CONST),  cmp_gen(context, VAL(1), VAL(2), label))
-CMD(mov) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		mov_gen(context, VAL(1), VAL(2), label))
+CMD(cmp) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR5(REG, DIRECT, LABEL1, LABEL2, CONST),  cmp_gen(context, VAL(1), VAL(2), label, lineNumber,originalLine))
+CMD(mov) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		mov_gen(context, VAL(1), VAL(2), label,lineNumber,originalLine))
 CMD(add) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		add_func(VAL(1), VAL(2), label))
 CMD(sub) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		add_func(VAL(1), VAL(2), label))
 CMD(lea) TWO(OR3(DIRECT, LABEL1, LABEL2),             OR4(REG, DIRECT, LABEL1, LABEL2), 		add_func(VAL(1), VAL(2), label))
@@ -89,8 +89,8 @@ CMD(jsr) ONE(DIRECT,										debugPrint(VAL(1)))
 CMD(rts)  NONE(printf("rts!"))
 CMD(stop) NONE(printf("stop!"))
 
-CMD(entry) ONE(DIRECT, genEntry(label, VAL(1), context))
-CMD(_extern) ONE(DIRECT, genExtern(label, VAL(1), context))
+CMD(entry) ONE(DIRECT, genEntry(label, VAL(1), context,lineNumber,originalLine ))
+CMD(_extern) ONE(DIRECT, genExtern(label, VAL(1), context,lineNumber,originalLine))
 
-CMD(data) MANY_NUMBERS(genData(label, nums, count, context))
-CMD(string) STRING(genString(label, text, context))
+CMD(data) MANY_NUMBERS(genData(label, nums, count, context,lineNumber,originalLine))
+CMD(string) STRING(genString(label, text, context,lineNumber,originalLine))

@@ -7,32 +7,37 @@
 
 #include  "gendsl.h"
 
-void deferLabelAddrResolution(list* l, addrVal* into, char* label) {
+int deferLabelAddrResolution(list* l, addrVal* into, char* label, int lineNumber, char* origLine) {
 	node* n = find(*l, findLabelText, label);
 	if (n==NULL) {
-		printf("label %s not defined!\n", label);
+		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
+		return -1;
 	} else {
 		into->val = LABEL(n)->offset;
 		into->type = LABEL(n)->isExtern ? e : r;
 	}
+	return 0;
 }
 
-void deferLabelDistanceResolution(list* l, addrVal* into, char* label) {
+int  deferLabelDistanceResolution(list* l, addrVal* into, char* label, int lineNumber, char* origLine) {
 	into->val = 5;
 	into->type=e;
+	return 0;
 }
 
-void deferMakeSureLabelHasAddress(list* l, addrVal* into, char* label) {
+int  deferMakeSureLabelHasAddress(list* l, addrVal* into, char* label, int lineNumber, char* origLine) {
 	node* n = find(*l, findLabelText, label);
 	if (n==NULL) {
-		printf("label %s not defined!\n", label);
+		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
+		return -1;
 	} else if (LABEL(n)->offset==-1) {
-		printf("label %s is not resolved!\n", label);
+		printf("Error at line %d '%s': label %s not resolved!\n", lineNumber, origLine, label);
+		return -1;
 	}
-
+	return 0;
 }
 
-void genExtern(char* label, Operand oper, Context* context) {
+void genExtern(char* label, Operand oper, Context* context,int lineNum, char* origLine) {
 	node* n = find(context->allLabels, findLabelText, oper.get.direct);
 	if (n!=NULL) {
 		printf("label %s is already defined, cannot be extern.\n", oper.get.direct);
@@ -41,18 +46,18 @@ void genExtern(char* label, Operand oper, Context* context) {
 	}
 }
 
-void genEntry(char* label, Operand oper, Context* context) {
+void genEntry(char* label, Operand oper, Context* context, int lineNum, char* origLine) {
 	node* n = find(context->allLabels, findLabelText, oper.get.direct);
 	if (n==NULL) {
 		n = newEntry(oper.get.direct);
 		context->allLabels = append(context->allLabels, n);
-		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureLabelHasAddress, &context->allLabels, NULL, oper.get.direct));
+		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureLabelHasAddress, &context->allLabels, NULL, oper.get.direct, lineNum, origLine));
 	} else {
 		LABEL(n)->isEntry=1;
 	}
 }
 
-void genData(char* label, int* nums, int count, Context* context) {
+void genData(char* label, int* nums, int count, Context* context, int lineNum, char* origLine) {
 	node* n;
 	if (label[0]=='\0') {
 		n = newLabel("", -1);
@@ -74,7 +79,7 @@ void genData(char* label, int* nums, int count, Context* context) {
 	context->allLabels = append(context->allLabels, n);
 }
 
-void genString(char* label, char* str, Context* context) {
+void genString(char* label, char* str, Context* context, int lineNum, char* origLine) {
 	node* n;
 	if (label[0]=='\0') {
 		n = newLabel("", -1);
@@ -120,34 +125,7 @@ void asmLabel(Context* context, char* label) {
 GEN(mov_gen)
 	START
 		DO2(constant,	reg,	MOV(CONSTANT(source), 		REGISTER(dest)))
-		/*DO2(constant,	direct, MOV(CONSTANT(source), 		DIRECT_LABEL(dest)))*/
-else if (operand1.kind == constant && operand2.kind == direct){{ \
-	OpCode code;\
-	Operand* theOperand;\
-	addrVal *theWord;\
-	node* n;\
-	byte size=1; \
-	code.code=0;\
-	code.bit.op=0;\
-	theOperand=&operand1;\
-	n  = newAsmNode(); \
-	theWord = ((asm_node*)n->data)->word;\
-	code.bit.sourceKind = theOperand->kind; /* CONSTANT */\
-	code.bit.sourceReg  = 0;\
-	theWord->val=theOperand->get.constant; \
-	theWord->type=a; \
-	size++;theWord++;; \
-	theOperand=&operand2;\
-	code.bit.destKind = theOperand->kind; /* DIRECT_LABEL*/ \
-	code.bit.destReg  = 0;\
-	context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct));;\
-	size++;theWord++;; \
-	\
-	context->codeList = append(context->codeList, n);\
-	((asm_node*)n->data)->op_code = code.code; \
-	((asm_node*)n->data)->size=size; \
-	nothing(theWord);\
-}}
+		DO2(constant,	direct, MOV(CONSTANT(source), 		DIRECT_LABEL(dest)))
 		DO2(direct,		direct, MOV(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
 		DO2(direct, 	reg, 	MOV(DIRECT_LABEL(source), 	REGISTER(dest)))
 		DO2(reg, 		direct, MOV(REGISTER(source), 		DIRECT_LABEL(dest)))
