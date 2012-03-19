@@ -13,6 +13,9 @@
 #include "lists.h"
 #include "DoubleLinkedList.h"
 
+#define FIRST_ARG_IS_INVALID 4001
+#define SECOND_ARG_IS_INVALID 4002
+
 void deferLabelDistanceResolution(list* l, int* into, char* label);
 void deferLabelAddrResolution(list* l, int* into, char* label);
 

@@ -131,8 +131,6 @@
 		}\
 	}\
     pi++;
-#define FIRST_ARG_IS_INVALID 4001
-#define SECOND_ARG_IS_INVALID 4002
 
 #define TWO(A,B,code) { \
 	Operand theVals[2],val; /*TWO*/	\
