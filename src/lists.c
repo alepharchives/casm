@@ -115,3 +115,14 @@ int computeLabelOffset(list* l, int lastAsmOffset) {
 	}
 	return 0;
 }
+
+void execDeffered(list* l) {
+	node** scan = l;
+	node* n;
+
+	while (*scan!= NULL) {
+		n = *scan;
+		INVOKE(n);
+		scan = &(*scan)->next;
+	}
+}
