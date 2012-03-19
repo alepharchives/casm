@@ -105,9 +105,9 @@ int computeLabelOffset(list* l, int lastAsmOffset) {
 	while (*scan!= NULL) {
 		n = *scan;
 		switch (LABEL(n)->kind) {
-		case ASM_KIND: LABEL(n)->offset = LABEL(n)->code->offset; break;
-		case DATA_KIND: LABEL(n)->offset = offset; offset+=LABEL(n)->data.size;break;
-		case STRING_KIND: LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->data.str);break;
+		case ASM_KIND: 		LABEL(n)->offset = LABEL(n)->code->offset; break;
+		case DATA_KIND: 	LABEL(n)->offset = offset; offset+=LABEL(n)->data.size; break;
+		case STRING_KIND: 	LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->data.str); break;
 		case NOT_INIT: printf("Label %s referenced but not defined!\n", LABEL(n)->label); return -1;
 		}
 
@@ -125,4 +125,75 @@ void execDeffered(list* l) {
 		INVOKE(n);
 		scan = &(*scan)->next;
 	}
+}
+
+void intToBin(int i, char* out) {
+	int j;
+	for (j=0;j<15;j++) {
+		out[14-j] = '0'+(i&1);
+		i>>=1;
+	}
+	out[15]='\0';
+}
+
+void printOneAsm(asm_node* n) {
+	char off[16], bits[16];
+	int j;
+	intToBin(n->offset, off);
+	intToBin(n->op_code, bits);
+	printf("offset %s (%d) : data %s\n", off, n->offset, bits);
+	for (j=1;j<n->size;j++) {
+		int of = n->offset+j;
+		intToBin(of, off);
+		intToBin(n->word[j-1], bits);
+		printf("offset %s (%d) : data %s\n", off, of, bits);
+	}
+}
+
+void printAsm(list* l) {
+	node** scan = l;
+	node* n;
+
+	while (*scan!= NULL) {
+		n = *scan;
+		printOneAsm(ASM(n));
+		fflush(stdout);
+		scan = &(*scan)->next;
+	}
+	return;
+}
+
+void printOneData(label_node* n) {
+	char off[16], bits[16],l[50];
+	int j;
+	if (strlen(n->label)>0) sprintf(l, "(%s)", n->label);
+	else l[0]='\0';
+	if (n->kind==DATA_KIND) {
+		for(j=0;j<n->data.size;j++) {
+			int of = n->offset+j;
+			intToBin(of, off);
+			intToBin( n->data.nums[j],bits);
+			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
+		}
+	} else if (n->kind == STRING_KIND) {
+		for(j=0;j<=strlen(n->data.str);j++) {
+			int of = n->offset+j;
+			intToBin(of, off);
+			intToBin( n->data.str[j],bits);
+			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
+		}
+	}
+}
+
+void printData(list* l) {
+	node** scan = l;
+	node* n;
+
+	while (*scan!= NULL) {
+		n = *scan;
+		printOneData(LABEL(n));
+		fflush(stdout);
+		scan = &(*scan)->next;
+	}
+	return;
 }

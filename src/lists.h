@@ -26,6 +26,8 @@ int findLabelExtern(node* n, void* label);
 int computeAsmOffset(list* l, int initial);
 int computeLabelOffset(list* l, int lastAsmOffset);
 void execDeffered(list* l);
+void printAsm(list* l);
+void printData(list* l);
 
 typedef struct {
 	int op_code, word[4];
@@ -51,7 +53,7 @@ typedef enum {
 typedef struct {
 	label_kind kind;
 	union {
-		union {
+		struct {
 			int* nums;
 			int size;
 		};

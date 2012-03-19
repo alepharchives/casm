@@ -124,10 +124,6 @@ int main(void) {
 		 TRY_DOT(data)
 		 TRY_DOT(string)
 		ELSE("no such command")
-
-
-
-
 		fflush(stdout);
 	}
 
@@ -135,7 +131,9 @@ int main(void) {
 	computeLabelOffset(&context.allLabels, lastOffset);
 	execDeffered(&context.deferred);
 
-
+	printAsm(&context.codeList);
+	printf("\n");
+	printData(&context.allLabels);
 
 	return 0;
 }

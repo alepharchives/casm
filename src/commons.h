@@ -63,6 +63,5 @@ typedef struct {
 	list codeList;
 	list allLabels;
 	list deferred;
-	list dataList;
 } Context ;
 #endif /* COMMONS_H_ */
