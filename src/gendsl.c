@@ -13,7 +13,7 @@ void deferLabelAddrResolution(list* l, addrVal* into, char* label) {
 		printf("label %s not defined!", label);
 	} else {
 		into->val = LABEL(n)->offset;
-		into->type = r;
+		into->type = LABEL(n)->isExtern ? e : r;
 	}
 }
 
@@ -34,7 +34,7 @@ void deferMakeSureLabelHasAddress(list* l, addrVal* into, char* label) {
 
 void genExtern(char* label, Operand oper, Context* context) {
 	node* n = find(context->allLabels, findLabelText, oper.get.direct);
-	if (n==NULL) {
+	if (n!=NULL) {
 		printf("label %s is already defined, cannot be extern.", oper.get.direct);
 	} else {
 		context->allLabels = append(context->allLabels, newExtern(oper.get.direct));
