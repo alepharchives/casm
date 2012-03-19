@@ -39,6 +39,7 @@ int main(void) {
 	char line[1000];
 	node* n;
 	byte b;
+	int i=0, lastOffset;
 	int lineCounter = 0;
 	list codeList = NULL;
 	list allLabels  = NULL;
@@ -111,7 +112,8 @@ int main(void) {
 */
 
 
-	while (1) {
+	//while (1) {
+	for (i=0;i<5;i++) {
 		getline(line, sizeof(line));
 
 		PARSE(line)
@@ -139,6 +141,11 @@ int main(void) {
 		ELSE("no such command")
 		fflush(stdout);
 	}
+
+	lastOffset = computeAsmOffset(&context.codeList, 100);
+	computeLabelOffset(&context.allLabels, lastOffset);
+	execDeffered(&context.deferred);
+
 
 
 	return 0;

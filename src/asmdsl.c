@@ -93,4 +93,4 @@ CMD(entry) ONE(DIRECT, genEntry(label, VAL(1), context))
 CMD(_extern) ONE(DIRECT, genExtern(label, VAL(1), context))
 
 CMD(data) MANY_NUMBERS(genData(label, nums, count, context))
-CMD(string) STRING(debugString(label, text))
+CMD(string) STRING(genString(label, text, context))

@@ -68,6 +68,30 @@ void genData(char* label, int* nums, int count, Context* context) {
 	LABEL(n)->kind = DATA_KIND;
 	LABEL(n)->data.kind = DATA_KIND;
 	LABEL(n)->data.nums=nums;
+	LABEL(n)->data.size=count;
+	LABEL(n)->data.offset=-1;
+	context->allLabels = append(context->allLabels, n);
+}
+
+void genString(char* label, char* str, Context* context) {
+	node* n;
+	if (label[0]=='\0') {
+		n = newLabel("", -1);
+		context->allLabels = append(context->allLabels, n);
+	} else {
+		n = find(context->allLabels, findLabelText, label);
+		if (n!=NULL) {
+			printf("label %s already defined!\n", label);
+			return;
+		}
+		else {
+			n = newLabel(label, -1);
+		}
+	}
+	LABEL(n)->kind = STRING_KIND;
+	LABEL(n)->data.kind = STRING_KIND;
+	LABEL(n)->data.str = str;
+	LABEL(n)->data.offset=-1;
 	context->allLabels = append(context->allLabels, n);
 }
 
