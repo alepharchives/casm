@@ -89,12 +89,11 @@ int main(void) {
 
 	lastOffset = computeAsmOffset(&context.codeList, 100);
 	computeLabelOffset(&context.allLabels, lastOffset);
-	execDeffered(&context.deferred);
-
-	printAsm(&context.codeList);
-	printf("\n");
-	printData(&context.allLabels);
-
+	if (execDeffered(&context.deferred) == 0) {
+		printAsm(&context.codeList);
+		printf("\n");
+		printData(&context.allLabels);
+	}
 	return 0;
 }
 

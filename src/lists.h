@@ -13,7 +13,7 @@
 #include "commons.h"
 #include "DoubleLinkedList.h"
 
-node* newDeferedNode(void (*f)(list* l, addrVal*, char*), list* l, addrVal* into, char* label);
+node* newDeferedNode(int  (*f)(list* l, addrVal*, char*, int, char*), list* l, addrVal* into, char* label, int lineNumber, char* origLine);
 node* newAsmNode();
 node* newLabel(char* label, int offset);
 node* newExtern(char* label);
@@ -24,7 +24,7 @@ int findLabelEntry(node* n, void* label);
 int findLabelExtern(node* n, void* label);
 int computeAsmOffset(list* l, int initial);
 int computeLabelOffset(list* l, int lastAsmOffset);
-void execDeffered(list* l);
+int execDeffered(list* l);
 void printAsm(list* l);
 void printData(list* l);
 
@@ -37,9 +37,11 @@ typedef struct {
 } asm_node ;
 
 typedef struct {
-	void (*f)(list* l, addrVal*, char*);
+	int (*f)(list* l, addrVal*, char*, int, char*);
 	addrVal* into;
 	list* list;
+	int lineNumber;
+	char origLine[100];
 	char label[MAX_LABEL];
 }defered_node;
 
@@ -77,7 +79,8 @@ typedef struct {
 #define LABEL(n) ((label_node*)n->data)
 #define ASM(n) ((asm_node*)n->data)
 #define DATA(n) ((data_node*)n->data)
+#define DEFERRED(n) ((defered_node*)n->data)
 
-#define INVOKE(n) ((defered_node*)n->data)->f((((defered_node*)n->data)->list), (((defered_node*)n->data)->into), (((defered_node*)n->data)->label))
+#define INVOKE(n) DEFERRED(n)->f(DEFERRED(n)->list, DEFERRED(n)->into, DEFERRED(n)->label, DEFERRED(n)->lineNumber, DEFERRED(n)->origLine)
 
 #endif

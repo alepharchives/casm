@@ -16,8 +16,8 @@
 #define FIRST_ARG_IS_INVALID 4001
 #define SECOND_ARG_IS_INVALID 4002
 
-void deferLabelDistanceResolution(list* l, addrVal* into, char* label);
-void deferLabelAddrResolution(list* l, addrVal* into, char* label);
+int  deferLabelDistanceResolution(list* l, addrVal* into, char* label, int lineNumber, char* origLine);
+int  deferLabelAddrResolution(list* l, addrVal* into, char* label, int lineNumber, char* origLine);
 
 #define REGISTER(T) \
 	code.bit.T ## Kind = theOperand->kind; /* REGISTER */ \
@@ -32,7 +32,7 @@ void deferLabelAddrResolution(list* l, addrVal* into, char* label);
 	theWord->type=a; \
 	USE_EXTRA_WORD
 
-#define GET_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct)); \
+#define GET_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct,lineNumber,originalLine)); \
 
 #define GET_ONE_INDEX_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.oneIndex.label));
 
@@ -78,18 +78,20 @@ void deferLabelAddrResolution(list* l, addrVal* into, char* label);
 #define MOV(OP1, OP2) OPER(0,OP1,OP2)
 #define CMP(OP1, OP2) OPER(1,OP1,OP2)
 
-#define GEN(cmd) void cmd(Context* context, Operand operand1, Operand operand2, char* label)
+#define GEN(cmd) void cmd(Context* context, Operand operand1, Operand operand2, char* label, int lineNumber, char* originalLine)
 #define START {if(0){}
 #define DO2(kind1, kind2, op) else if (operand1.kind == kind1 && operand2.kind == kind2){op}
 #define DO1(kind1, op) else if (operand1.kind == kind1){op}
 #define END(code) code;}
 
 
-void mov_gen(Context* context, Operand operand1, Operand operand2, char* label);
-void genExtern(char* label, Operand oper, Context* context);
-void genEntry(char* label, Operand oper, Context* context);
-void genData(char* label, int* nums, int count, Context* context);
-void genString(char* label, char* str, Context* context);
+GEN(mov_gen);
+GEN(cmp_gen);
+
+void genExtern(char* label, Operand oper, Context* context, int lineNum, char* origLine);
+void genEntry(char* label, Operand oper, Context* context, int lineNum, char* origLine);
+void genData(char* label, int* nums, int count, Context* context, int lineNum, char* origLine);
+void genString(char* label, char* str, Context* context, int lineNum, char* origLine);
 
 void nothing(addrVal* i);
 #endif /* GENDSL_H_ */
