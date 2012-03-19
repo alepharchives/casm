@@ -18,6 +18,12 @@ void deferLabelAddrResolution(list* l, addrVal* into, char* label) {
 }
 
 void deferLabelDistanceResolution(list* l, addrVal* into, char* label) {
+	node* n = find(*l, findLabelText, label);
+	if (n==NULL){
+		printf("label %s not defined!\n", label);
+	} else {
+
+	}
 	into->val = 5;
 	into->type=e;
 }

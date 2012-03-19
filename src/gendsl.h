@@ -36,7 +36,7 @@ void deferLabelAddrResolution(list* l, addrVal* into, char* label);
 
 #define GET_ONE_INDEX_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.oneIndex.label));
 
-/*#define GET_DISTANCE_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.oneIndex.label));*/
+#define GET_ONE_INDEX_LABEL_OFFSET_INDEX context->deferred = append(context->deferred, newDeferedNode(deferLabelDistanceResolution,&context->allLabels, theWord, theOperand->get.oneIndex.index));
 
 #define DIRECT_LABEL(T) \
 	code.bit.T ## Kind = theOperand->kind; /* DIRECT_LABEL*/ \
@@ -48,8 +48,9 @@ void deferLabelAddrResolution(list* l, addrVal* into, char* label);
 	code.bit.T ## Kind = theOperand->kind; /* LABEL_ONE_INDEX*/ \
 	code.bit.T ## Reg  = 0;\
 	GET_ONE_INDEX_LABEL_OFFSET;\
+	USE_EXTRA_WORD;\
+	GET_ONE_INDEX_LABEL_OFFSET_INDEX;\
 	USE_EXTRA_WORD
-
 
 #define REMOVE_WARNS2 theWord=&warn; warn++; *theWord++;
 
