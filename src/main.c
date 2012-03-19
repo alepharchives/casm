@@ -135,6 +135,8 @@ int main(void) {
 	computeLabelOffset(&context.allLabels, lastOffset);
 	execDeffered(&context.deferred);
 
+
+
 	return 0;
 }
 

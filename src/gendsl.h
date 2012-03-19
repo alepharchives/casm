@@ -31,12 +31,7 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 	*theWord=theOperand->get.constant; \
 	USE_EXTRA_WORD
 
-#define GET_LABEL_OFFSET { \
-		node* label = find(context->allLabels, findLabelText, theOperand->get.direct); /* GET_LABEL_OFFSET */ \
-		if (label == NULL) { \
-			context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct)); \
-		} else *theWord = LABEL(label)->offset; \
-	}
+#define GET_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct)); \
 
 
 #define DIRECT_LABEL(T) \
@@ -79,5 +74,7 @@ void mov_gen(Context* context, Operand operand1, Operand operand2, char* label);
 void genExtern(char* label, Operand oper, Context* context);
 void genEntry(char* label, Operand oper, Context* context);
 void genData(char* label, int* nums, int count, Context* context);
+void genString(char* label, char* str, Context* context);
+
 void nothing(int* i);
 #endif /* GENDSL_H_ */
