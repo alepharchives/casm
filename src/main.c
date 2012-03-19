@@ -39,7 +39,7 @@ int main(void) {
 	char line[1000];
 	node* n;
 	byte b;
-
+	int lineCounter = 0;
 	list codeList = NULL;
 	list allLabels  = NULL;
 	list deferred = NULL;
@@ -122,6 +122,7 @@ int main(void) {
 		 TRY_DOT(data)
 		 TRY_DOT(string)
 		ELSE("no such command")
+
 
 
 

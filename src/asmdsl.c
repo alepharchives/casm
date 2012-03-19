@@ -7,6 +7,10 @@
 
 
 #include "asmdsl.h"
+char* trimNewline(char* line)
+{	line[strlen(line)-1]='\0';
+	return line;
+}
 
 void cmp_func(Operand oper1, Operand oper2, Label label) {
 	printf("CMP\n");

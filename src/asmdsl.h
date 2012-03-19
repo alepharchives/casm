@@ -19,6 +19,7 @@
 		Operand a[c] ;		    \
 		int pi=0,i;			\
 		Operand val;			\
+		val.kind = none; \
 		for (i=0;i<count;i++) { a[i].kind=none;}
 
 #define FIN_OR(code) \
@@ -130,18 +131,27 @@
 		}\
 	}\
     pi++;
+#define FIRST_ARG_IS_INVALID 4001
+#define SECOND_ARG_IS_INVALID 4002
 
 #define TWO(A,B,code) { \
 	Operand theVals[2],val; /*TWO*/	\
 	Operand a[2];\
+	theVals[0].kind=none;theVals[1].kind=none;\
 	int pi=0;\
 	char* l=NULL;	\
 	if (p==NULL) return NULL; \
 	{A;theVals[0]=val;} \
 	l=NULL;				\
-	if (theVals[0].kind==none) return NULL;\
+	if (theVals[0].kind==none) { \
+		*err = FIRST_ARG_IS_INVALID;\
+		return NULL;\
+	} \
 	{B;theVals[1]=val;}	\
-	if (theVals[1].kind==none) return NULL;\
+	if (theVals[1].kind==none) { \
+		*err = SECOND_ARG_IS_INVALID;\
+		return NULL;\
+	} \
 	code;		\
 	REMOVE_WARNS		\
 	return p; \
@@ -155,7 +165,10 @@
 		if (p==NULL) return NULL; \
 		{A;theVals[0]=val;} \
 		l=NULL;				\
-		if (theVals[0].kind==none) return NULL;\
+		if (theVals[0].kind==none) { \
+			*err = FIRST_ARG_IS_INVALID;\
+			return NULL;\
+		} \
 		code;		\
 		REMOVE_WARNS		\
 		return p; \
@@ -197,13 +210,22 @@
 	int err=0; \
 	Label label;\
 	char*l;\
+	lineCounter++;\
 	GET_LINE_LABEL;\
 	l=strip(l, " ");\
 	if(0) {}
 
+char* trimNewline(char* line);
+
 #define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &context, &err, label)) {}
 #define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &context, &err, label)) {}
-#define ELSE(msg)     else if (!err){ printf("%s\n",msg);}}
+#define ELSE(msg)     else if (!err){ printf("%s\n",msg);}\
+					  else if (err) { \
+						  switch(err) { \
+						  	  case FIRST_ARG_IS_INVALID: printf("error in line %d: first argument of line '%s' is not valid\n", lineCounter, trimNewline(line));break; \
+						  	  case SECOND_ARG_IS_INVALID:printf("error in line %d: second argument of line '%s' is not valid\n",lineCounter,  trimNewline(line));break; \
+						  } \
+					  }}
 
 void func(Operand oper1, Operand oper2, Label label);
 void debugPrint(Operand oper);
