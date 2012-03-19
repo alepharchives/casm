@@ -36,17 +36,6 @@ node* newEntry(char* label) {
 	return _newLabel(label,-1,0,1);
 }
 
-/*
-node* newData(int* nums) {
-	node* n = malloc(sizeof(node));
-	n->prev=NULL;
-	n->data=malloc(sizeof(data_node));
-	memcpy(DATA(n)->nums, nums);
-	DATA(n)->offset=0;
-	DATA(n)->kind = DATA_KIND;
-	return n;
-}*/
-
 node* newString(char* str) {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;

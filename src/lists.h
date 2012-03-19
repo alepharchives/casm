@@ -18,7 +18,6 @@ node* newAsmNode();
 node* newLabel(char* label, int offset);
 node* newExtern(char* label);
 node* newEntry(char* label);
-/*node* newData(int* nums);*/
 
 int findLabelText(node* n, void* label);
 int findLabelEntry(node* n, void* label);
