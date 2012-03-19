@@ -63,14 +63,11 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 	ASM(n)->op_code = code.code; \
 	ASM(n)->size=size; \
 	nothing(theWord);\
-}break;
+}
 
-void init(void(*fs[5][4])(Context*, Operand, Operand, char*), void(*f)(Context*, Operand, Operand, char*), addr from, addr to);
-
-#define GEN(name) void name(Context* context, Operand operand1, Operand operand2, char* label)
-#define DEFAULT(name) void name(Operand operand1, Operand operand2, char* label)
-#define ASSIGN2(mat, name, code, from, to) GEN(name##from##to) code \
-		init(movs, name##from##to, from, to);
+#define START if(0){}
+#define DO(kind1, kind2, op) else if (operand1.kind == kind1 && operand2.kind == kind2){op}
+#define END(code) code;
 
 
 void mov_gen(Context* context, Operand operand1, Operand operand2, char* label);
