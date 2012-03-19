@@ -18,7 +18,7 @@ node* newAsmNode();
 node* newLabel(char* label, int offset);
 node* newExtern(char* label);
 node* newEntry(char* label);
-node* newData(int* nums);
+/*node* newData(int* nums);*/
 
 int findLabelText(node* n, void* label);
 int findLabelEntry(node* n, void* label);
@@ -41,13 +41,15 @@ typedef struct {
 
 #define STRING_KIND 1
 #define DATA_KIND 2
+#define ASM_KIND 3
+#define NOT_INIT 4
 
 typedef struct {
 	byte kind;
 	union {
 		int* nums;
 		char* str;
-	} get;
+	};
 	int offset;
 } data_node;
 
@@ -56,8 +58,9 @@ typedef struct {
 	int offset;
 	byte isExtern;
 	byte isEntry;
+	byte kind;
 	union {
-		asm_node code;
+		asm_node* code;
 		data_node data;
 	};
 }label_node;

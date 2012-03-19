@@ -17,6 +17,7 @@ node* _newLabel(char* label, int offset, byte isExtern, byte isEntry) {
 	n->prev=NULL;
 	n->data=malloc(sizeof(label_node));
 	strcpy(LABEL(n)->label, label);
+	LABEL(n)->kind = NOT_INIT;
 	LABEL(n)->offset=offset;
 	LABEL(n)->isEntry=isEntry;
 	LABEL(n)->isExtern=isExtern;
@@ -35,21 +36,22 @@ node* newEntry(char* label) {
 	return _newLabel(label,-1,0,1);
 }
 
+/*
 node* newData(int* nums) {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
 	n->data=malloc(sizeof(data_node));
-	strcpy(DATA(n)->get.nums, nums);
+	memcpy(DATA(n)->nums, nums);
 	DATA(n)->offset=0;
 	DATA(n)->kind = DATA_KIND;
 	return n;
-}
+}*/
 
 node* newString(char* str) {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
 	n->data=malloc(sizeof(data_node));
-	strcpy(DATA(n)->get.str, str);
+	strcpy(DATA(n)->str, str);
 	DATA(n)->offset=0;
 	DATA(n)->kind = STRING_KIND;
 	return n;

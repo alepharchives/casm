@@ -25,6 +25,16 @@ list append(list l, node* new) {
 	return *head;
 }
 
+node* getLast(list l) {
+	node** scan = &l;
+
+	while ((*scan)->next != NULL) {
+		scan = &(*scan)->next;
+	}
+
+	return *scan;
+}
+
 list insertSorted(list l, node* new) {
 	node** scan = &l, **head = &l;
 

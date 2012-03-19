@@ -65,43 +65,84 @@ void genData(char* label, int* nums, int count, Context* context) {
 			n = newLabel(label, -1);
 		}
 	}
-
+	LABEL(n)->kind = DATA_KIND;
 	LABEL(n)->data.kind = DATA_KIND;
-	LABEL(n)->data.get.nums=nums;
+	LABEL(n)->data.nums=nums;
 	context->allLabels = append(context->allLabels, n);
 }
 
-/*ASSIGN2(movs, mov, MOV(REGISTER(source), DIRECT_LABEL(dest)), reg, direct)*/
-void movregdirect(Context* context, Operand operand1, Operand operand2, char* label) {
-	OpCode code;
-	Operand* theOperand;
-	int *theWord;
+void asmLabel(Context* context, char* label) {
 	node* n;
-	byte size=1;
-	code.code=0;
-	code.bit.op=0;
-	theOperand=&operand1;
-	n  = newAsmNode();
-	theWord = ((asm_node*)n->data)->word;
-	code.bit.sourceKind = theOperand->kind; /* REGISTER */
-	code.bit.sourceReg  = theOperand->get.reg;;
-	theOperand=&operand2;
-	code.bit.destKind = theOperand->kind; /* DIRECT_LABEL*/
-	code.bit.destReg  = 0;
-	{
-		node* label = find(context->allLabels, findLabelText, theOperand->get.direct); /* GET_LABEL_OFFSET */
-		if (label == ((void *)0)) {
-			context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct));
-		} else *theWord = ((label_node*)label->data)->offset;
-	};
-	size++;theWord++;;
-
-	context->codeList = append(context->codeList, n);
-	((asm_node*)n->data)->op_code = code.code;
-	((asm_node*)n->data)->size=size;
+	node* asmNode;
+	if (label[0]!='\0') {
+		asmNode = getLast(context->codeList);
+		n = find(context->allLabels, findLabelText, label);
+		if (n==NULL) {
+			n = newLabel(label, -1);
+			LABEL(n)->kind = ASM_KIND;
+			LABEL(n)->code = ASM(asmNode);
+			context->allLabels = append(context->allLabels, n);
+		} else if (LABEL(n)->kind == NOT_INIT){
+			LABEL(n)->kind = ASM_KIND;
+			LABEL(n)->code = ASM(asmNode);
+		}
+		else {
+			printf("label %s already defined!\n", label);
+		}
+	}
 }
-void(*movs[5][4])(Context*, Operand, Operand, char*);
 
-void init(void(*fs[5][4])(Context*, Operand, Operand, char*), void(*f)(Context*, Operand, Operand, char*), addr from, addr to) {
-fs[from][to]=f;
+void mov_gen(Context* context, Operand operand1, Operand operand2, char* label) {
+
+	switch (operand1.kind) {
+	case constant:
+		switch (operand2.kind) {
+		case direct:				MOV(CONSTANT(source), DIRECT_LABEL(dest))	break;
+		case label_with_index:  			break;
+		case label_with_two_indices: 		break;
+		case reg: 					MOV(CONSTANT(source), REGISTER(dest)) break;
+		}
+		break;
+	case direct:
+		switch (operand2.kind) {
+		case direct:				MOV(DIRECT_LABEL(source), DIRECT_LABEL(dest)) break;
+		case label_with_index: break;
+		case label_with_two_indices: break;
+		case reg:					MOV(DIRECT_LABEL(source), REGISTER(dest)) break;
+		}
+		break;
+	case label_with_index:
+		switch (operand2.kind) {
+		case direct:
+			break;
+		case label_with_index:
+			break;
+		case label_with_two_indices:
+			break;
+		case reg:
+			break;
+		}
+		break;
+	case label_with_two_indices:
+		switch (operand2.kind) {
+		case direct:
+			break;
+		case label_with_index:
+			break;
+		case label_with_two_indices:
+			break;
+		case reg:
+			break;
+		}
+		break;
+	case reg:
+		switch (operand2.kind) {
+		case direct:				MOV(REGISTER(source), DIRECT_LABEL(dest)) break;
+		case label_with_index:break;
+		case label_with_two_indices:break;
+		case reg:					MOV(REGISTER(source), REGISTER(dest)) break;
+		}
+		break;
+	}
+	asmLabel(context, label);
 }

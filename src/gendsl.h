@@ -70,7 +70,7 @@ void init(void(*fs[5][4])(Context*, Operand, Operand, char*), void(*f)(Context*,
 		init(movs, name##from##to, from, to);
 
 
-
+void mov_gen(Context* context, Operand operand1, Operand operand2, char* label);
 void genExtern(char* label, Operand oper, Context* context);
 void genEntry(char* label, Operand oper, Context* context);
 void genData(char* label, int* nums, int count, Context* context);

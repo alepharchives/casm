@@ -67,7 +67,7 @@ void debugPrint(Operand oper) {
 
 /* code in the table on page 33 */
 CMD(cmp) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR5(REG, DIRECT, LABEL1, LABEL2, CONST),  cmp_func(VAL(1), VAL(2), label))
-CMD(mov) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		mov_func(VAL(1), VAL(2), label))
+CMD(mov) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		mov_gen(context, VAL(1), VAL(2), label))
 CMD(add) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		add_func(VAL(1), VAL(2), label))
 CMD(sub) TWO(OR5(REG, CONST, DIRECT, LABEL1, LABEL2), OR4(REG, DIRECT, LABEL1, LABEL2), 		add_func(VAL(1), VAL(2), label))
 CMD(lea) TWO(OR3(DIRECT, LABEL1, LABEL2),             OR4(REG, DIRECT, LABEL1, LABEL2), 		add_func(VAL(1), VAL(2), label))

@@ -15,5 +15,6 @@ void freeList(list l);
 void printBackwards(list l);
 list append(list l, node* new);
 node* find(list l, int (node*, void*), void*);
+node* getLast(list l);
 
 #endif

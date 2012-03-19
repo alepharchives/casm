@@ -90,10 +90,10 @@ int main(void) {
 		MOV(DIRECT_LABEL(source), DIRECT_LABEL(dest))
 	MOV(CONSTANT(source), DIRECT_LABEL(dest))
 	MOV(CONSTANT(source), CONSTANT(dest))
-*/
 	allLabels = append(allLabels, newLabel("label", 50));
 
 	INVOKE(deferred);
+*/
 
 
 	while (1) {
