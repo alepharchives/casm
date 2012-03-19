@@ -129,15 +129,15 @@ void execDeffered(list* l) {
 
 void intToBin(int i, char* out) {
 	int j;
-	for (j=0;j<15;j++) {
-		out[14-j] = '0'+(i&1);
+	for (j=0;j<16;j++) {
+		out[15-j] = '0'+(i&1);
 		i>>=1;
 	}
-	out[15]='\0';
+	out[16]='\0';
 }
 
 void printOneAsm(asm_node* n) {
-	char off[16], bits[16];
+	char off[20], bits[20];
 	int j;
 	intToBin(n->offset, off);
 	intToBin(n->op_code, bits);
@@ -164,7 +164,7 @@ void printAsm(list* l) {
 }
 
 void printOneData(label_node* n) {
-	char off[16], bits[16],l[50];
+	char off[17], bits[17],l[50];
 	int j;
 	if (strlen(n->label)>0) sprintf(l, "(%s)", n->label);
 	else l[0]='\0';

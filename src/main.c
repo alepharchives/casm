@@ -98,9 +98,9 @@ int main(void) {
 
 
 	//while (1) {
-	for (i=0;i<5;i++) {
+	while (lineCounter<7) {
 		getline(line, sizeof(line));
-
+		/*printf("got %d %s\n", lineCounter, line);*/
 		PARSE(line)
 		 TRY(cmp)
 		 TRY(mov)

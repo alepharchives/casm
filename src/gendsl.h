@@ -42,14 +42,14 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 
 #define REMOVE_WARNS2 theWord=&warn; warn++; *theWord++;
 
-#define MOV(OP1, OP2) { \
+#define OPER(CODE, OP1, OP2) { \
 	OpCode code;\
 	Operand* theOperand;\
 	int *theWord;\
 	node* n;\
 	byte size=1; \
 	code.code=0;\
-	code.bit.op=0;\
+	code.bit.op=CODE;\
 	theOperand=&operand1;\
 	n  = newAsmNode(); \
 	theWord = ASM(n)->word;\
@@ -62,6 +62,9 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 	ASM(n)->size=size; \
 	nothing(theWord);\
 }
+
+#define MOV(OP1, OP2) OPER(0,OP1,OP2)
+#define CMP(OP1, OP2) OPER(1,OP1,OP2)
 
 #define GEN(cmd) void cmd(Context* context, Operand operand1, Operand operand2, char* label)
 #define START {if(0){}

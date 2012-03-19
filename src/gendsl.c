@@ -54,7 +54,6 @@ void genData(char* label, int* nums, int count, Context* context) {
 	node* n;
 	if (label[0]=='\0') {
 		n = newLabel("", -1);
-		context->allLabels = append(context->allLabels, n);
 	} else {
 		n = find(context->allLabels, findLabelText, label);
 		if (n!=NULL) {
@@ -124,6 +123,16 @@ GEN(mov_gen)
 		DO2(direct, 	reg, 	MOV(DIRECT_LABEL(source), 	REGISTER(dest)))
 		DO2(reg, 		direct, MOV(REGISTER(source), 		DIRECT_LABEL(dest)))
 		DO2(reg, 		reg,	MOV(REGISTER(source), 		REGISTER(dest)))
+	END(asmLabel(context, label))
+
+GEN(cmp_gen)
+	START
+		DO2(constant,	reg,	CMP(CONSTANT(source), 		REGISTER(dest)))
+		DO2(constant,	direct, CMP(CONSTANT(source), 		DIRECT_LABEL(dest)))
+		DO2(direct,		direct, CMP(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
+		DO2(direct, 	reg, 	CMP(DIRECT_LABEL(source), 	REGISTER(dest)))
+		DO2(reg, 		direct, CMP(REGISTER(source), 		DIRECT_LABEL(dest)))
+		DO2(reg, 		reg,	CMP(REGISTER(source), 		REGISTER(dest)))
 	END(asmLabel(context, label))
 
 void nothing(int* b){};
