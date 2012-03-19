@@ -92,49 +92,64 @@ void asmLabel(Context* context, char* label) {
 	}
 }
 
+#define ERROR2(name,  A,B) printf("%s operator is not valid for operands of type %s and %s\n", #name, #A, #B);break;
+#define CANT_GET_HERE break;
+
 void mov_gen(Context* context, Operand operand1, Operand operand2, char* label) {
 
 	switch (operand1.kind) {
 	case constant:
 		switch (operand2.kind) {
+		case constant:				CANT_GET_HERE
 		case direct:				MOV(CONSTANT(source), DIRECT_LABEL(dest))	break;
 		case label_with_index:  			break;
 		case label_with_two_indices: 		break;
 		case reg: 					MOV(CONSTANT(source), REGISTER(dest)) break;
+		case none: 					CANT_GET_HERE
 		}
 		break;
 	case direct:
 		switch (operand2.kind) {
-		case direct:				MOV(DIRECT_LABEL(source), DIRECT_LABEL(dest)) break;
-		case label_with_index: break;
+		case constant:				CANT_GET_HERE
+		case direct:				MOV(DIRECT_LABEL(source), DIRECT_LABEL(dest))
+		case label_with_index: 		 break;
 		case label_with_two_indices: break;
-		case reg:					MOV(DIRECT_LABEL(source), REGISTER(dest)) break;
+		case reg:					MOV(DIRECT_LABEL(source), REGISTER(dest))
+		case none: 					CANT_GET_HERE
 		}
 		break;
 	case label_with_index:
 		switch (operand2.kind) {
+		case constant:break;
 		case direct:break;
 		case label_with_index:break;
 		case label_with_two_indices:break;
 		case reg:break;
+		case none:break;
 		}
 		break;
 	case label_with_two_indices:
 		switch (operand2.kind) {
+		case constant:break;
 		case direct:break;
 		case label_with_index:break;
 		case label_with_two_indices:break;
 		case reg:break;
+		case none:break;
 		}
 		break;
 	case reg:
 		switch (operand2.kind) {
-		case direct:				MOV(REGISTER(source), DIRECT_LABEL(dest)) break;
-		case label_with_index:break;
-		case label_with_two_indices:break;
-		case reg:					MOV(REGISTER(source), REGISTER(dest)) break;
+		case constant:				CANT_GET_HERE
+		case direct:				MOV(REGISTER(source), DIRECT_LABEL(dest))
+		case label_with_index:		 break;
+		case label_with_two_indices: break;
+		case reg:					MOV(REGISTER(source), REGISTER(dest))
+		case none:					CANT_GET_HERE
 		}
 		break;
+	case none:break;
 	}
 	asmLabel(context, label);
 }
+void nothing(int* b){};

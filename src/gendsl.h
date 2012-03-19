@@ -42,6 +42,8 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 	GET_LABEL_OFFSET;\
 	USE_EXTRA_WORD
 
+#define REMOVE_WARNS2 theWord=&warn; warn++; *theWord++;
+
 #define MOV(OP1, OP2) { \
 	OpCode code;\
 	Operand* theOperand;\
@@ -60,7 +62,8 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 	context->codeList = append(context->codeList, n);\
 	ASM(n)->op_code = code.code; \
 	ASM(n)->size=size; \
-}
+	nothing(theWord);\
+}break;
 
 void init(void(*fs[5][4])(Context*, Operand, Operand, char*), void(*f)(Context*, Operand, Operand, char*), addr from, addr to);
 
@@ -74,4 +77,5 @@ void mov_gen(Context* context, Operand operand1, Operand operand2, char* label);
 void genExtern(char* label, Operand oper, Context* context);
 void genEntry(char* label, Operand oper, Context* context);
 void genData(char* label, int* nums, int count, Context* context);
+void nothing(int* i);
 #endif /* GENDSL_H_ */
