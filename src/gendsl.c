@@ -113,26 +113,18 @@ void mov_gen(Context* context, Operand operand1, Operand operand2, char* label) 
 		break;
 	case label_with_index:
 		switch (operand2.kind) {
-		case direct:
-			break;
-		case label_with_index:
-			break;
-		case label_with_two_indices:
-			break;
-		case reg:
-			break;
+		case direct:break;
+		case label_with_index:break;
+		case label_with_two_indices:break;
+		case reg:break;
 		}
 		break;
 	case label_with_two_indices:
 		switch (operand2.kind) {
-		case direct:
-			break;
-		case label_with_index:
-			break;
-		case label_with_two_indices:
-			break;
-		case reg:
-			break;
+		case direct:break;
+		case label_with_index:break;
+		case label_with_two_indices:break;
+		case reg:break;
 		}
 		break;
 	case reg:
