@@ -92,13 +92,14 @@ void asmLabel(Context* context, char* label) {
 	}
 }
 
-GEN(mov_gen) START
-				DO(constant,	reg,	MOV(CONSTANT(source), 		REGISTER(dest)))
-				DO(constant,	direct, MOV(CONSTANT(source), 		DIRECT_LABEL(dest)))
-				DO(direct,		direct, MOV(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
-				DO(direct, 		reg, 	MOV(DIRECT_LABEL(source), 	REGISTER(dest)))
-				DO(reg, 		direct, MOV(REGISTER(source), 		DIRECT_LABEL(dest)))
-				DO(reg, 		reg,	MOV(REGISTER(source), 		REGISTER(dest)))
-			 END(asmLabel(context, label))
+GEN(mov_gen)
+	START
+		DO2(constant,	reg,	MOV(CONSTANT(source), 		REGISTER(dest)))
+		DO2(constant,	direct, MOV(CONSTANT(source), 		DIRECT_LABEL(dest)))
+		DO2(direct,		direct, MOV(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
+		DO2(direct, 	reg, 	MOV(DIRECT_LABEL(source), 	REGISTER(dest)))
+		DO2(reg, 		direct, MOV(REGISTER(source), 		DIRECT_LABEL(dest)))
+		DO2(reg, 		reg,	MOV(REGISTER(source), 		REGISTER(dest)))
+	END(asmLabel(context, label))
 
 void nothing(int* b){};
