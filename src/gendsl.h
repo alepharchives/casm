@@ -65,9 +65,10 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 	nothing(theWord);\
 }
 
-#define START if(0){}
+#define GEN(cmd) void cmd(Context* context, Operand operand1, Operand operand2, char* label)
+#define START {if(0){}
 #define DO(kind1, kind2, op) else if (operand1.kind == kind1 && operand2.kind == kind2){op}
-#define END(code) code;
+#define END(code) code;}
 
 
 void mov_gen(Context* context, Operand operand1, Operand operand2, char* label);
