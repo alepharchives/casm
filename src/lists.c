@@ -82,3 +82,36 @@ node* newDeferedNode(void (*f)(list* l, int*, char*), list* l, int* into, char* 
 	n->data=d;
 	return n;
 }
+
+/* This function will set all the offsets of the AST, and return the last offset */
+int computeAsmOffset(list* l, int initial) {
+	node** scan = l;
+	node* n;
+	int offset = initial;
+
+	while (*scan!= NULL) {
+		n = *scan;
+		ASM(n)->offset = offset;
+		offset += ASM(n)->size;
+		scan = &(*scan)->next;
+	}
+	return offset;
+}
+
+int computeLabelOffset(list* l, int lastAsmOffset) {
+	node** scan = l, *n;
+	int offset = lastAsmOffset;
+
+	while (*scan!= NULL) {
+		n = *scan;
+		switch (LABEL(n)->kind) {
+		case ASM_KIND: LABEL(n)->offset = LABEL(n)->code->offset; break;
+		case DATA_KIND: LABEL(n)->offset = offset; offset+=LABEL(n)->data.size;break;
+		case STRING_KIND: LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->data.str);break;
+		case NOT_INIT: printf("Label %s referenced but not defined!\n", LABEL(n)->label); return -1;
+		}
+
+		scan = &(*scan)->next;
+	}
+	return 0;
+}

@@ -39,15 +39,20 @@ typedef struct {
 	char label[MAX_LABEL];
 }defered_node;
 
-#define STRING_KIND 1
-#define DATA_KIND 2
-#define ASM_KIND 3
-#define NOT_INIT 4
+typedef enum {
+	STRING_KIND,
+	DATA_KIND ,
+	ASM_KIND ,
+	NOT_INIT
+} label_kind;
 
 typedef struct {
-	byte kind;
+	label_kind kind;
 	union {
-		int* nums;
+		union {
+			int* nums;
+			int size;
+		};
 		char* str;
 	};
 	int offset;
@@ -58,7 +63,7 @@ typedef struct {
 	int offset;
 	byte isExtern;
 	byte isEntry;
-	byte kind;
+	label_kind kind;
 	union {
 		asm_node* code;
 		data_node data;

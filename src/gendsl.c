@@ -68,6 +68,8 @@ void genData(char* label, int* nums, int count, Context* context) {
 	LABEL(n)->kind = DATA_KIND;
 	LABEL(n)->data.kind = DATA_KIND;
 	LABEL(n)->data.nums=nums;
+	LABEL(n)->data.size=count;
+	LABEL(n)->data.offset=-1;
 	context->allLabels = append(context->allLabels, n);
 }
 
