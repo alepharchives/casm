@@ -51,9 +51,23 @@ int main(void) {
 	/* mov label[%ass], r3*/
 	Operand operand1, operand2;
 	operand1.kind = label_with_index;
+	strcpy(operand1.get.oneIndex.label, "label");
+	strcpy(operand1.get.oneIndex.index, "index");
+	operand2.kind = constant;
+	operand2.get.constant = 6;
+	/*MOV(LABEL_ONE_INDEX(source), DIRECT_LABEL(dest))*/
+
+
+
+
+
+
+
+
+
 //	operand1.get.oneIndex = 4;
-	operand2.kind = direct;
-	strcpy(operand2.get.direct, "label");
+
+	/*strcpy(operand2.get.direct, "label");*/
 
 	//MOV(REGISTER(source), DIRECT_LABEL(dest))
 
