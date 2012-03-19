@@ -16,8 +16,8 @@
 #define FIRST_ARG_IS_INVALID 4001
 #define SECOND_ARG_IS_INVALID 4002
 
-void deferLabelDistanceResolution(list* l, int* into, char* label);
-void deferLabelAddrResolution(list* l, int* into, char* label);
+void deferLabelDistanceResolution(list* l, addrVal* into, char* label);
+void deferLabelAddrResolution(list* l, addrVal* into, char* label);
 
 #define REGISTER(T) \
 	code.bit.T ## Kind = theOperand->kind; /* REGISTER */ \
@@ -28,7 +28,8 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 #define CONSTANT(T)  \
 	code.bit.T ## Kind = theOperand->kind; /* CONSTANT */\
 	code.bit.T ## Reg  = 0;\
-	*theWord=theOperand->get.constant; \
+	theWord->val=theOperand->get.constant; \
+	theWord->type=a; \
 	USE_EXTRA_WORD
 
 #define GET_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct)); \
@@ -52,14 +53,14 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 
 #define REMOVE_WARNS2 theWord=&warn; warn++; *theWord++;
 
-#define MOV(OP1, OP2) { \
+#define OPER(CODE, OP1, OP2) { \
 	OpCode code;\
 	Operand* theOperand;\
-	int *theWord;\
+	addrVal *theWord;\
 	node* n;\
 	byte size=1; \
 	code.code=0;\
-	code.bit.op=0;\
+	code.bit.op=CODE;\
 	theOperand=&operand1;\
 	n  = newAsmNode(); \
 	theWord = ASM(n)->word;\
@@ -72,6 +73,9 @@ void deferLabelAddrResolution(list* l, int* into, char* label);
 	ASM(n)->size=size; \
 	nothing(theWord);\
 }
+
+#define MOV(OP1, OP2) OPER(0,OP1,OP2)
+#define CMP(OP1, OP2) OPER(1,OP1,OP2)
 
 #define GEN(cmd) void cmd(Context* context, Operand operand1, Operand operand2, char* label)
 #define START {if(0){}
@@ -86,5 +90,5 @@ void genEntry(char* label, Operand oper, Context* context);
 void genData(char* label, int* nums, int count, Context* context);
 void genString(char* label, char* str, Context* context);
 
-void nothing(int* i);
+void nothing(addrVal* i);
 #endif /* GENDSL_H_ */

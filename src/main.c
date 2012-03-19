@@ -37,15 +37,10 @@
 
 int main(void) {
 	char line[1000];
-	node* n;
-	byte b;
-	int i=0, lastOffset;
 	int lineCounter = 0;
-	list codeList = NULL;
-	list allLabels  = NULL;
-	list deferred = NULL;
-	list dataList = NULL;
-	Context context = {NULL, NULL, NULL, NULL};\
+	Context context;
+	int lastOffset;
+
 
 
 	/* mov label[%ass], r3*/
@@ -58,78 +53,10 @@ int main(void) {
 	/*MOV(LABEL_ONE_INDEX(source), DIRECT_LABEL(dest))*/
 
 
-
-
-
-
-
-
-
-//	operand1.get.oneIndex = 4;
-
-	/*strcpy(operand2.get.direct, "label");*/
-
-	//MOV(REGISTER(source), DIRECT_LABEL(dest))
-
-
-
-
-
-
-		/* MOV #45, r2 */
-	/*operand1.get.constant = 45;*/
-/*	allLabels = append(allLabels, newLabel("ass", 40));
-	{
-		Operand operand1, operand2;
-		operand1.kind = reg;
-		operand1.get.reg = 4;
-		operand2.kind = direct;
-		strcpy(operand2.get.direct, "label");
-
-		MOV(REGISTER(source), DIRECT_LABEL(dest))
-
-	}*/
-
-		/* mov label, ass
-			MOV(REGISTER(source), DIRECT_LABEL(dest))
-		 * */
-
-/* mov label[%ass], r3
-   MOV(LABEL1D(source), REGISTER(dest));
-*/
-
-/*	{
-			Operand operand1, operand2;
-			operand1.kind = label_with_index;
-			strcpy(operand1.get.oneIndex.label, "label"); /* resolve offset*/
-			/*strcpy(operand1.get.oneIndex.index, "ass"); /* has to defer a call to resolve distance*/
-			/*operand1.get.reg = 4;
-			operand2.kind = direct;
-			strcpy(operand2.get.direct, "label");
-	}*/
-
-/* these two has to work!
-
-    MOV(LABEL2D(source), REGISTER(dest));
-*/
-
-
-
-
-/*
-		MOV(DIRECT_LABEL(source), DIRECT_LABEL(dest))
-	MOV(CONSTANT(source), DIRECT_LABEL(dest))
-	MOV(CONSTANT(source), CONSTANT(dest))
-	allLabels = append(allLabels, newLabel("label", 50));
-
-	INVOKE(deferred);
-*/
-
-
 	//while (1) {
-	for (i=0;i<5;i++) {
+	while (lineCounter<7) {
 		getline(line, sizeof(line));
-
+		/*printf("got %d %s\n", lineCounter, line);*/
 		PARSE(line)
 		 TRY(cmp)
 		 TRY(mov)
@@ -160,56 +87,11 @@ int main(void) {
 	computeLabelOffset(&context.allLabels, lastOffset);
 	execDeffered(&context.deferred);
 
-
+	printAsm(&context.codeList);
+	printf("\n");
+	printData(&context.allLabels);
 
 	return 0;
 }
 
-/*
-node* n;
 
-int i = 42;
-
-if (i-=2) {
-	printf("ass\n");
-}
-
-printf("%d\n", (i+=12)-(i+=67));
-
-
-n = malloc(sizeof(node));
-n->data = 4;
-insertSorted(n);
-
-n = malloc(sizeof(node));
-n->data = 5;
-insertSorted(n);
-
-n = malloc(sizeof(node));
-n->data = 2;
-insertSorted(n);
-
-n = malloc(sizeof(node));
-n->data = 9;
-insertSorted(n);
-
-print();
-printBackwards();
-
-n = malloc(sizeof(node));
-n->data = 6;
-insertSorted(n);
-
-n = malloc(sizeof(node));
-n->data = 1;
-insertSorted(n);
-
-n = malloc(sizeof(node));
-n->data = 16;
-insertSorted(n);
-
-print();
-printBackwards();
-
-freeList();
-*/

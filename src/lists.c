@@ -36,17 +36,6 @@ node* newEntry(char* label) {
 	return _newLabel(label,-1,0,1);
 }
 
-/*
-node* newData(int* nums) {
-	node* n = malloc(sizeof(node));
-	n->prev=NULL;
-	n->data=malloc(sizeof(data_node));
-	memcpy(DATA(n)->nums, nums);
-	DATA(n)->offset=0;
-	DATA(n)->kind = DATA_KIND;
-	return n;
-}*/
-
 node* newString(char* str) {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
@@ -62,16 +51,20 @@ node* newAsmNode() {
 	n->prev=NULL;
 	n->data=malloc(sizeof(asm_node));
 	ASM(n)->op_code=0;
-	ASM(n)->word[0]=0;
-	ASM(n)->word[1]=0;
-	ASM(n)->word[2]=0;
-	ASM(n)->word[3]=0;
+	ASM(n)->word[0].val=0;
+	ASM(n)->word[1].val=0;
+	ASM(n)->word[2].val=0;
+	ASM(n)->word[3].val=0;
+	ASM(n)->word[0].type=a;
+	ASM(n)->word[1].type=a;
+	ASM(n)->word[2].type=a;
+	ASM(n)->word[3].type=a;
 	ASM(n)->size=0;
 	ASM(n)->offset=0;
 	return n;
 }
 
-node* newDeferedNode(void (*f)(list* l, int*, char*), list* l, int* into, char* label) {
+node* newDeferedNode(void (*f)(list* l, addrVal*, char*), list* l, addrVal* into, char* label) {
 	node* n = malloc(sizeof(node));
 	defered_node* d = malloc(sizeof(defered_node));
 	d->f = f;
@@ -105,10 +98,10 @@ int computeLabelOffset(list* l, int lastAsmOffset) {
 	while (*scan!= NULL) {
 		n = *scan;
 		switch (LABEL(n)->kind) {
-		case ASM_KIND: LABEL(n)->offset = LABEL(n)->code->offset; break;
-		case DATA_KIND: LABEL(n)->offset = offset; offset+=LABEL(n)->data.size;break;
-		case STRING_KIND: LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->data.str);break;
-		case NOT_INIT: printf("Label %s referenced but not defined!\n", LABEL(n)->label); return -1;
+		case ASM_KIND: 		LABEL(n)->offset = LABEL(n)->code->offset; break;
+		case DATA_KIND: 	LABEL(n)->offset = offset; offset+=LABEL(n)->data.size; break;
+		case STRING_KIND: 	LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->data.str); break;
+		case NOT_INIT: if (LABEL(n)->isExtern!=1) {printf("Label %s referenced but not defined!\n", LABEL(n)->label); return -1;}break;
 		}
 
 		scan = &(*scan)->next;
@@ -125,4 +118,75 @@ void execDeffered(list* l) {
 		INVOKE(n);
 		scan = &(*scan)->next;
 	}
+}
+
+void intToBin(int i, char* out) {
+	int j;
+	for (j=0;j<16;j++) {
+		out[15-j] = '0'+(i&1);
+		i>>=1;
+	}
+	out[16]='\0';
+}
+
+void printOneAsm(asm_node* n) {
+	char off[17], bits[17];
+	int j;
+	intToBin(n->offset, off);
+	intToBin(n->op_code, bits);
+	printf("offset %s (%d) : code %s a\n", off, n->offset, bits);
+	for (j=1;j<n->size;j++) {
+		int of = n->offset+j;
+		intToBin(of, off);
+		intToBin(n->word[j-1].val, bits);
+		printf("offset %s (%d) : code %s %c\n", off, of, bits, n->word[j-1].type);
+	}
+}
+
+void printAsm(list* l) {
+	node** scan = l;
+	node* n;
+
+	while (*scan!= NULL) {
+		n = *scan;
+		printOneAsm(ASM(n));
+		fflush(stdout);
+		scan = &(*scan)->next;
+	}
+	return;
+}
+
+void printOneData(label_node* n) {
+	char off[17], bits[17],l[50];
+	int j;
+	if (strlen(n->label)>0) sprintf(l, "(%s)", n->label);
+	else l[0]='\0';
+	if (n->kind==DATA_KIND) {
+		for(j=0;j<n->data.size;j++) {
+			int of = n->offset+j;
+			intToBin(of, off);
+			intToBin( n->data.nums[j],bits);
+			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
+		}
+	} else if (n->kind == STRING_KIND) {
+		for(j=0;j<=strlen(n->data.str);j++) {
+			int of = n->offset+j;
+			intToBin(of, off);
+			intToBin( n->data.str[j],bits);
+			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
+		}
+	}
+}
+
+void printData(list* l) {
+	node** scan = l;
+	node* n;
+
+	while (*scan!= NULL) {
+		n = *scan;
+		printOneData(LABEL(n));
+		fflush(stdout);
+		scan = &(*scan)->next;
+	}
+	return;
 }

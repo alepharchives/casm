@@ -47,6 +47,17 @@ typedef struct {
 	} get;
 } Operand;
 
+typedef enum {
+	a = 'a',
+	r = 'r',
+	e = 'e'
+} addrType;
+
+typedef struct {
+		int val;
+		addrType type;
+} addrVal;
+
 typedef
 	union {
 	int code;
@@ -63,6 +74,5 @@ typedef struct {
 	list codeList;
 	list allLabels;
 	list deferred;
-	list dataList;
 } Context ;
 #endif /* COMMONS_H_ */
