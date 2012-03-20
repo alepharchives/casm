@@ -34,9 +34,11 @@ int  deferLabelAddrResolution(list* l, addrVal* into, char* label, int lineNumbe
 
 #define GET_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.direct,lineNumber,originalLine)); \
 
-#define GET_ONE_INDEX_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.oneIndex.label));
+#define GET_1D_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.oneIndex.label, lineNumber, originalLine)); \
 
-#define GET_ONE_INDEX_LABEL_OFFSET_INDEX context->deferred = append(context->deferred, newDeferedNode(deferLabelDistanceResolution,&context->allLabels, theWord, theOperand->get.oneIndex.index));
+#define GET_1D_INDEX_DISTANCE context->deferred = append(context->deferred, newDeferedNode(deferLabelDistanceResolution,&context->allLabels, theWord, theOperand->get.oneIndex.index, lineNumber, originalLine)); \
+
+#define GET_2D_LABEL_OFFSET(P) context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.twoIndice.P ##, lineNumber, originalLine));
 
 #define DIRECT_LABEL(T) \
 	code.bit.T ## Kind = theOperand->kind; /* DIRECT_LABEL*/ \
@@ -44,13 +46,22 @@ int  deferLabelAddrResolution(list* l, addrVal* into, char* label, int lineNumbe
 	GET_LABEL_OFFSET;\
 	USE_EXTRA_WORD
 
-#define LABEL_ONE_INDEX(T) \
+#define LABEL_1D(T) \
 	code.bit.T ## Kind = theOperand->kind; /* LABEL_ONE_INDEX*/ \
-	code.bit.T ## Reg  = 0;\
-	GET_ONE_INDEX_LABEL_OFFSET;\
+	code.bit.T ## Reg  = 0; /* There is not register in this operand type */\
+	GET_1D_LABEL_OFFSET;\
 	USE_EXTRA_WORD;\
-	GET_ONE_INDEX_LABEL_OFFSET_INDEX;\
+	GET_1D_INDEX_DISTANCE;\
 	USE_EXTRA_WORD
+
+#define LABEL_2D(T) \
+	code.bit.T ## Kind = theOperand->kind; /* LABEL_TWO_INDEX*/\
+	code.bit.T ## Reg  = theOperand->get.twoIndice.reg;\
+	GET_2D_LABEL_OFFSET(label);\
+	USE_EXTRA_WORD;\
+	GET_2D_LABEL_OFFSET(index);\
+	USE_EXTRA_WORD
+
 
 #define REMOVE_WARNS2 theWord=&warn; warn++; *theWord++;
 

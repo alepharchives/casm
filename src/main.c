@@ -50,11 +50,7 @@ int main(void) {
 	strcpy(operand1.get.oneIndex.index, "index");
 	operand2.kind = constant;
 	operand2.get.constant = 6;
-/*	MOV(LABEL_ONE_INDEX(source), DIRECT_LABEL(dest))*/
-
-
-
-
+	/*MOV(LABEL_ONE_INDEX(source), DIRECT_LABEL(dest))*/
 
 
 	//while (1) {
