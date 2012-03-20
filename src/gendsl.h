@@ -62,7 +62,6 @@ int  deferLabelAddrResolution(list* l, addrVal* into, char* label, int lineNumbe
 	GET_2D_LABEL_OFFSET(index);\
 	USE_EXTRA_WORD
 
-
 #define REMOVE_WARNS2 theWord=&warn; warn++; *theWord++;
 
 #define OPER(CODE, OP1, OP2) { \

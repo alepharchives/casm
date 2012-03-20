@@ -40,7 +40,7 @@ node* newString(char* str) {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
 	n->data=malloc(sizeof(data_node));
-	strcpy(DATA(n)->str, str);
+	strcpy(DATA(n)->getData.str, str);
 	DATA(n)->offset=0;
 	DATA(n)->kind = STRING_KIND;
 	return n;
@@ -101,9 +101,9 @@ int computeLabelOffset(list* l, int lastAsmOffset) {
 	while (*scan!= NULL) {
 		n = *scan;
 		switch (LABEL(n)->kind) {
-		case ASM_KIND: 		LABEL(n)->offset = LABEL(n)->code->offset; break;
-		case DATA_KIND: 	LABEL(n)->offset = offset; offset+=LABEL(n)->data.size; break;
-		case STRING_KIND: 	LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->data.str); break;
+		case ASM_KIND: 		LABEL(n)->offset = LABEL(n)->get.code->offset; break;
+		case DATA_KIND: 	LABEL(n)->offset = offset; offset+=LABEL(n)->get.data.getData.data.size; break;
+		case STRING_KIND: 	LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->get.data.getData.str); break;
 		case NOT_INIT: if (LABEL(n)->isExtern!=1) {printf("Label %s referenced but not defined!\n", LABEL(n)->label); return -1;}break;
 		}
 
@@ -168,17 +168,17 @@ void printOneData(label_node* n) {
 	if (strlen(n->label)>0) sprintf(l, "(%s)", n->label);
 	else l[0]='\0';
 	if (n->kind==DATA_KIND) {
-		for(j=0;j<n->data.size;j++) {
+		for(j=0;j<n->get.data.getData.data.size;j++) {
 			int of = n->offset+j;
 			intToBin(of, off);
-			intToBin( n->data.nums[j],bits);
+			intToBin( n->get.data.getData.data.nums[j],bits);
 			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
 		}
 	} else if (n->kind == STRING_KIND) {
-		for(j=0;j<=strlen(n->data.str);j++) {
+		for(j=0;j<=strlen(n->get.data.getData.str);j++) {
 			int of = n->offset+j;
 			intToBin(of, off);
-			intToBin( n->data.str[j],bits);
+			intToBin( n->get.data.getData.str[j],bits);
 			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
 		}
 	}

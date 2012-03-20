@@ -1,7 +1,7 @@
 /*
  * lists.h
  *
- *  Created on: 18 áîøñ 2012
+ *  Created on: 18 ï¿½ï¿½ï¿½ï¿½ 2012
  *      Author: ypsw
  */
 #ifndef LISTS_H
@@ -58,9 +58,9 @@ typedef struct {
 		struct {
 			int* nums;
 			int size;
-		};
+		} data;
 		char* str;
-	};
+	}getData;
 	int offset;
 } data_node;
 
@@ -73,7 +73,7 @@ typedef struct {
 	union {
 		asm_node* code;
 		data_node data;
-	};
+	}get;
 }label_node;
 
 #define LABEL(n) ((label_node*)n->data)

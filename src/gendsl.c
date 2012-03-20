@@ -72,10 +72,10 @@ void genData(char* label, int* nums, int count, Context* context, int lineNum, c
 		}
 	}
 	LABEL(n)->kind = DATA_KIND;
-	LABEL(n)->data.kind = DATA_KIND;
-	LABEL(n)->data.nums=nums;
-	LABEL(n)->data.size=count;
-	LABEL(n)->data.offset=-1;
+	LABEL(n)->get.data.kind = DATA_KIND;
+	LABEL(n)->get.data.getData.data.nums=nums;
+	LABEL(n)->get.data.getData.data.size=count;
+	LABEL(n)->get.data.offset=-1;
 	context->allLabels = append(context->allLabels, n);
 }
 
@@ -95,9 +95,9 @@ void genString(char* label, char* str, Context* context, int lineNum, char* orig
 		}
 	}
 	LABEL(n)->kind = STRING_KIND;
-	LABEL(n)->data.kind = STRING_KIND;
-	LABEL(n)->data.str = str;
-	LABEL(n)->data.offset=-1;
+	LABEL(n)->get.data.kind = STRING_KIND;
+	LABEL(n)->get.data.getData.str = str;
+	LABEL(n)->get.data.offset=-1;
 	context->allLabels = append(context->allLabels, n);
 }
 
@@ -110,11 +110,11 @@ void asmLabel(Context* context, char* label) {
 		if (n==NULL) {
 			n = newLabel(label, -1);
 			LABEL(n)->kind = ASM_KIND;
-			LABEL(n)->code = ASM(asmNode);
+			LABEL(n)->get.code = ASM(asmNode);
 			context->allLabels = append(context->allLabels, n);
 		} else if (LABEL(n)->kind == NOT_INIT){
 			LABEL(n)->kind = ASM_KIND;
-			LABEL(n)->code = ASM(asmNode);
+			LABEL(n)->get.code = ASM(asmNode);
 		}
 		else {
 			printf("label %s already defined!\n", label);
@@ -124,40 +124,17 @@ void asmLabel(Context* context, char* label) {
 
 GEN(mov_gen)
 	START
+
 		DO2(constant,				reg,	MOV(CONSTANT(source), 		REGISTER(dest)))
 		DO2(constant,				direct, MOV(CONSTANT(source), 		DIRECT_LABEL(dest)))
 		DO2(direct,					direct, MOV(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
 		DO2(direct, 				reg, 	MOV(DIRECT_LABEL(source), 	REGISTER(dest)))
 		DO2(reg, 					direct, MOV(REGISTER(source), 		DIRECT_LABEL(dest)))
 		DO2(reg, 					reg,	MOV(REGISTER(source), 		REGISTER(dest)))
-		DO2(reg, 					reg,	MOV(REGISTER(source), 		REGISTER(dest)))
-		/*DO2(label_with_two_indices, reg,	MOV(LABEL_2D(source), 		REGISTER(dest)))*/
-		/*else if (operand1.kind == label_with_two_indices && operand2.kind == reg){{ \
-			OpCode code;\
-			Operand* theOperand;\
-			addrVal *theWord;\
-			node* n;\
-			byte size=1; \
-			code.code=0;\
-			code.bit.op=0;\
-			theOperand=&operand1;\
-			n  = newAsmNode(); \
-			theWord = ((asm_node*)n->data)->word;\
-			code.bit.sourceKind = theOperand->kind; /* LABEL_TWO_INDEX*/\
-			/*code.bit.sourceReg  = theOperand->get.twoIndice.reg;\
-			context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.twoIndice.label, lineNumber, originalLine));;\
-			size++;theWord++;;\
-			context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.twoIndice.index, lineNumber, originalLine));;\
-			size++;theWord++;; \
-			theOperand=&operand2;\
-			code.bit.destKind = theOperand->kind; /* REGISTER */ \
-			/*code.bit.destReg  = theOperand->get.reg;; \
-			\
-			context->codeList = append(context->codeList, n);\
-			((asm_node*)n->data)->op_code = code.code; \
-			((asm_node*)n->data)->size=size; \
-			nothing(theWord);\
-		}}*/
+
+	/*	DO2(label_with_two_indices, reg,	MOV(LABEL_2D(source), 		REGISTER(dest)))*/
+		/*DO2(reg, 		reg,	MOV(REGISTER(source), 		REGISTER(dest)))*/
+
 	END(asmLabel(context, label))
 
 GEN(cmp_gen)
@@ -171,3 +148,27 @@ GEN(cmp_gen)
 	END(asmLabel(context, label))
 
 void nothing(addrVal* b){};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

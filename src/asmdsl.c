@@ -34,8 +34,8 @@ void add_func(Operand oper1, Operand oper2, Label label) {
 }
 
 void debugNums(char* label, int* nums, int size) {
-	if (label[0]!='\0')	printf("label %s\n", label);
 	int i=0;
+	if (label[0]!='\0')	printf("label %s\n", label);
 	while (i<size) {
 		printf("%d, ", nums[i++]);
 	}
