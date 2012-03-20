@@ -124,22 +124,50 @@ void asmLabel(Context* context, char* label) {
 
 GEN(mov_gen)
 	START
-		DO2(constant,	reg,	MOV(CONSTANT(source), 		REGISTER(dest)))
-		DO2(constant,	direct, MOV(CONSTANT(source), 		DIRECT_LABEL(dest)))
-		DO2(direct,		direct, MOV(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
-		DO2(direct, 	reg, 	MOV(DIRECT_LABEL(source), 	REGISTER(dest)))
-		DO2(reg, 		direct, MOV(REGISTER(source), 		DIRECT_LABEL(dest)))
-		DO2(reg, 		reg,	MOV(REGISTER(source), 		REGISTER(dest)))
+		DO2(constant,				reg,	MOV(CONSTANT(source), 		REGISTER(dest)))
+		DO2(constant,				direct, MOV(CONSTANT(source), 		DIRECT_LABEL(dest)))
+		DO2(direct,					direct, MOV(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
+		DO2(direct, 				reg, 	MOV(DIRECT_LABEL(source), 	REGISTER(dest)))
+		DO2(reg, 					direct, MOV(REGISTER(source), 		DIRECT_LABEL(dest)))
+		DO2(reg, 					reg,	MOV(REGISTER(source), 		REGISTER(dest)))
+		DO2(reg, 					reg,	MOV(REGISTER(source), 		REGISTER(dest)))
+		/*DO2(label_with_two_indices, reg,	MOV(LABEL_2D(source), 		REGISTER(dest)))*/
+		/*else if (operand1.kind == label_with_two_indices && operand2.kind == reg){{ \
+			OpCode code;\
+			Operand* theOperand;\
+			addrVal *theWord;\
+			node* n;\
+			byte size=1; \
+			code.code=0;\
+			code.bit.op=0;\
+			theOperand=&operand1;\
+			n  = newAsmNode(); \
+			theWord = ((asm_node*)n->data)->word;\
+			code.bit.sourceKind = theOperand->kind; /* LABEL_TWO_INDEX*/\
+			/*code.bit.sourceReg  = theOperand->get.twoIndice.reg;\
+			context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.twoIndice.label, lineNumber, originalLine));;\
+			size++;theWord++;;\
+			context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.twoIndice.index, lineNumber, originalLine));;\
+			size++;theWord++;; \
+			theOperand=&operand2;\
+			code.bit.destKind = theOperand->kind; /* REGISTER */ \
+			/*code.bit.destReg  = theOperand->get.reg;; \
+			\
+			context->codeList = append(context->codeList, n);\
+			((asm_node*)n->data)->op_code = code.code; \
+			((asm_node*)n->data)->size=size; \
+			nothing(theWord);\
+		}}*/
 	END(asmLabel(context, label))
 
 GEN(cmp_gen)
 	START
-		DO2(constant,	reg,	CMP(CONSTANT(source), 		REGISTER(dest)))
-		DO2(constant,	direct, CMP(CONSTANT(source), 		DIRECT_LABEL(dest)))
-		DO2(direct,		direct, CMP(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
-		DO2(direct, 	reg, 	CMP(DIRECT_LABEL(source), 	REGISTER(dest)))
-		DO2(reg, 		direct, CMP(REGISTER(source), 		DIRECT_LABEL(dest)))
-		DO2(reg, 		reg,	CMP(REGISTER(source), 		REGISTER(dest)))
+		DO2(constant,				reg,			CMP(CONSTANT(source), 		REGISTER(dest)))
+		DO2(constant,				direct, 		CMP(CONSTANT(source), 		DIRECT_LABEL(dest)))
+		DO2(direct,					direct, 		CMP(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
+		DO2(direct, 				reg, 			CMP(DIRECT_LABEL(source), 	REGISTER(dest)))
+		DO2(reg, 					direct, 		CMP(REGISTER(source), 		DIRECT_LABEL(dest)))
+
 	END(asmLabel(context, label))
 
 void nothing(addrVal* b){};

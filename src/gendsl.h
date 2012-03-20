@@ -38,7 +38,7 @@ int  deferLabelAddrResolution(list* l, addrVal* into, char* label, int lineNumbe
 
 #define GET_1D_INDEX_DISTANCE context->deferred = append(context->deferred, newDeferedNode(deferLabelDistanceResolution,&context->allLabels, theWord, theOperand->get.oneIndex.index, lineNumber, originalLine)); \
 
-#define GET_2D_LABEL_OFFSET(P) context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.twoIndice.P ##, lineNumber, originalLine));
+#define GET_2D_LABEL_OFFSET(P) context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,&context->allLabels, theWord, theOperand->get.twoIndice.P, lineNumber, originalLine));
 
 #define DIRECT_LABEL(T) \
 	code.bit.T ## Kind = theOperand->kind; /* DIRECT_LABEL*/ \
