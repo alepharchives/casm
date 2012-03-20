@@ -129,7 +129,29 @@ GEN(mov_gen)
 		DO2(direct,		direct, MOV(DIRECT_LABEL(source), 	DIRECT_LABEL(dest)))
 		DO2(direct, 	reg, 	MOV(DIRECT_LABEL(source), 	REGISTER(dest)))
 		DO2(reg, 		direct, MOV(REGISTER(source), 		DIRECT_LABEL(dest)))
-		DO2(reg, 		reg,	MOV(REGISTER(source), 		REGISTER(dest)))
+		/*DO2(reg, 		reg,	MOV(REGISTER(source), 		REGISTER(dest)))*/
+		else if (operand1.kind == reg && operand2.kind == reg){{ \
+			OpCode code;\
+			Operand* theOperand;\
+			addrVal *theWord;\
+			node* n;\
+			byte size=1; \
+			code.code=0;\
+			code.bit.op=0;\
+			theOperand=&operand1;\
+			n  = newAsmNode(); \
+			theWord = ((asm_node*)n->data)->word;\
+			code.bit.sourceKind = theOperand->kind; /* REGISTER */ \
+			code.bit.sourceReg  = theOperand->get.reg;; \
+			theOperand=&operand2;\
+			code.bit.destKind = theOperand->kind; /* REGISTER */ \
+			code.bit.destReg  = theOperand->get.reg;; \
+			\
+			context->codeList = append(context->codeList, n);\
+			((asm_node*)n->data)->op_code = code.code; \
+			((asm_node*)n->data)->size=size; \
+			nothing(theWord);\
+		}}
 	END(asmLabel(context, label))
 
 GEN(cmp_gen)

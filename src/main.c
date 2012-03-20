@@ -37,7 +37,7 @@
 int main(void) {
 	char line[1000];
 	int lineCounter = 0;
-	Context context;
+	Context context = {NULL, NULL, NULL};
 	int lastOffset;
 
 
