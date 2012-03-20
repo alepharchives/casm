@@ -23,7 +23,6 @@
  * and try out all of our commands on that line. if all fails, an error is printed.
  */
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -53,7 +52,6 @@ int main(void) {
 	/*MOV(LABEL_ONE_INDEX(source), DIRECT_LABEL(dest))*/
 
 
-	//while (1) {
 	while (lineCounter<7) {
 		getline(line, sizeof(line));
 		/*printf("got %d %s\n", lineCounter, line);*/
