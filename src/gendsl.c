@@ -21,7 +21,7 @@ int deferLabelAddrResolution(list* l, addrVal* into, char* label, int lineNumber
 
 int  deferLabelDistanceResolution(list* l, addrVal* into, char* label, int lineNumber, char* origLine) {
 	into->val = 5;
-	into->type=e;
+	into->type=a;
 	return 0;
 }
 
@@ -131,9 +131,9 @@ GEN(mov_gen)
 		DO2(direct, 				reg, 	MOV(DIRECT_LABEL(source), 	REGISTER(dest)))
 		DO2(reg, 					direct, MOV(REGISTER(source), 		DIRECT_LABEL(dest)))
 		DO2(reg, 					reg,	MOV(REGISTER(source), 		REGISTER(dest)))
-
-	/*	DO2(label_with_two_indices, reg,	MOV(LABEL_2D(source), 		REGISTER(dest)))*/
-		/*DO2(reg, 		reg,	MOV(REGISTER(source), 		REGISTER(dest)))*/
+		DO2(label_with_two_indices, reg,	MOV(LABEL_2D(source), 		REGISTER(dest)))
+		DO2(label_with_two_indices, direct,	MOV(LABEL_2D(source), 		DIRECT_LABEL(dest)))
+		/*DO2(label_with_two_indices, label_with_two_indices,				MOV(LABEL_2D(source), 		LABEL_2D(dest)))*/
 
 	END(asmLabel(context, label))
 
