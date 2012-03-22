@@ -37,20 +37,8 @@
 int main(void) {
 	char line[1000];
 	int lineCounter = 0;
-	Context context = {NULL, NULL, NULL};
-	int lastOffset;
-
-
-
-	/* mov label[%ass], r3*/
-	Operand operand1, operand2;
-	operand1.kind = label_with_index;
-	strcpy(operand1.get.oneIndex.label, "label");
-	strcpy(operand1.get.oneIndex.index, "index");
-	operand2.kind = constant;
-	operand2.get.constant = 6;
-	/*MOV(LABEL_ONE_INDEX(source), DIRECT_LABEL(dest))*/
-
+	Context context = {NULL, NULL, NULL, -1};
+	/*int lastOffset;*/
 
 	while (lineCounter<7) {
 		getline(line, sizeof(line));
@@ -81,8 +69,8 @@ int main(void) {
 		fflush(stdout);
 	}
 
-	lastOffset = computeAsmOffset(&context.codeList, 100);
-	computeLabelOffset(&context.allLabels, lastOffset);
+	context.lastOffset = computeAsmOffset(&context.codeList, 100);
+	computeLabelOffset(&context.allLabels, context.lastOffset);
 	if (execDeffered(&context.deferred) == 0) {
 		printAsm(&context.codeList);
 		printf("\n");
