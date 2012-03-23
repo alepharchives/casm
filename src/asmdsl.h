@@ -222,8 +222,6 @@
 	l=strip(l, " ");\
 	if(0) {}
 
-char* trimNewline(char* line);
-
 #define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &context, &err, label, lineCounter, line)) {}
 #define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &context, &err, label,lineCounter, line)) {}
 #define ELSE(msg)     else if (!err){ printf("%s\n",msg);}\

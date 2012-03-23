@@ -177,4 +177,6 @@ void string_gen(Context* context, char* label, char* str, int lineNum, char* ori
 void asmLabel(Context* context, char* label,int lineNum, char* origLine);
 
 void nothing(addrVal* i);
+
+char* trimNewline(char* line);
 #endif /* GENDSL_H_ */
