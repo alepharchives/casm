@@ -7,8 +7,8 @@
 
 #include  "gendsl.h"
 
-int deferLabelAddrResolution(list* l, addrVal* into, char* label, int lineNumber, char* origLine) {
-	node* n = find(*l, findLabelText, label);
+int deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+	node* n = find(l->allLabels, findLabelText, label);
 	if (n==NULL) {
 		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
 		return -1;
@@ -19,14 +19,20 @@ int deferLabelAddrResolution(list* l, addrVal* into, char* label, int lineNumber
 	return 0;
 }
 
-int  deferLabelDistanceResolution(list* l, addrVal* into, char* label, int lineNumber, char* origLine) {
-	into->val = 5;
-	into->type=a;
+int  deferLabelDistanceResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+	node* n = find(l->allLabels, findLabelText, label);
+		if (n==NULL) {
+			printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
+			return -1;
+		} else {
+			into->val = l->lastOffset - LABEL(n)->offset;
+			into->type = a;
+		}
 	return 0;
 }
 
-int  deferMakeSureLabelHasAddress(list* l, addrVal* into, char* label, int lineNumber, char* origLine) {
-	node* n = find(*l, findLabelText, label);
+int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+	node* n = find(l->allLabels, findLabelText, label);
 	if (n==NULL) {
 		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
 		return -1;
@@ -51,7 +57,7 @@ void genEntry(char* label, Operand oper, Context* context, int lineNum, char* or
 	if (n==NULL) {
 		n = newEntry(oper.get.direct);
 		context->allLabels = append(context->allLabels, n);
-		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureLabelHasAddress, &context->allLabels, NULL, oper.get.direct, lineNum, origLine));
+		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureLabelHasAddress, context, NULL, oper.get.direct, lineNum, origLine));
 	} else {
 		LABEL(n)->isEntry=1;
 	}
@@ -133,6 +139,7 @@ GEN(mov_gen)
 		DO2(reg, 					reg,	MOV(REGISTER(source), 		REGISTER(dest)))
 		DO2(label_with_two_indices, reg,	MOV(LABEL_2D(source), 		REGISTER(dest)))
 		DO2(label_with_two_indices, direct,	MOV(LABEL_2D(source), 		DIRECT_LABEL(dest)))
+		DO2(label_with_index, reg,			MOV(LABEL_1D(source), 		REGISTER(dest)))
 		/*DO2(label_with_two_indices, label_with_two_indices,				MOV(LABEL_2D(source), 		LABEL_2D(dest)))*/
 
 	END(asmLabel(context, label))

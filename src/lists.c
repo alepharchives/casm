@@ -64,12 +64,12 @@ node* newAsmNode() {
 	return n;
 }
 
-node* newDeferedNode(int (*f)(list* l, addrVal*, char*, int, char*), list* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+node* newDeferedNode(int (*f)(Context* l, addrVal*, char*, int, char*), Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
 	node* n = malloc(sizeof(node));
 	defered_node* d = malloc(sizeof(defered_node));
 	d->f = f;
 	d->into=into;
-	d->list=l;
+	d->cont=l;
 	strcpy(d->label,label);
 	d->lineNumber = lineNumber;
 	strcpy(d->origLine, origLine);

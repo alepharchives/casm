@@ -13,7 +13,7 @@
 #include "commons.h"
 #include "DoubleLinkedList.h"
 
-node* newDeferedNode(int  (*f)(list* l, addrVal*, char*, int, char*), list* l, addrVal* into, char* label, int lineNumber, char* origLine);
+node* newDeferedNode(int  (*f)(Context* l, addrVal*, char*, int, char*), Context* l, addrVal* into, char* label, int lineNumber, char* origLine);
 node* newAsmNode();
 node* newLabel(char* label, int offset);
 node* newExtern(char* label);
@@ -37,9 +37,9 @@ typedef struct {
 } asm_node ;
 
 typedef struct {
-	int (*f)(list* l, addrVal*, char*, int, char*);
+	int (*f)(Context* l, addrVal*, char*, int, char*);
 	addrVal* into;
-	list* list;
+	Context* cont;
 	int lineNumber;
 	char origLine[100];
 	char label[MAX_LABEL];
@@ -81,6 +81,6 @@ typedef struct {
 #define DATA(n) ((data_node*)n->data)
 #define DEFERRED(n) ((defered_node*)n->data)
 
-#define INVOKE(n) DEFERRED(n)->f(DEFERRED(n)->list, DEFERRED(n)->into, DEFERRED(n)->label, DEFERRED(n)->lineNumber, DEFERRED(n)->origLine)
+#define INVOKE(n) DEFERRED(n)->f(((Context*)(DEFERRED(n)->cont)), DEFERRED(n)->into, DEFERRED(n)->label, DEFERRED(n)->lineNumber, DEFERRED(n)->origLine)
 
 #endif
