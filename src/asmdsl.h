@@ -132,12 +132,19 @@
 	}\
     pi++;
 
+#define VERIFY { \
+	if (*p!='\n' && *p!='\0') { \
+		*err=COMMAND_NOT_TERMINATED; \
+		return NULL; \
+	} \
+}
+
 #define TWO(A,B,code) { \
 	Operand theVals[2],val; /*TWO*/	\
 	Operand a[2];\
-	theVals[0].kind=none;theVals[1].kind=none;\
 	int pi=0;\
 	char* l=NULL;	\
+	theVals[0].kind=none;theVals[1].kind=none;\
 	if (p==NULL) return NULL; \
 	{A;theVals[0]=val;} \
 	l=NULL;				\
@@ -151,6 +158,7 @@
 		return NULL;\
 	} \
 	code;		\
+	VERIFY \
 	REMOVE_WARNS		\
 	return p; \
 }
@@ -162,25 +170,26 @@
 		char* l=NULL;	\
 		if (p==NULL) return NULL; \
 		{A;theVals[0]=val;} \
-		l=NULL;				\
 		if (theVals[0].kind==none) { \
 			*err = FIRST_ARG_IS_INVALID;\
 			return NULL;\
 		} \
+		VERIFY \
 		code;		\
 		REMOVE_WARNS		\
 		return p; \
 }
 
-#define NONE(code) {if (p==NULL) return NULL; code; return p;}
+#define NONE(code) {if (p==NULL) return NULL; code; VERIFY; return p;}
 
 #define MANY_NUMBERS(code) { \
 	char* l; \
+	int* nums;\
 	int i,count=0;\
 	if (p==NULL) return NULL; \
 	l = p = strip(p," ");\
 	while ((l=oneOf(getInteger(l, &i, err), ",\n"))!=((void *)0)) {count++;}\
-	int* nums = (int*)malloc(sizeof(int)*count);\
+	nums = (int*)malloc(sizeof(int)*count);\
 	i=0;\
 	l=p;\
 	while ((l=oneOf(getInteger(l, &nums[i++], err), ",\n"))!=((void *)0));\
@@ -222,11 +231,37 @@ char* trimNewline(char* line);
 						  switch(err) { \
 						  	  case FIRST_ARG_IS_INVALID: printf("error in line %d: first argument of line '%s' is not valid\n", lineCounter, trimNewline(line));break; \
 						  	  case SECOND_ARG_IS_INVALID:printf("error in line %d: second argument of line '%s' is not valid\n",lineCounter,  trimNewline(line));break; \
+						  	  case COMMAND_NOT_TERMINATED:printf("error in line %d: in line '%s' command has extra parameters\n", lineCounter,  trimNewline(line));break; \
 						  } \
 					  }}
 
 void func(Operand oper1, Operand oper2, Label label);
 void debugPrint(Operand oper);
+
+#define GEN2(gen)		 gen##_gen(context, VAL(1), VAL(2), label, lineNumber,originalLine)
+#define GEN1(gen) 		 gen##_gen(context, VAL(1), label, lineNumber,originalLine)
+#define GEN0(gen) 		 gen##_gen(context, label, lineNumber,originalLine)
+#define CALL_DATA(gen)   gen##_gen(context, label, nums, count, lineNumber,originalLine)
+#define CALL_STRING(gen) gen##_gen(context, label, text, lineNumber,originalLine)
+
+#define MOV(OP1, OP2) OPER2(0,OP1,OP2)
+#define CMP(OP1, OP2) OPER2(1,OP1,OP2)
+#define ADD(OP1, OP2) OPER2(2,OP1,OP2)
+#define SUB(OP1, OP2) OPER2(3,OP1,OP2)
+#define LEA(OP1, OP2) OPER2(6,OP1,OP2)
+
+#define NOT(OP1) OPER1(4,OP1)
+#define CLR(OP1) OPER1(5,OP1)
+#define INC(OP1) OPER1(7,OP1)
+#define DEC(OP1) OPER1(8,OP1)
+#define JMP(OP1) OPER1(9,OP1)
+#define BNE(OP1) OPER1(10,OP1)
+#define RED(OP1) OPER1(11,OP1)
+#define PRN(OP1) OPER1(12,OP1)
+#define JSR(OP1) OPER1(13,OP1)
+
+#define RTS  OPER0(14)
+#define STOP OPER0(15)
 
 #define CMD(name) char* name(char* p, Context* context, int* err, char* label, int lineNumber, char* originalLine)
 
@@ -238,7 +273,7 @@ CMD(add);
 CMD(sub);
 CMD(lea);
 
-CMD(prm);
+CMD(prn);
 CMD(not);
 CMD(clr);
 CMD(inc);

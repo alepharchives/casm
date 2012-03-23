@@ -1,7 +1,7 @@
 /*
  * commons.h
  *
- *  Created on: 18 бошс 2012
+ *  Created on: 18 пїЅпїЅпїЅпїЅ 2012
  *      Author: ypsw
  */
 
@@ -60,13 +60,13 @@ typedef struct {
 
 typedef
 	union {
-	int code;
+	unsigned int code;
 	struct {
-		int destReg:3;
-		int destKind:3;
-		int sourceReg:3;
-		int sourceKind:3;
-		int op:4;
+		unsigned int destReg:3;
+		unsigned int destKind:3;
+		unsigned int sourceReg:3;
+		unsigned int sourceKind:3;
+		unsigned int op:4;
 	}bit;
 } OpCode ;
 

@@ -38,18 +38,16 @@ int main(void) {
 	char line[1000];
 	int lineCounter = 0;
 	Context context = {NULL, NULL, NULL, -1};
-	/*int lastOffset;*/
 
-	while (lineCounter<7) {
+	while (lineCounter<23) {
 		getline(line, sizeof(line));
-		/*printf("got %d %s\n", lineCounter, line);*/
 		PARSE(line)
 		 TRY(cmp)
 		 TRY(mov)
 		 TRY(add)
 		 TRY(sub)
 		 TRY(lea)
-		 TRY(prm)
+		 TRY(prn)
 		 TRY(not)
 		 TRY(clr)
 		 TRY(inc)

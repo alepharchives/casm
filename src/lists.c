@@ -103,7 +103,7 @@ int computeLabelOffset(list* l, int lastAsmOffset) {
 		switch (LABEL(n)->kind) {
 		case ASM_KIND: 		LABEL(n)->offset = LABEL(n)->get.code->offset; break;
 		case DATA_KIND: 	LABEL(n)->offset = offset; offset+=LABEL(n)->get.data.getData.data.size; break;
-		case STRING_KIND: 	LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->get.data.getData.str); break;
+		case STRING_KIND: 	LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->get.data.getData.str)+1; break;
 		case NOT_INIT: if (LABEL(n)->isExtern!=1) {printf("Label %s referenced but not defined!\n", LABEL(n)->label); return -1;}break;
 		}
 
