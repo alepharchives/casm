@@ -27,6 +27,9 @@ int computeLabelOffset(list* l, int lastAsmOffset);
 int execDeffered(list* l);
 void printAsm(list* l);
 void printData(list* l);
+void writeAsm(Context* c, FILE *f);
+
+
 
 
 typedef struct {

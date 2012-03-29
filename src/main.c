@@ -34,13 +34,21 @@
 #include "gendsl.h"
 #include "parser.h"
 
+#define MAXLINE 1000
+
 int main(void) {
 	char line[1000];
 	int lineCounter = 0;
 	Context context = {NULL, NULL, NULL, -1};
 
-	while (lineCounter<23) {
-		getline(line, sizeof(line));
+	FILE *fp, *fo;
+	if ((fp = fopen("ps","r")) == NULL)
+	{
+		printf("err~!");
+	}
+
+	while (fgets(line,MAXLINE, fp) != NULL) {
+		/*getline(line, sizeof(line));*/
 		PARSE(line)
 		 TRY(cmp)
 		 TRY(mov)
@@ -70,9 +78,11 @@ int main(void) {
 	context.lastOffset = computeAsmOffset(&context.codeList, 100);
 	computeLabelOffset(&context.allLabels, context.lastOffset);
 	if (execDeffered(&context.deferred) == 0) {
-		printAsm(&context.codeList);
+		fo = fopen("ps.obj","w");
+		writeAsm(&context, fo);
+		fclose(fo);
 		printf("\n");
-		printData(&context.allLabels);
+		/*printData(&context.allLabels);*/
 	}
 	return 0;
 
