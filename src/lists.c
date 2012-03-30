@@ -4,8 +4,8 @@ int findLabelText(node* n, void* label) {
 	return strcmp(LABEL(n)->label, (char*)label);
 }
 
-int findLabelEntryText(node* n, void* label) {
-	return strcmp(ENTRY(n)->label, (char*)label);
+int findLabelExEntText(node* n, void* label) {
+	return strcmp(EXENT(n)->label, (char*)label);
 }
 
 int findLabelEntry(node* n, void* label) {
@@ -53,12 +53,12 @@ node* newString(char* str) {
 	return n;
 }
 
-node* newEntryWord(char* label, int offset){
+node* newExEntWord(char* label, int offset){
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
-	n->data=malloc(sizeof(entry_node));
-	strcpy(ENTRY(n)->label, label);
-	ENTRY(n)->offset = offset;
+	n->data=malloc(sizeof(exent_node));
+	strcpy(EXENT(n)->label, label);
+	EXENT(n)->offset = offset;
 	return n;
 }
 
@@ -151,6 +151,15 @@ void intToBin(int i, char* out) {
 	out[16]='\0';
 }
 
+void intToBin8(int i, char* out) {
+	int j;
+	for (j=0;j<8;j++) {
+		out[7-j] = '0'+(i&1);
+		i>>=1;
+	}
+	out[8]='\0';
+}
+
 void printOneAsm(asm_node* n) {
 	char off[17], bits[17];
 	int j;
@@ -189,7 +198,6 @@ void printOneData(label_node* n, FILE *f, int *last) {
 			*last = of;
 			intToBin(of, off);
 			intToBin( n->get.data.getData.data.nums[j],bits);
-			/*printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");*/
 			fprintf(f, "%s   %s\n", off ,bits);
 		}
 	} else if (n->kind == STRING_KIND) {
@@ -198,7 +206,6 @@ void printOneData(label_node* n, FILE *f, int *last) {
 			intToBin(of, off);
 			*last = of;
 			intToBin( n->get.data.getData.str[j],bits);
-			/*printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");*/
 			fprintf(f, "%s   %s\n", off ,bits);
 		}
 	}
@@ -215,9 +222,6 @@ void writeOneAsm(asm_node* n, FILE *f) {
 		intToBin(of, off);
 		intToBin(n->word[j-1].val, bits);
 		fprintf(f, "%s   %s %c\n", off, bits, n->word[j-1].type);
-		if (n->word[j-1].type == 'e'){
-			/*printf("like");*/
-		}
 	}
 }
 
@@ -250,24 +254,22 @@ void writeAsm(Context* c, FILE *f) {
 	intToBin(lastdata - c->lastOffset, lastdataoff);
 	fseek(f, 17 * sizeof(char) ,SEEK_SET);
 	fprintf(f,"  %s ", lastdataoff);
-
 	return;
 }
 
-void writeOneEntry(entry_node* n, FILE *f){
+void writeOneExEnt(exent_node* n, FILE *f){
 	char offset[20];
-	intToBin(n->offset,offset);
-	printf("entry: %s  offset: %s, (%d)\n",n->label, offset, n->offset);
-	fprintf(f,"%s  %s \n",n->label, offset);
+	intToBin8(n->offset,offset);
+	fprintf(f,"%s   %s \n",n->label, offset);
 }
 
-void writeEntry(list* l, FILE *f) {
+void writeExEnt(list* l, FILE *f) {
 	node** scan = l;
 	node* n;
 
 	while (*scan!= NULL) {
 		n = *scan;
-		writeOneEntry(ENTRY(n), f);
+		writeOneExEnt(EXENT(n), f);
 		fflush(stdout);
 		scan = &(*scan)->next;
 	}

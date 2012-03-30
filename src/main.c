@@ -38,78 +38,74 @@
 
 int main(int argc, char *argv[]) {
 
-/*	int i;*/
-	/*for (i=1; i<argc;i++){*/
-
+	int i;
+	for (i=1; i<argc;i++){
 		char line[1000];
-		char file[20] = "ps.as";
-		char objfile[20] = "ps.obj";
-		char entfile[20] = "ps.ent";
-		char extfile[20] = "ps.ext";
+		char file[20];
+		char objfile[20];
+		char entfile[20];
+		char extfile[20];
 		int lineCounter = 0;
 		Context context = {NULL, NULL, NULL, NULL, NULL, -1};
 		FILE *fr, *fwo, *fwent, *fwex;
 
-		/*sprintf(file,"%s.as",argv[i]);*/
+		sprintf(file,"%s.as",argv[i]);
 
 		if ((fr = fopen(file,"r")) == NULL)
 		{
-			printf("error opening the file!!");
+			printf("error opening %s file!!", file);
 		}
+		else{
+			while (fgets(line,MAXLINE, fr) != NULL) {
+				PARSE(line)
+				 TRY(cmp)
+				 TRY(mov)
+				 TRY(add)
+				 TRY(sub)
+				 TRY(lea)
+				 TRY(prn)
+				 TRY(not)
+				 TRY(clr)
+				 TRY(inc)
+				 TRY(dec)
+				 TRY(jmp)
+				 TRY(bne)
+				 TRY(red)
+				 TRY(jsr)
+				 TRY(rts)
+				 TRY(stop)
 
-		while (fgets(line,MAXLINE, fr) != NULL) {
-
-			PARSE(line)
-			 TRY(cmp)
-			 TRY(mov)
-			 TRY(add)
-			 TRY(sub)
-			 TRY(lea)
-			 TRY(prn)
-			 TRY(not)
-			 TRY(clr)
-			 TRY(inc)
-			 TRY(dec)
-			 TRY(jmp)
-			 TRY(bne)
-			 TRY(red)
-			 TRY(jsr)
-			 TRY(rts)
-			 TRY(stop)
-
-			 TRY_DOT(_extern)
-			 TRY_DOT(entry)
-			 TRY_DOT(data)
-			 TRY_DOT(string)
-			ELSE("no such command")
-			fflush(stdout);
-		}
-
-		context.lastOffset = computeAsmOffset(&context.codeList, 100);
-		computeLabelOffset(&context.allLabels, context.lastOffset);
-		if (execDeffered(&context.deferred) == 0) {
-			/*sprintf(objfile,"%s.obj",argv[i]);*/
-			fwo = fopen(objfile,"w");
-			writeAsm(&context, fwo);
-			fclose(fwo);
-			printf("\n");
-			if(context.entrylabels != NULL){
-				/*sprintf(objfile,"%s.ent",argv[i]);*/
-				fwent = fopen(entfile,"w");
-				writeEntry(&context.entrylabels, fwent);
-				fclose(fwent);
+				 TRY_DOT(_extern)
+				 TRY_DOT(entry)
+				 TRY_DOT(data)
+				 TRY_DOT(string)
+				ELSE("no such command")
+				fflush(stdout);
 			}
-			if(context.externlabels != NULL){
-				/*sprintf(objfile,"%s.ent",argv[i]);*/
-				fwex = fopen(extfile,"w");
-				writeEntry(&context.entrylabels, fwex);
-				fclose(fwex);
+
+			context.lastOffset = computeAsmOffset(&context.codeList, 100);
+			computeLabelOffset(&context.allLabels, context.lastOffset);
+			if (execDeffered(&context.deferred) == 0) {
+				sprintf(objfile,"%s.obj",argv[i]);
+				fwo = fopen(objfile,"w");
+				writeAsm(&context, fwo);
+				fclose(fwo);
+				if(context.entrylabels != NULL){
+					sprintf(entfile,"%s.ent",argv[i]);
+					fwent = fopen(entfile,"w");
+					writeExEnt(&context.entrylabels, fwent);
+					fclose(fwent);
+				}
+				if(context.externlabels != NULL){
+					sprintf(extfile,"%s.ext",argv[i]);
+					fwex = fopen(extfile,"w");
+					writeExEnt(&context.externlabels, fwex);
+					fclose(fwex);
+				}
 			}
 		}
-
-	/*}*/
+	}
 		return 0;
-
 }
 
 
