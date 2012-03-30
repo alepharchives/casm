@@ -4,6 +4,10 @@ int findLabelText(node* n, void* label) {
 	return strcmp(LABEL(n)->label, (char*)label);
 }
 
+int findLabelEntryText(node* n, void* label) {
+	return strcmp(ENTRY(n)->label, (char*)label);
+}
+
 int findLabelEntry(node* n, void* label) {
 	return LABEL(n)->isEntry==1 && strcmp(LABEL(n)->label, (char*)label) ;
 }
@@ -43,6 +47,15 @@ node* newString(char* str) {
 	strcpy(DATA(n)->getData.str, str);
 	DATA(n)->offset=0;
 	DATA(n)->kind = STRING_KIND;
+	return n;
+}
+
+node* newEntryWord(char* label, int offset){
+	node* n = malloc(sizeof(node));
+	n->prev=NULL;
+	n->data=malloc(sizeof(entry_node));
+	strcpy(ENTRY(n)->label, label);
+	ENTRY(n)->offset = offset;
 	return n;
 }
 
@@ -173,7 +186,7 @@ void printOneData(label_node* n, FILE *f, int *last) {
 			*last = of;
 			intToBin(of, off);
 			intToBin( n->get.data.getData.data.nums[j],bits);
-			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
+			/*printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");*/
 			fprintf(f, "%s   %s\n", off ,bits);
 		}
 	} else if (n->kind == STRING_KIND) {
@@ -182,14 +195,8 @@ void printOneData(label_node* n, FILE *f, int *last) {
 			intToBin(of, off);
 			*last = of;
 			intToBin( n->get.data.getData.str[j],bits);
-			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
+			/*printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");*/
 			fprintf(f, "%s   %s\n", off ,bits);
-		}
-	}
-	else if(n->kind == NOT_INIT){
-
-		if (n->isExtern == 1){
-			/*printf("%s\n",l);*/
 		}
 	}
 }
@@ -244,3 +251,23 @@ void writeAsm(Context* c, FILE *f) {
 	return;
 }
 
+
+void writeEntry(list* l, FILE *f) {
+	node** scan = l;
+	node* n;
+
+	while (*scan!= NULL) {
+		n = *scan;
+		writeOneEntry(ENTRY(n), f);
+		fflush(stdout);
+		scan = &(*scan)->next;
+	}
+	return;
+}
+
+void writeOneEntry(entry_node* n, FILE *f){
+	char offset[20];
+	intToBin(n->offset,offset);
+	printf("entry: %s  offset: %s, (%d)\n",n->label, offset, n->offset);
+	fprintf(f,"%s  %s \n",n->label, offset);
+}

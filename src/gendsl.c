@@ -19,7 +19,18 @@ int deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNum
 		return -1;
 	} else {
 		into->val = LABEL(n)->offset;
+		int i = LABEL(n)->offset;
 		into->type = LABEL(n)->isExtern ? e : r;
+		if  (LABEL(n)->isEntry){
+			node* n2 = find(l->entrylabels, findLabelEntryText, label);
+			if (n2 == NULL){
+				l->entrylabels = append(l->entrylabels,newEntryWord(label,i));
+			}
+		}
+		else if(LABEL(n)->isExtern){
+			/*printf("extern: %s, %d\n", label, lineNumber + 100);*/
+			/*l->externlabels = append(l->externlabels,newExternWord(label,lineNumber +100 - 10));*/
+		}
 	}
 	return 0;
 }

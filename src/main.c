@@ -38,20 +38,19 @@
 
 int main(int argc, char *argv[]) {
 
-	int i;
-	for (i=1; i<argc;i++){
+/*	int i;*/
+	/*for (i=1; i<argc;i++){*/
 
 		char line[1000];
-		char file[20];
-		char objfile[20];
-		char entfile[20];
-		char extfile[20];
+		char file[20] = "ps.as";
+		char objfile[20] = "ps.obj";
+		char entfile[20] = "ps.ent";
+		char extfile[20] = "ps.ext";
 		int lineCounter = 0;
-		Context context = {NULL, NULL, NULL, -1};
-		FILE *fr, *fwo;
+		Context context = {NULL, NULL, NULL, NULL, NULL, -1};
+		FILE *fr, *fwo, *fwent, *fwex;
 
-
-		sprintf(file,"%s.as",argv[i]);
+		/*sprintf(file,"%s.as",argv[i]);*/
 
 		if ((fr = fopen(file,"r")) == NULL)
 		{
@@ -59,7 +58,6 @@ int main(int argc, char *argv[]) {
 		}
 
 		while (fgets(line,MAXLINE, fr) != NULL) {
-			/*getline(line, sizeof(line));*/
 			PARSE(line)
 			 TRY(cmp)
 			 TRY(mov)
@@ -89,15 +87,26 @@ int main(int argc, char *argv[]) {
 		context.lastOffset = computeAsmOffset(&context.codeList, 100);
 		computeLabelOffset(&context.allLabels, context.lastOffset);
 		if (execDeffered(&context.deferred) == 0) {
-			sprintf(objfile,"%s.obj",argv[i]);
+			/*sprintf(objfile,"%s.obj",argv[i]);*/
 			fwo = fopen(objfile,"w");
 			writeAsm(&context, fwo);
 			fclose(fwo);
 			printf("\n");
-			/*printData(&context.allLabels);*/
+			if(context.entrylabels != NULL){
+				/*sprintf(objfile,"%s.ent",argv[i]);*/
+				fwent = fopen(entfile,"w");
+				writeEntry(&context.entrylabels, fwent);
+				fclose(fwent);
+			}
+			if(context.externlabels != NULL){
+				/*sprintf(objfile,"%s.ent",argv[i]);*/
+				fwex = fopen(extfile,"w");
+				writeEntry(&context.entrylabels, fwex);
+				fclose(fwex);
+			}
 		}
 
-	}
+	/*}*/
 		return 0;
 
 }
