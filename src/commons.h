@@ -75,7 +75,6 @@ typedef struct {
 	list allLabels;
 	list deferred;
 	list externlabels;
-	list entrylabels;
 	int lastOffset;
 } Context ;
 #endif /* COMMONS_H_ */

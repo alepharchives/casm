@@ -99,5 +99,7 @@ void printAsm(list* l);
 void printData(list* l);
 void writeAsm(Context* c, FILE *f);
 
+int extractEntries(list* l,FILE *f);
+
 
 #endif

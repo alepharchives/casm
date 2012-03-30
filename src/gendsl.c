@@ -29,13 +29,8 @@ int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  cha
 		into->val = LABEL(n)->offset;
 		i = LABEL(n)->offset;
 		into->type = LABEL(n)->isExtern ? e : r;
-		if  (LABEL(n)->isEntry){
-			node* n2 = find(l->entrylabels, findLabelEntryText, label);
-			if (n2 == NULL){
-				l->entrylabels = append(l->entrylabels,newEntryWord(label,i));
-			}
-		}
-		else if(LABEL(n)->isExtern){
+
+		if(LABEL(n)->isExtern){
 			printf("extern: %s, %d\n", label, asm_node->offset);
 			/*l->externlabels = append(l->externlabels,newExternWord(label,lineNumber +100 - 10));*/
 		}
@@ -66,8 +61,6 @@ int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, asm_node* asm_node,
 	} else if (LABEL(n)->offset==-1) {
 		printf("Error at line %d '%s': label %s not resolved!\n", lineNumber,  trimNewline(origLine),  label);
 		return -1;
-	} else if (LABEL(n)->kind==ASM_KIND) {
-		printf("entry: %s offset %d\n", label, LABEL(n)->get.code->offset);
 	}
 	return 0;
 }
