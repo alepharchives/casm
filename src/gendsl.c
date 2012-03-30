@@ -66,6 +66,8 @@ int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, asm_node* asm_node,
 	} else if (LABEL(n)->offset==-1) {
 		printf("Error at line %d '%s': label %s not resolved!\n", lineNumber,  trimNewline(origLine),  label);
 		return -1;
+	} else if (LABEL(n)->kind==ASM_KIND) {
+		printf("entry: %s offset %d\n", label, LABEL(n)->get.code->offset);
 	}
 	return 0;
 }
