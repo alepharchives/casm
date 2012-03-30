@@ -14,12 +14,13 @@ char* trimNewline(char* line)
 
 int deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
+	int i;
 	if (n==NULL) {
 		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
 		return -1;
 	} else {
 		into->val = LABEL(n)->offset;
-		int i = LABEL(n)->offset;
+		i = LABEL(n)->offset;
 		into->type = LABEL(n)->isExtern ? e : r;
 		if  (LABEL(n)->isEntry){
 			node* n2 = find(l->entrylabels, findLabelEntryText, label);
