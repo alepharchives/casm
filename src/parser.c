@@ -175,7 +175,7 @@ char* getInteger(char*p, int* res, int* err) {
 
 	/* if after removing all whitespaces we didnt hit either ',', end-of-line, or nothing was consumed at all,
 	 * then the input that was given is wrong! fail this parser!*/
-	if ((!charIs(e, ',') && !charIs(e, '\n'))||e==p) {
+	if ((!oneOf(e, "\n\r,"))||e==p) {
 		*err = NUMBER_ERR;
 		return NULL;
 	}
@@ -239,6 +239,6 @@ char* matchWord(char* p, char* m) {
  */
 char* matchWordD(char* p, char* m) {
 	char* e;
-	return oneOf((e=matchWord(p, m)), "\n ") ? e : NULL;
+	return oneOf((e=matchWord(p, m)), "\r\n ") ? e : NULL;
 }
 

@@ -16,6 +16,9 @@
 #define FIRST_ARG_IS_INVALID 4001
 #define SECOND_ARG_IS_INVALID 4002
 #define COMMAND_NOT_TERMINATED 4003
+#define EMPTY_DATA 4004
+#define BAD_DATA 4005
+
 
 int  deferLabelDistanceResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine);
 int  deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine);

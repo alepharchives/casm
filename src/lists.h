@@ -15,9 +15,9 @@
 
 node* newDeferedNode(int  (*f)(Context* l, addrVal*, char*, int, char*), Context* l, addrVal* into, char* label, int lineNumber, char* origLine);
 node* newAsmNode();
-node* newLabel(char* label, int offset);
-node* newExtern(char* label);
-node* newEntry(char* label);
+node* newLabel(char* label, int origLineCount, char* origLine);
+node* newExtern(char* label, int origLineCount, char* origLine);
+node* newEntry(char* label, int origLineCount, char* origLine);
 
 int findLabelText(node* n, void* label);
 int findLabelEntry(node* n, void* label);
@@ -73,6 +73,8 @@ typedef struct {
 	byte isExtern;
 	byte isEntry;
 	label_kind kind;
+	char origLine[1000];
+	int origLineNuber;
 	union {
 		asm_node* code;
 		data_node data;

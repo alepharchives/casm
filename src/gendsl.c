@@ -8,18 +8,28 @@
 #include  "gendsl.h"
 
 char* trimNewline(char* line)
-{	line[strlen(line)-1]='\0';
+{
+	int l = strlen(line);
+	int i=0;
+	if (oneOf(&line[l-1],"\r\n")) {
+		i++;
+		if (charIs(&line[l-2],'\r')) i++;
+	}
+	line[l-i]='\0';
 	return line;
 }
 
 int deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 	if (n==NULL) {
-		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
+		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, trimNewline(origLine), label);
 		return -1;
 	} else {
 		into->val = LABEL(n)->offset;
 		into->type = LABEL(n)->isExtern ? e : r;
+		if (into->type == e) {
+
+		}
 	}
 	return 0;
 }
@@ -27,7 +37,7 @@ int deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNum
 int  deferLabelDistanceResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 		if (n==NULL) {
-			printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
+			printf("Error at line %d '%s': label %s not defined!\n", lineNumber, trimNewline(origLine), label);
 			return -1;
 		} else {
 			/* last offset is the offset where the next op would be in,
@@ -42,10 +52,10 @@ int  deferLabelDistanceResolution(Context* l, addrVal* into, char* label, int li
 int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 	if (n==NULL) {
-		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
+		printf("error in line %d: in line '%s' label %s not defined!\n", lineNumber,  trimNewline(origLine),  label);
 		return -1;
 	} else if (LABEL(n)->offset==-1) {
-		printf("Error at line %d '%s': label %s not resolved!\n", lineNumber, origLine, label);
+		printf("error in line %d: in line '%s' label %s not resolved!\n", lineNumber,  trimNewline(origLine),  label);
 		return -1;
 	}
 	return 0;
@@ -54,16 +64,17 @@ int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, char* label, int li
 void extern__gen(Context* context, Operand oper, char* label, int lineNumber, char* originalLine){
 	node* n = find(context->allLabels, findLabelText, oper.get.direct);
 	if (n!=NULL) {
-		printf("label %s is already defined, cannot be extern.\n", oper.get.direct);
+		printf("error in line %d: in line '%s' label %s is already defined in line %d '%s', cannot be extern.\n", lineNumber,  trimNewline(originalLine),  oper.get.direct, LABEL(n)->origLineNuber, LABEL(n)->origLine);
 	} else {
-		context->allLabels = append(context->allLabels, newExtern(oper.get.direct));
+		context->allLabels = append(context->allLabels, newExtern(oper.get.direct, lineNumber, trimNewline(originalLine)));
 	}
 }
 
 void entry_gen(Context* context, Operand oper, char* label, int lineNumber, char* originalLine) {
 	node* n = find(context->allLabels, findLabelText, oper.get.direct);
+	originalLine = trimNewline(originalLine);
 	if (n==NULL) {
-		n = newEntry(oper.get.direct);
+		n = newEntry(oper.get.direct, lineNumber, originalLine);
 		context->allLabels = append(context->allLabels, n);
 		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureLabelHasAddress, context, NULL, oper.get.direct, lineNumber, originalLine));
 	} else {
@@ -74,7 +85,7 @@ void entry_gen(Context* context, Operand oper, char* label, int lineNumber, char
 void data_gen(Context* context, char* label, int* nums, int count, int lineNum, char* origLine) {
 	node* n;
 	if (label[0]=='\0') {
-		n = newLabel("", -1);
+		n = newLabel("", lineNum, trimNewline(origLine));
 		context->allLabels = append(context->allLabels, n);
 	} else {
 		n = find(context->allLabels, findLabelText, label);
@@ -84,12 +95,12 @@ void data_gen(Context* context, char* label, int* nums, int count, int lineNum, 
 				return;
 			}
 			else if (LABEL(n)->isEntry == 0) {
-				printf("error in line %d: in line '%s', label '%s' already defined!\n", lineNum, trimNewline(origLine), label);
+				printf("error in line %d: in line '%s', label '%s' already defined in line %d '%s'\n", lineNum, trimNewline(origLine), label, LABEL(n)->origLineNuber, LABEL(n)->origLine);
 				return;
 			}
 		}
 		else {
-			n = newLabel(label, -1);
+			n = newLabel(label,  lineNum, trimNewline(origLine));
 			context->allLabels = append(context->allLabels, n);
 		}
 	}
@@ -103,7 +114,7 @@ void data_gen(Context* context, char* label, int* nums, int count, int lineNum, 
 void string_gen(Context* context, char* label, char* str, int lineNum, char* origLine) {
 	node* n;
 	if (label[0]=='\0') {
-		n = newLabel("", -1);
+		n = newLabel("",  lineNum, trimNewline(origLine));
 		context->allLabels = append(context->allLabels, n);
 		context->allLabels = append(context->allLabels, n);
 	} else {
@@ -114,12 +125,12 @@ void string_gen(Context* context, char* label, char* str, int lineNum, char* ori
 				return;
 			}
 			else if (LABEL(n)->isEntry == 0) {
-				printf("error in line %d: in line '%s', label '%s' already defined!\n", lineNum, trimNewline(origLine), label);
+				printf("error in line %d: in line '%s', label '%s' already defined in line %d '%s'\n", lineNum, trimNewline(origLine), label, LABEL(n)->origLineNuber, LABEL(n)->origLine);
 				return;
 			}
 		}
 		else {
-			n = newLabel(label, -1);
+			n = newLabel(label,   lineNum, trimNewline(origLine));
 			context->allLabels = append(context->allLabels, n);
 		}
 	}
@@ -137,7 +148,7 @@ void asmLabel(Context* context, char* label,int lineNum, char* origLine) {
 		asmNode = getLast(context->codeList);
 		n = find(context->allLabels, findLabelText, label);
 		if (n==NULL) {
-			n = newLabel(label, -1);
+			n = newLabel(label,  lineNum, trimNewline(origLine));
 			LABEL(n)->kind = ASM_KIND;
 			LABEL(n)->get.code = ASM(asmNode);
 			context->allLabels = append(context->allLabels, n);
@@ -160,27 +171,3 @@ void asmLabel(Context* context, char* label,int lineNum, char* origLine) {
 
 
 void nothing(addrVal* b){}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

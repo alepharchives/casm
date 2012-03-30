@@ -12,7 +12,7 @@ int findLabelExtern(node* n, void* label) {
 	return LABEL(n)->isExtern==1 && strcmp(LABEL(n)->label, (char*)label) ;
 }
 
-node* _newLabel(char* label, int offset, byte isExtern, byte isEntry) {
+node* _newLabel(char* label, int offset, byte isExtern, byte isEntry,int origLineCount, char* origLine ) {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
 	n->data=malloc(sizeof(label_node));
@@ -21,19 +21,22 @@ node* _newLabel(char* label, int offset, byte isExtern, byte isEntry) {
 	LABEL(n)->offset=offset;
 	LABEL(n)->isEntry=isEntry;
 	LABEL(n)->isExtern=isExtern;
+	LABEL(n)->origLineNuber = origLineCount;
+	strcpy(LABEL(n)->origLine, origLine);
+
 	return n;
 }
 
-node* newLabel(char* label, int offset) {
-	return _newLabel(label, offset, 0,0);
+node* newLabel(char* label, int origLineCount, char* origLine) {
+	return _newLabel(label, -1, 0,0, origLineCount, origLine);
 }
 
-node* newExtern(char* label) {
-	return _newLabel(label,0,1,0);
+node* newExtern(char* label, int origLineCount, char* origLine) {
+	return _newLabel(label,0,1,0, origLineCount, origLine);
 }
 
-node* newEntry(char* label) {
-	return _newLabel(label,-1,0,1);
+node* newEntry(char* label, int origLineCount, char* origLine) {
+	return _newLabel(label,-1,0,1, origLineCount, origLine);
 }
 
 node* newString(char* str) {
@@ -73,7 +76,6 @@ node* newDeferedNode(int (*f)(Context* l, addrVal*, char*, int, char*), Context*
 	strcpy(d->label,label);
 	d->lineNumber = lineNumber;
 	strcpy(d->origLine, origLine);
-	d->origLine[strlen(d->origLine)-1]='\0';
 	n->prev=NULL;
 	n->data=d;
 	return n;
@@ -104,7 +106,7 @@ int computeLabelOffset(list* l, int lastAsmOffset) {
 		case ASM_KIND: 		LABEL(n)->offset = LABEL(n)->get.code->offset; break;
 		case DATA_KIND: 	LABEL(n)->offset = offset; offset+=LABEL(n)->get.data.getData.data.size; break;
 		case STRING_KIND: 	LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->get.data.getData.str)+1; break;
-		case NOT_INIT: if (LABEL(n)->isExtern!=1) {printf("Label %s referenced but not defined!\n", LABEL(n)->label); return -1;}break;
+		case NOT_INIT: if (LABEL(n)->isExtern!=1) {printf("error in line %d: in line '%s' Label %s referenced but not defined!\n", LABEL(n)->origLineNuber, LABEL(n)->origLine, LABEL(n)->label); return -1;}break;
 		}
 
 		scan = &(*scan)->next;

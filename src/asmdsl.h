@@ -180,19 +180,19 @@
 		return p; \
 }
 
-#define NONE(code) {if (p==NULL) return NULL; code; VERIFY; return p;}
+#define NONE(code) {if (p==NULL) return NULL; VERIFY; code; return p;}
 
 #define MANY_NUMBERS(code) { \
 	char* l; \
 	int* nums;\
-	int i,count=0;\
+	int i,count=1;\
 	if (p==NULL) return NULL; \
 	l = p = strip(p," ");\
-	while ((l=oneOf(getInteger(l, &i, err), ",\n"))!=((void *)0)) {count++;}\
+	while ((l=oneOf(getInteger(strip(l," "), &i, err), ",\n"))!=((void *)0)) {count++;}\
 	nums = (int*)malloc(sizeof(int)*count);\
 	i=0;\
 	l=p;\
-	while ((l=oneOf(getInteger(l, &nums[i++], err), ",\n"))!=((void *)0));\
+	while ((l=oneOf(getInteger(strip(l," "), &nums[i++], err), ",\n"))!=((void *)0));\
 	code; \
 	return p; \
 }
@@ -220,16 +220,18 @@
 	lineCounter++;\
 	GET_LINE_LABEL;\
 	l=strip(l, " ");\
-	if(0) {}
+	if(oneOf(l, "\n\r")) {}
 
 #define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &context, &err, label, lineCounter, line)) {}
 #define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &context, &err, label,lineCounter, line)) {}
-#define ELSE(msg)     else if (!err){ printf("%s\n",msg);}\
+#define ELSE(msg)     else if (!err){ printf("error in line %d: '%s' %s\n",lineCounter,trimNewline(line),  msg);}\
 					  else if (err) { \
 						  switch(err) { \
 						  	  case FIRST_ARG_IS_INVALID: printf("error in line %d: first argument of line '%s' is not valid\n", lineCounter, trimNewline(line));break; \
 						  	  case SECOND_ARG_IS_INVALID:printf("error in line %d: second argument of line '%s' is not valid\n",lineCounter,  trimNewline(line));break; \
 						  	  case COMMAND_NOT_TERMINATED:printf("error in line %d: in line '%s' command has extra parameters\n", lineCounter,  trimNewline(line));break; \
+						  	  case EMPTY_DATA:printf("error in line %d: in line '%s' data is empty\n", lineCounter,  trimNewline(line));break; \
+						  	  case BAD_DATA: printf("error in line %d: in line '%s' data needs another number\n", lineCounter,  trimNewline(line));break; \
 						  } \
 					  }}
 
