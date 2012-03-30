@@ -12,7 +12,7 @@ char* trimNewline(char* line)
 	return line;
 }
 
-int deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 	int i;
 	if (n==NULL) {
@@ -36,7 +36,7 @@ int deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNum
 	return 0;
 }
 
-int  deferLabelDistanceResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+int  deferLabelDistanceResolution(Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 		if (n==NULL) {
 			printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
@@ -51,7 +51,7 @@ int  deferLabelDistanceResolution(Context* l, addrVal* into, char* label, int li
 	return 0;
 }
 
-int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 	if (n==NULL) {
 		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, origLine, label);
@@ -77,7 +77,7 @@ void entry_gen(Context* context, Operand oper, char* label, int lineNumber, char
 	if (n==NULL) {
 		n = newEntry(oper.get.direct);
 		context->allLabels = append(context->allLabels, n);
-		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureLabelHasAddress, context, NULL, oper.get.direct, lineNumber, originalLine));
+		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureLabelHasAddress, context, NULL, NULL, oper.get.direct, lineNumber, originalLine));
 	} else {
 		LABEL(n)->isEntry=1;
 	}

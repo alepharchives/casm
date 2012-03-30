@@ -77,7 +77,7 @@ node* newAsmNode() {
 	return n;
 }
 
-node* newDeferedNode(int (*f)(Context* l, addrVal*, char*, int, char*), Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+node* newDeferedNode(int (*f)(Context* l, addrVal*, asm_node* , char*, int, char*), Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
 	node* n = malloc(sizeof(node));
 	defered_node* d = malloc(sizeof(defered_node));
 	d->f = f;
@@ -86,9 +86,9 @@ node* newDeferedNode(int (*f)(Context* l, addrVal*, char*, int, char*), Context*
 	strcpy(d->label,label);
 	d->lineNumber = lineNumber;
 	strcpy(d->origLine, origLine);
-	d->origLine[strlen(d->origLine)-1]='\0';
 	n->prev=NULL;
 	n->data=d;
+	d->asmNode = asm_node;
 	return n;
 }
 
@@ -251,6 +251,12 @@ void writeAsm(Context* c, FILE *f) {
 	return;
 }
 
+void writeOneEntry(entry_node* n, FILE *f){
+	char offset[20];
+	intToBin(n->offset,offset);
+	printf("entry: %s  offset: %s, (%d)\n",n->label, offset, n->offset);
+	fprintf(f,"%s  %s \n",n->label, offset);
+}
 
 void writeEntry(list* l, FILE *f) {
 	node** scan = l;
@@ -263,11 +269,4 @@ void writeEntry(list* l, FILE *f) {
 		scan = &(*scan)->next;
 	}
 	return;
-}
-
-void writeOneEntry(entry_node* n, FILE *f){
-	char offset[20];
-	intToBin(n->offset,offset);
-	printf("entry: %s  offset: %s, (%d)\n",n->label, offset, n->offset);
-	fprintf(f,"%s  %s \n",n->label, offset);
 }
