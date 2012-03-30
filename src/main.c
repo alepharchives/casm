@@ -36,55 +36,69 @@
 
 #define MAXLINE 1000
 
-int main(void) {
-	char line[1000];
-	int lineCounter = 0;
-	Context context = {NULL, NULL, NULL, -1};
+int main(int argc, char *argv[]) {
 
-	FILE *fp, *fo;
-	if ((fp = fopen("ps","r")) == NULL)
-	{
-		printf("err~!");
+	int i;
+	for (i=1; i<argc;i++){
+
+		char line[1000];
+		char file[20];
+		char objfile[20];
+		char entfile[20];
+		char extfile[20];
+		int lineCounter = 0;
+		Context context = {NULL, NULL, NULL, -1};
+		FILE *fr, *fwo;
+
+
+		sprintf(file,"%s.as",argv[i]);
+
+		if ((fr = fopen(file,"r")) == NULL)
+		{
+			printf("error opening the file!!");
+		}
+
+		while (fgets(line,MAXLINE, fr) != NULL) {
+			/*getline(line, sizeof(line));*/
+			PARSE(line)
+			 TRY(cmp)
+			 TRY(mov)
+			 TRY(add)
+			 TRY(sub)
+			 TRY(lea)
+			 TRY(prn)
+			 TRY(not)
+			 TRY(clr)
+			 TRY(inc)
+			 TRY(dec)
+			 TRY(jmp)
+			 TRY(bne)
+			 TRY(red)
+			 TRY(jsr)
+			 TRY(rts)
+			 TRY(stop)
+
+			 TRY_DOT(_extern)
+			 TRY_DOT(entry)
+			 TRY_DOT(data)
+			 TRY_DOT(string)
+			ELSE("no such command")
+			fflush(stdout);
+		}
+
+		context.lastOffset = computeAsmOffset(&context.codeList, 100);
+		computeLabelOffset(&context.allLabels, context.lastOffset);
+		if (execDeffered(&context.deferred) == 0) {
+			sprintf(objfile,"%s.obj",argv[i]);
+			fwo = fopen(objfile,"w");
+			writeAsm(&context, fwo);
+			fclose(fwo);
+			printf("\n");
+			/*printData(&context.allLabels);*/
+		}
+
 	}
-
-	while (fgets(line,MAXLINE, fp) != NULL) {
-		/*getline(line, sizeof(line));*/
-		PARSE(line)
-		 TRY(cmp)
-		 TRY(mov)
-		 TRY(add)
-		 TRY(sub)
-		 TRY(lea)
-		 TRY(prn)
-		 TRY(not)
-		 TRY(clr)
-		 TRY(inc)
-		 TRY(dec)
-		 TRY(jmp)
-		 TRY(bne)
-		 TRY(red)
-		 TRY(jsr)
-		 TRY(rts)
-		 TRY(stop)
-
-		 TRY_DOT(_extern)
-		 TRY_DOT(entry)
-		 TRY_DOT(data)
-		 TRY_DOT(string)
-		ELSE("no such command")
-		fflush(stdout);
-	}
-
-	context.lastOffset = computeAsmOffset(&context.codeList, 100);
-	computeLabelOffset(&context.allLabels, context.lastOffset);
-	if (execDeffered(&context.deferred) == 0) {
-		fo = fopen("ps.obj","w");
-		writeAsm(&context, fo);
-		fclose(fo);
-		printf("\n");
-		/*printData(&context.allLabels);*/
-	}
-	return 0;
+		return 0;
 
 }
 

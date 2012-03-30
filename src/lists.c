@@ -186,21 +186,13 @@ void printOneData(label_node* n, FILE *f, int *last) {
 			fprintf(f, "%s   %s\n", off ,bits);
 		}
 	}
-}
+	else if(n->kind == NOT_INIT){
 
-/*void printData(list* l) {
-	node** scan = l;
-	node* n;
-	FILE *f;
-
-	while (*scan!= NULL) {
-		n = *scan;
-		printOneData(LABEL(n),f);
-		fflush(stdout);
-		scan = &(*scan)->next;
+		if (n->isExtern == 1){
+			/*printf("%s\n",l);*/
+		}
 	}
-	return;
-}*/
+}
 
 void writeOneAsm(asm_node* n, FILE *f) {
 	char off[17], bits[17];
@@ -213,6 +205,9 @@ void writeOneAsm(asm_node* n, FILE *f) {
 		intToBin(of, off);
 		intToBin(n->word[j-1].val, bits);
 		fprintf(f, "%s   %s %c\n", off, bits, n->word[j-1].type);
+		if (n->word[j-1].type == 'e'){
+			/*printf("like");*/
+		}
 	}
 }
 
@@ -241,9 +236,10 @@ void writeAsm(Context* c, FILE *f) {
 		fflush(stdout);
 		scan2 = &(*scan2)->next;
 		}
-		intToBin(lastdata - c->lastOffset, lastdataoff);
-		fseek(f, 17 * sizeof(char) ,SEEK_SET);
-		fprintf(f,"  %s ", lastdataoff);
+
+	intToBin(lastdata - c->lastOffset, lastdataoff);
+	fseek(f, 17 * sizeof(char) ,SEEK_SET);
+	fprintf(f,"  %s ", lastdataoff);
 
 	return;
 }
