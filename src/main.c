@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
 		}
 
 		while (fgets(line,MAXLINE, fr) != NULL) {
+			printf("%s", line);
 			PARSE(line)
 			 TRY(cmp)
 			 TRY(mov)

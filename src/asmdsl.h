@@ -227,11 +227,11 @@
 #define ELSE(msg)     else if (!err){ printf("error in line %d: '%s' %s\n",lineCounter,trimNewline(line),  msg);}\
 					  else if (err) { \
 						  switch(err) { \
-						  	  case FIRST_ARG_IS_INVALID: printf("error in line %d: first argument of line '%s' is not valid\n", lineCounter, trimNewline(line));break; \
-						  	  case SECOND_ARG_IS_INVALID:printf("error in line %d: second argument of line '%s' is not valid\n",lineCounter,  trimNewline(line));break; \
-						  	  case COMMAND_NOT_TERMINATED:printf("error in line %d: in line '%s' command has extra parameters\n", lineCounter,  trimNewline(line));break; \
-						  	  case EMPTY_DATA:printf("error in line %d: in line '%s' data is empty\n", lineCounter,  trimNewline(line));break; \
-						  	  case BAD_DATA: printf("error in line %d: in line '%s' data needs another number\n", lineCounter,  trimNewline(line));break; \
+						  	  case FIRST_ARG_IS_INVALID: printf("Error at line %d '%s':first argument is not valid\n", lineCounter, trimNewline(line));break; \
+						  	  case SECOND_ARG_IS_INVALID:printf("Error at line %d '%s': second argument is not valid\n",lineCounter,  trimNewline(line));break; \
+						  	  case COMMAND_NOT_TERMINATED:printf("Error at line %d '%s': command has extra parameters\n", lineCounter,  trimNewline(line));break; \
+						  	  case EMPTY_DATA:printf("Error at line %d '%s': data is empty\n", lineCounter,  trimNewline(line));break; \
+						  	  case BAD_DATA: printf("Error at line %d '%s': data needs another number\n", lineCounter,  trimNewline(line));break; \
 						  } \
 					  }}
 

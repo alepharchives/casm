@@ -3,7 +3,7 @@
 .extern REVERSE
 .extern PRTSTR
 .extern COUNT
-STRADD: .data 0
+STRADD: .data 
 STR: .string "abcdef"
 LASTCHAR: .data 0
 LEN: .data 0
