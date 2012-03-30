@@ -81,9 +81,9 @@ typedef struct {
 
 node* newDeferedNode(int  (*f)(Context* l, addrVal*, asm_node*, char*, int, char*), Context* l, addrVal* into, asm_node* asmNode, char* label, int lineNumber, char* origLine);
 node* newAsmNode();
-node* newLabel(char* label, int offset);
-node* newExtern(char* label);
-node* newEntry(char* label);
+node* newLabel(char* label , int origLineCount, char* origLine);
+node* newExtern(char* label, int origLineCount, char* origLine);
+node* newEntry(char* label, int origLineCount, char* origLine);
 node* newEntryWord(char* label, int offset);
 void writeEntry(list* l, FILE *f) ;
 
