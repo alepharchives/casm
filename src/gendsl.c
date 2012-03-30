@@ -19,22 +19,31 @@ char* trimNewline(char* line)
 	return line;
 }
 
-int deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
+	int i;
 	if (n==NULL) {
 		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, trimNewline(origLine), label);
 		return -1;
 	} else {
 		into->val = LABEL(n)->offset;
+		i = LABEL(n)->offset;
 		into->type = LABEL(n)->isExtern ? e : r;
-		if (into->type == e) {
-
+		if  (LABEL(n)->isEntry){
+			node* n2 = find(l->entrylabels, findLabelEntryText, label);
+			if (n2 == NULL){
+				l->entrylabels = append(l->entrylabels,newEntryWord(label,i));
+			}
+		}
+		else if(LABEL(n)->isExtern){
+			/*printf("extern: %s, %d\n", label, lineNumber + 100);*/
+			/*l->externlabels = append(l->externlabels,newExternWord(label,lineNumber +100 - 10));*/
 		}
 	}
 	return 0;
 }
 
-int  deferLabelDistanceResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+int  deferLabelDistanceResolution(Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 		if (n==NULL) {
 			printf("Error at line %d '%s': label %s not defined!\n", lineNumber, trimNewline(origLine), label);
@@ -49,7 +58,7 @@ int  deferLabelDistanceResolution(Context* l, addrVal* into, char* label, int li
 	return 0;
 }
 
-int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, char* label, int lineNumber, char* origLine) {
+int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 	if (n==NULL) {
 		printf("error in line %d: in line '%s' label %s not defined!\n", lineNumber,  trimNewline(origLine),  label);
@@ -76,7 +85,7 @@ void entry_gen(Context* context, Operand oper, char* label, int lineNumber, char
 	if (n==NULL) {
 		n = newEntry(oper.get.direct, lineNumber, originalLine);
 		context->allLabels = append(context->allLabels, n);
-		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureLabelHasAddress, context, NULL, oper.get.direct, lineNumber, originalLine));
+		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureLabelHasAddress, context, NULL, NULL, oper.get.direct, lineNumber, originalLine));
 	} else {
 		LABEL(n)->isEntry=1;
 	}

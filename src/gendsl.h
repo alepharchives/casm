@@ -20,8 +20,8 @@
 #define BAD_DATA 4005
 
 
-int  deferLabelDistanceResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine);
-int  deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNumber, char* origLine);
+int  deferLabelDistanceResolution(Context* l, addrVal* into, asm_node* asm_node,  char* label, int lineNumber, char* origLine);
+int  deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine);
 
 #define REGISTER(T) \
 	code.bit.T ## Kind = theOperand->kind; /* REGISTER */ \
@@ -36,13 +36,13 @@ int  deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNu
 	theWord->type=a; \
 	USE_EXTRA_WORD
 
-#define GET_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,context, theWord, theOperand->get.direct,lineNumber,originalLine)); \
+#define GET_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,context, theWord, ASM(n), theOperand->get.direct,lineNumber,originalLine)); \
 
-#define GET_1D_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,context, theWord, theOperand->get.oneIndex.label, lineNumber, originalLine)); \
+#define GET_1D_LABEL_OFFSET context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,context, theWord, ASM(n), theOperand->get.oneIndex.label, lineNumber, originalLine)); \
 
-#define GET_1D_INDEX_DISTANCE context->deferred = append(context->deferred, newDeferedNode(deferLabelDistanceResolution,context, theWord, theOperand->get.oneIndex.index, lineNumber, originalLine)); \
+#define GET_1D_INDEX_DISTANCE context->deferred = append(context->deferred, newDeferedNode(deferLabelDistanceResolution,context, theWord, ASM(n), theOperand->get.oneIndex.index, lineNumber, originalLine)); \
 
-#define GET_2D_LABEL_OFFSET(P) context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,context, theWord, theOperand->get.twoIndice.P, lineNumber, originalLine));
+#define GET_2D_LABEL_OFFSET(P) context->deferred = append(context->deferred, newDeferedNode(deferLabelAddrResolution,context, theWord, ASM(n), theOperand->get.twoIndice.P, lineNumber, originalLine));
 
 #define DIRECT_LABEL(T) \
 	code.bit.T ## Kind = theOperand->kind; /* DIRECT_LABEL*/ \
@@ -98,7 +98,7 @@ int  deferLabelAddrResolution(Context* l, addrVal* into, char* label, int lineNu
 	code.code=0;\
 	code.bit.op=CODE;\
 	theOperand=&operand1;\
-	n  = newAsmNode(); \
+	n = newAsmNode(); \
 	theWord = ASM(n)->word;\
 	OP1; \
 	context->codeList = append(context->codeList, n);\

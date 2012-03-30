@@ -13,24 +13,6 @@
 #include "commons.h"
 #include "DoubleLinkedList.h"
 
-node* newDeferedNode(int  (*f)(Context* l, addrVal*, char*, int, char*), Context* l, addrVal* into, char* label, int lineNumber, char* origLine);
-node* newAsmNode();
-node* newLabel(char* label, int origLineCount, char* origLine);
-node* newExtern(char* label, int origLineCount, char* origLine);
-node* newEntry(char* label, int origLineCount, char* origLine);
-
-int findLabelText(node* n, void* label);
-int findLabelEntry(node* n, void* label);
-int findLabelExtern(node* n, void* label);
-int computeAsmOffset(list* l, int initial);
-int computeLabelOffset(list* l, int lastAsmOffset);
-int execDeffered(list* l);
-void printAsm(list* l);
-void printData(list* l);
-void writeAsm(Context* c, FILE *f);
-
-
-
 
 typedef struct {
 	int op_code;
@@ -40,12 +22,13 @@ typedef struct {
 } asm_node ;
 
 typedef struct {
-	int (*f)(Context* l, addrVal*, char*, int, char*);
+	int (*f)(Context* l, addrVal*, asm_node*, char*, int, char*);
 	addrVal* into;
 	Context* cont;
 	int lineNumber;
 	char origLine[100];
 	char label[MAX_LABEL];
+	asm_node* asmNode;
 }defered_node;
 
 typedef enum {
@@ -81,11 +64,40 @@ typedef struct {
 	}get;
 }label_node;
 
+typedef struct {
+	char label[MAX_LABEL];
+	int offset;
+}entry_node;
+
+
+
 #define LABEL(n) ((label_node*)n->data)
 #define ASM(n) ((asm_node*)n->data)
 #define DATA(n) ((data_node*)n->data)
 #define DEFERRED(n) ((defered_node*)n->data)
+#define ENTRY(n)  ((entry_node*)n->data)
 
-#define INVOKE(n) DEFERRED(n)->f(((Context*)(DEFERRED(n)->cont)), DEFERRED(n)->into, DEFERRED(n)->label, DEFERRED(n)->lineNumber, DEFERRED(n)->origLine)
+#define INVOKE(n) DEFERRED(n)->f(((Context*)(DEFERRED(n)->cont)), DEFERRED(n)->into,DEFERRED(n)->asmNode, DEFERRED(n)->label, DEFERRED(n)->lineNumber, DEFERRED(n)->origLine)
+
+node* newDeferedNode(int  (*f)(Context* l, addrVal*, asm_node*, char*, int, char*), Context* l, addrVal* into, asm_node* asmNode, char* label, int lineNumber, char* origLine);
+node* newAsmNode();
+node* newLabel(char* label, int offset);
+node* newExtern(char* label);
+node* newEntry(char* label);
+node* newEntryWord(char* label, int offset);
+void writeEntry(list* l, FILE *f) ;
+
+
+int findLabelText(node* n, void* label);
+int findLabelEntry(node* n, void* label);
+int findLabelExtern(node* n, void* label);
+int findLabelEntryText(node* n, void* label);
+int computeAsmOffset(list* l, int initial);
+int computeLabelOffset(list* l, int lastAsmOffset);
+int execDeffered(list* l);
+void printAsm(list* l);
+void printData(list* l);
+void writeAsm(Context* c, FILE *f);
+
 
 #endif
