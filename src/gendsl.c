@@ -36,7 +36,7 @@ int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  cha
 			}
 		}
 		else if(LABEL(n)->isExtern){
-			/*printf("extern: %s, %d\n", label, lineNumber + 100);*/
+			printf("extern: %s, %d\n", label, asm_node->offset);
 			/*l->externlabels = append(l->externlabels,newExternWord(label,lineNumber +100 - 10));*/
 		}
 	}
