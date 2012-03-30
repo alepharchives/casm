@@ -63,7 +63,7 @@
 #define DIRECT \
 	if (l==NULL) /*DIRECT*/ { \
 		l = strip(getAllAlphas(strip(p," "), a[pi].get.direct), " "); \
-		l = oneOf(l,",\n"); \
+		l = oneOf(l,",\n\r"); \
 		if (l!=NULL && l!=strip(p," ")) { \
 				a[pi].kind = direct; \
 				val = a[pi]; \
@@ -75,7 +75,7 @@
 #define LABEL1 \
 	if (l==NULL) /*LABEL1*/ { \
 		l = charIs(getAllAlphasDigits(charIs(charIs(getAllAlphas(strip(p," "), a[pi].get.oneIndex.label), '[') ,'%'), a[pi].get.oneIndex.index), ']'); \
-		l = oneOf(l,",\n"); \
+		l = oneOf(l,",\n\r"); \
 		if (l!=NULL && l!=strip(p," ")) { \
 				a[pi].kind = label_with_index; \
 				val = a[pi]; \
@@ -90,7 +90,7 @@
 		l = charIs(getAllAlphasDigits(charIs(strip(p, " "), '['), a[pi].get.twoIndice.index), ']'); \
 		l = getAllAlphasDigits(l, a[pi].get.twoIndice.label); \
 		l = charIs(getDigit(charIs(charIs(l, '['), 'r'), &r), ']'); \
-		l = oneOf(l,",\n"); \
+		l = oneOf(l,",\n\r"); \
 		if (l!=NULL && l!=strip(p," ")) { \
 				a[pi].kind = label_with_two_indices; \
 				a[pi].get.twoIndice.reg = r - '0'; \
@@ -105,7 +105,7 @@
 		char* n; \
 		l = charIs(strip(p," "), 'r'); \
 			if (l!=NULL) { \
-				if ((n=oneOf(strip(isDigit(l), " "),",\n"))) { \
+				if ((n=oneOf(strip(isDigit(l), " "),",\n\r"))) { \
 					a[pi].kind = reg; \
 					a[pi].get.reg = 0; \
 					a[pi].get.reg = (char)*(l)-'0'; \
@@ -122,7 +122,7 @@
 	if (l==NULL) /*CONST*/ { \
 		l = charIs(strip(p," "),'#');\
 		if (l!=NULL) { \
-			l = oneOf(getInteger(strip(l," "),&a[pi].get.constant, err), ",\n"); \
+			l = oneOf(getInteger(strip(l," "),&a[pi].get.constant, err), ",\n\r"); \
 			if (l!=NULL) { \
 				a[pi].kind = constant; \
 				val = a[pi];\
@@ -133,7 +133,7 @@
     pi++;
 
 #define VERIFY { \
-	if (*p!='\n' && *p!='\0') { \
+	if (*p!='\n' && *p!='\0' && *p!='\r') { \
 		*err=COMMAND_NOT_TERMINATED; \
 		return NULL; \
 	} \
