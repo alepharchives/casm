@@ -83,6 +83,19 @@ int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, asm_node* asm_node,
 	return 0;
 }
 
+int  deferMakeSureExternLabelNotDefined(Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
+	node* n = find(l->allLabels, findLabelText, label);
+	if (n==NULL) {
+		printf(" Error at line %d '%s': label '%s' not defined.\n", lineNumber,  trimNewline(origLine),  label);
+		return -1;
+	} else if (LABEL(n)->offset != 0) {
+		printf(" Error at line %d '%s': extern label '%s' is redefined in %d '%s'.\n", lineNumber,  trimNewline(origLine),  label,  LABEL(n)->origLineNuber, LABEL(n)->origLine);
+		return -1;
+
+	}
+	return 0;
+}
+
 /* the next *_gen functions are used specifically by the dot_try commands (.entry, .data, etc..) */
 
 /* this function gets called when an .extern line was read, it makes sure that */
@@ -93,6 +106,7 @@ void extern__gen(Context* context, Operand oper, char* label, int* err,  int lin
 		*err = GEN_ERROR;
 	} else {
 		context->allLabels = append(context->allLabels, newExtern(oper.get.direct, lineNumber, trimNewline(originalLine)));
+		context->deferred = append(context->deferred, newDeferedNode(deferMakeSureExternLabelNotDefined, context, NULL, NULL, oper.get.direct, lineNumber, trimNewline(originalLine)));
 	}
 }
 
@@ -192,6 +206,10 @@ void asmLabel(Context* context, char* label, int* err, int lineNum, char* origLi
 			LABEL(n)->kind = ASM_KIND;
 			LABEL(n)->get.code = ASM(asmNode);
 			if (LABEL(n)->isEntry) {
+				LABEL(n)->origLineNuber = lineNum;
+				strcpy(LABEL(n)->origLine, trimNewline(origLine));
+			}
+			if (LABEL(n)->isExtern) {
 				LABEL(n)->origLineNuber = lineNum;
 				strcpy(LABEL(n)->origLine, trimNewline(origLine));
 			}
