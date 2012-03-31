@@ -29,13 +29,15 @@ int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  cha
 		into->val = LABEL(n)->offset;
 		i = LABEL(n)->offset;
 		into->type = LABEL(n)->isExtern ? e : r;
-		if  (LABEL(n)->isEntry){
-			node* n2 = find(l->entrylabels, findLabelExEntText, label);
-			if (n2 == NULL){
-				l->entrylabels = append(l->entrylabels,newExEntWord(label,i));
+
+		if(LABEL(n)->isExtern){
+			int delta=1;
+			for (i=0;i<4 && (&asm_node->word[i] !=  into);i++) {
+				delta++;
 			}
-		}
-		else if(LABEL(n)->isExtern){
+
+			i = asm_node->offset+delta;
+
 			i = asm_node->offset;
 			l->externlabels = append(l->externlabels,newExEntWord(label,i));
 		}
@@ -52,7 +54,7 @@ int  deferLabelDistanceResolution(Context* l, addrVal* into, asm_node* asm_node,
 			/* last offset is the offset where the next op would be in,
 			 * but our instructions are to point to the last offset,
 			 * so we have to go back one word..*/
-			into->val =  LABEL(n)->offset - (l->lastOffset-1);
+			into->val =  LABEL(n)->offset - (l->lastAsmOffset-1);
 			into->type = a;
 		}
 	return 0;
@@ -60,8 +62,6 @@ int  deferLabelDistanceResolution(Context* l, addrVal* into, asm_node* asm_node,
 
 int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
-	node* n2;
-	int offset;
 	if (n==NULL) {
 		printf("Error at line %d '%s': label %s not defined!\n", lineNumber,  trimNewline(origLine),  label);
 		return -1;
@@ -69,12 +69,6 @@ int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, asm_node* asm_node,
 		printf("Error at line %d '%s': label %s not resolved!\n", lineNumber,  trimNewline(origLine),  label);
 		return -1;
 
-	} else if (LABEL(n)->kind==ASM_KIND) {
-		n2 = find(l->entrylabels, findLabelExEntText, label);
-		if (n2 == NULL){
-			offset = LABEL(n)->get.code->offset;
-			l->entrylabels = append(l->entrylabels,newExEntWord(label,offset));
-		}
 	}
 	return 0;
 }

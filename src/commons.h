@@ -25,6 +25,8 @@ typedef enum {
 typedef int Reg;
 typedef int Constant;
 typedef char Label[MAX_LABEL];
+typedef char OffsetBits[9];
+typedef char AsmBits[25];
 typedef Label Direct;
 typedef struct  {
 		Label label;
@@ -75,7 +77,6 @@ typedef struct {
 	list allLabels;
 	list deferred;
 	list externlabels;
-	list entrylabels;
-	int lastOffset;
+	int lastAsmOffset, lastDataOffset;
 } Context ;
 #endif /* COMMONS_H_ */

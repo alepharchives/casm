@@ -13,7 +13,6 @@
 #include "commons.h"
 #include "DoubleLinkedList.h"
 
-
 typedef struct {
 	int op_code;
 	addrVal word[4];

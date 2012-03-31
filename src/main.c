@@ -39,6 +39,7 @@
 int main(int argc, char *argv[]) {
 
 	int i;
+
 	for (i=1; i<argc;i++){
 		char line[1000];
 		char file[20];
@@ -46,7 +47,7 @@ int main(int argc, char *argv[]) {
 		char entfile[20];
 		char extfile[20];
 		int lineCounter = 0;
-		Context context = {NULL, NULL, NULL, NULL, NULL, -1};
+		Context context = {NULL, NULL, NULL, NULL, -1};
 		FILE *fr, *fwo, *fwent, *fwex;
 
 		sprintf(file,"%s.as",argv[i]);
@@ -83,19 +84,27 @@ int main(int argc, char *argv[]) {
 				fflush(stdout);
 			}
 
-			context.lastOffset = computeAsmOffset(&context.codeList, 100);
-			computeLabelOffset(&context.allLabels, context.lastOffset);
+			context.lastAsmOffset = computeAsmOffset(&context.codeList, 100);
+			context.lastDataOffset = computeLabelOffset(&context.allLabels, context.lastAsmOffset);
+
 			if (execDeffered(&context.deferred) == 0) {
+
+				printAsm(&context.codeList);
+				printf("\n");
+				printData(&context.allLabels);
+
+				printf("\n");printf("\n");printf("\n");printf("\n");
+
 				sprintf(objfile,"%s.obj",argv[i]);
 				fwo = fopen(objfile,"w");
 				writeAsm(&context, fwo);
 				fclose(fwo);
-				if(context.entrylabels != NULL){
-					sprintf(entfile,"%s.ent",argv[i]);
-					fwent = fopen(entfile,"w");
-					writeExEnt(&context.entrylabels, fwent);
-					fclose(fwent);
-				}
+
+				sprintf(entfile,"%s.ent",argv[i]);
+				fwent = fopen(entfile,"w");
+				extractEntries(&context.allLabels, fwent);
+				fclose(fwent);
+
 				if(context.externlabels != NULL){
 					sprintf(extfile,"%s.ext",argv[i]);
 					fwex = fopen(extfile,"w");

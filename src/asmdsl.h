@@ -214,12 +214,17 @@
 }
 
 #define PARSE(line)  { \
-	int err=0; \
+	int err=0, len; \
 	Label label;\
 	char*l;\
 	lineCounter++;\
 	GET_LINE_LABEL;\
 	l=strip(l, " ");\
+	len = strlen(line); \
+	if (line[len-1]!='\n') {\
+		line[len]='\n';\
+		line[len+1]='\0';\
+	}\
 	if(oneOf(l, "\n\r")) {}
 
 #define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &context, &err, label, lineCounter, line)) {}
