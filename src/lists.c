@@ -120,7 +120,7 @@ int computeLabelOffset(list* l, int lastAsmOffset) {
 		case ASM_KIND: 		LABEL(n)->offset = LABEL(n)->get.code->offset; break;
 		case DATA_KIND: 	LABEL(n)->offset = offset; offset+=LABEL(n)->get.data.getData.data.size; break;
 		case STRING_KIND: 	LABEL(n)->offset = offset; offset+=strlen(LABEL(n)->get.data.getData.str)+1; break;
-		case NOT_INIT: return -1;/*if (LABEL(n)->isExtern!=1) {printf("error in line %d: in line '%s' Label %s referenced but not defined!\n", LABEL(n)->origLineNuber, LABEL(n)->origLine, LABEL(n)->label); return -1;}*/break;
+		case NOT_INIT: break;/*if (LABEL(n)->isExtern!=1) {printf("error in line %d: in line '%s' Label %s referenced but not defined!\n", LABEL(n)->origLineNuber, LABEL(n)->origLine, LABEL(n)->label); return -1;}*/break;
 		}
 
 		scan = &(*scan)->next;
@@ -187,7 +187,7 @@ void printAsm(list* l) {
 	return;
 }
 
-void printOneData(label_node* n, FILE *f, int *last) {
+void printOneDataToFile(label_node* n, FILE *f, int *last) {
 	char off[17], bits[17],l[50];
 	int j;
 	if (strlen(n->label)>0) sprintf(l, "(%s)", n->label);
@@ -210,6 +210,42 @@ void printOneData(label_node* n, FILE *f, int *last) {
 		}
 	}
 }
+
+void printOneData(label_node* n) {
+	char off[17], bits[17],l[50];
+	int j;
+	if (strlen(n->label)>0) sprintf(l, "(%s)", n->label);
+	else l[0]='\0';
+	if (n->kind==DATA_KIND) {
+		for(j=0;j<n->get.data.getData.data.size;j++) {
+			int of = n->offset+j;
+			intToBin(of, off);
+			intToBin( n->get.data.getData.data.nums[j],bits);
+			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
+		}
+	} else if (n->kind == STRING_KIND) {
+		for(j=0;j<=strlen(n->get.data.getData.str);j++) {
+			int of = n->offset+j;
+			intToBin(of, off);
+			intToBin( n->get.data.getData.str[j],bits);
+			printf("offset %s (%d) : data %s %s\n", off, of, bits, (j==0)?l:"");
+		}
+	}
+}
+
+void printData(list* l) {
+	node** scan = l;
+	node* n;
+
+	while (*scan!= NULL) {
+		n = *scan;
+		printOneData(LABEL(n));
+		fflush(stdout);
+		scan = &(*scan)->next;
+	}
+	return;
+}
+
 
 void writeOneAsm(asm_node* n, FILE *f) {
 	char off[17], bits[17];
@@ -246,7 +282,7 @@ void writeAsm(Context* c, FILE *f) {
 
 	while (*scan2!= NULL) {
 		n2 = *scan2;
-		printOneData(LABEL(n2),f, &lastdata);
+		printOneDataToFile(LABEL(n2),f, &lastdata);
 		fflush(stdout);
 		scan2 = &(*scan2)->next;
 		}
@@ -274,4 +310,20 @@ void writeExEnt(list* l, FILE *f) {
 		scan = &(*scan)->next;
 	}
 	return;
+}
+
+int extractEntries(list* l,FILE *f) {
+	node** scan = l, *n;
+	char off[17];
+
+	while (*scan!= NULL) {
+		n = *scan;
+		if (LABEL(n)->isEntry) {
+			printf("ENTRY: %s %d\n", LABEL(n)->label, LABEL(n)->offset);
+			intToBin(LABEL(n)->offset, off);
+			fprintf(f, "ENTRY: %s %s\n", LABEL(n)->label, off);
+		}
+		scan = &(*scan)->next;
+	}
+	return 0;
 }

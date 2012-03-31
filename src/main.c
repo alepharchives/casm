@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
 		{
 			printf("error opening %s file!!", file);
 		}
-		else{
+		else {
 			while (fgets(line,MAXLINE, fr) != NULL) {
 				PARSE(line)
 				 TRY(cmp)
@@ -105,7 +105,5 @@ int main(int argc, char *argv[]) {
 			}
 		}
 	}
-		return 0;
+	return 0;
 }
-
-
