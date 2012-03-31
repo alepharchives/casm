@@ -1,17 +1,23 @@
-app: mat.o parser.o matdsl.o main.o
-	gcc -o "main" main.o mat.o matdsl.o parser.o 
+assembler: lists.o parser.o asmdsl.o gendsl.o DoubleLinkedList.o main.o
+	gcc -o "assembler"  main.o lists.o parser.o asmdsl.o gendsl.o DoubleLinkedList.o 
 	
-mat.o: mat.c mat.h
-	gcc -ansi -pedantic -Wall -g -c mat.c
+lists.o: lists.c lists.h
+	gcc -ansi -pedantic -Wall -g -c lists.c
 
 parser.o: parser.c parser.h
 	gcc -ansi -pedantic -Wall -g -c parser.c	
 
-matdsl.o: matdsl.c matdsl.h  
-	gcc -ansi -pedantic -Wall -g -c matdsl.c	
+asmdsl.o: asmdsl.c asmdsl.h  
+	gcc -ansi -pedantic -Wall -g -c asmdsl.c
+	
+gendsl.o: gendsl.c gendsl.h  
+	gcc -ansi -pedantic -Wall -g -c gendsl.c	
 
+DoubleLinkedList.o: DoubleLinkedList.c DoubleLinkedList.h  
+	gcc -ansi -pedantic -Wall -g -c DoubleLinkedList.c	
+				
 main.o: main.c 
 	gcc -ansi -pedantic -Wall -g -c main.c 
 
 clean:
-	rm -rf *.o main
+	rm -rf *.o assembler
