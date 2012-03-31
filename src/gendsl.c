@@ -178,19 +178,14 @@ void asmLabel(Context* context, char* label, int* err, int lineNum, char* origLi
 		} else if (LABEL(n)->kind == NOT_INIT){
 			LABEL(n)->kind = ASM_KIND;
 			LABEL(n)->get.code = ASM(asmNode);
-			if (LABEL(n)->isEntry == 0) {
+			if (LABEL(n)->isEntry) {
 				LABEL(n)->origLineNuber = lineNum;
-				strcpy(LABEL(n)->origLine, origLine);
+				strcpy(LABEL(n)->origLine, trimNewline(origLine));
 			}
 		}
 		else {
-			if (LABEL(n)->isExtern == 1) {
+			if (LABEL(n)->isExtern) {
 				printf("Error at line %d '%s': label '%s' defined as extern in line %d '%s'\n", lineNum, trimNewline(origLine), label, LABEL(n)->origLineNuber, LABEL(n)->origLine);
-				*err = GEN_ERROR;
-				return;
-			}
-			else if (LABEL(n)->isEntry == 0) {
-				printf("Error at line %d '%s': label '%s' already defined in line %d '%s'\n", lineNum, trimNewline(origLine), label, LABEL(n)->origLineNuber, LABEL(n)->origLine);
 				*err = GEN_ERROR;
 				return;
 			}
