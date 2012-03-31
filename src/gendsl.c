@@ -29,8 +29,9 @@ int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  cha
 		into->type = LABEL(n)->isExtern ? e : r;
 
 		if(LABEL(n)->isExtern){
+			int i;
 			int delta=1;
-			for (i=0;i<4 && (&asm_node->word[i] !=  into);i++) {
+			for (i=0;i<4 && (&asm_node->word[i] != into);i++) {
 				delta++;
 			}
 			l->externlabels = append(l->externlabels,newExEntWord(label,asm_node->offset+delta));
