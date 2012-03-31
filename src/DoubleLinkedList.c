@@ -71,17 +71,6 @@ void printBackwards(list l) {
 	printf("\n");
 }
 
-void freeList(list l) {
-	node** scan = &l;
-	while (*scan != NULL && (*scan)->next != NULL) {
-		node *temp;
-		temp = *scan;
-		scan = &(*scan)->next;
-		free(temp->data);
-		free(temp);
-	}
-}
-
 node* find(list l, int (*p)(node*, void*), void* data) {
 	node** scan = &l;
 	while (*scan != NULL && p(*scan, data)) scan = &(*scan)->next;

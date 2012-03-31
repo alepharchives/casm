@@ -11,7 +11,6 @@ typedef struct node {
 list insertHead(list l, node* new);
 list insertSorted(list l,node* new);
 void print(list l);
-void freeList(list l);
 void printBackwards(list l);
 list append(list l, node* new);
 node* find(list l, int (node*, void*), void*);

@@ -338,3 +338,49 @@ int extractEntries(list* l,FILE *f) {
 	}
 	return 0;
 }
+
+void freeContext(Context* context) {
+
+	node** scan = &context->allLabels;
+	while (*scan != NULL) {
+		node *temp;
+		temp = *scan;
+		*scan = (*scan)->next;
+		if (LABEL(temp)->kind == DATA_KIND) {
+			free(LABEL(temp)->get.data.getData.data.nums);
+		}
+		else if (LABEL(temp)->kind == STRING_KIND) {
+			free(LABEL(temp)->get.data.getData.str);
+		}
+		free(temp->data);
+		free(temp);
+	}
+
+	scan = &context->deferred;
+	while (*scan != NULL) {
+		node *temp;
+		temp = *scan;
+		*scan = (*scan)->next;
+		free(temp->data);
+		free(temp);
+	}
+
+	scan = &context->externlabels;
+	while (*scan != NULL) {
+		node *temp;
+		temp = *scan;
+		*scan = (*scan)->next;
+		free(temp->data);
+		free(temp);
+	}
+
+	scan = &context->codeList;
+	while (*scan != NULL) {
+		node *temp;
+		temp = *scan;
+		*scan = (*scan)->next;
+		free(temp->data);
+		free(temp);
+	}
+
+}

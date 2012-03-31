@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "commons.h"
 #include "lists.h"
 #include "DoubleLinkedList.h"
 
@@ -34,85 +35,32 @@
 #include "gendsl.h"
 #include "parser.h"
 
-#define MAXLINE 1000
-
 int main(int argc, char *argv[]) {
+	FOREACH_FILE(
+		100,
+		FOREACH_LINE(
+			PARSE
+				TRY(cmp)
+				TRY(mov)
+				TRY(add)
+				TRY(sub)
+				TRY(lea)
+				TRY(prn)
+				TRY(not)
+				TRY(clr)
+				TRY(inc)
+				TRY(dec)
+				TRY(jmp)
+				TRY(bne)
+				TRY(red)
+				TRY(jsr)
+				TRY(rts)
+				TRY(stop)
+				TRY_DOT(_extern)
+				TRY_DOT(entry)
+				TRY_DOT(data)
+				TRY_DOT(string)
+			ELSE("no such command")))
 
-	int i;
-
-	for (i=1; i<argc;i++){
-		char line[1000];
-		char file[20];
-		char objfile[20];
-		char entfile[20];
-		char extfile[20];
-		int lineCounter = 0;
-		Context context = {NULL, NULL, NULL, NULL, -1};
-		FILE *fr, *fwo, *fwent, *fwex;
-
-		sprintf(file,"%s.as",argv[i]);
-
-		if ((fr = fopen(file,"r")) == NULL)
-		{
-			printf("error opening %s file!!", file);
-		}
-		else {
-			while (fgets(line,MAXLINE, fr) != NULL) {
-				PARSE(line)
-				 TRY(cmp)
-				 TRY(mov)
-				 TRY(add)
-				 TRY(sub)
-				 TRY(lea)
-				 TRY(prn)
-				 TRY(not)
-				 TRY(clr)
-				 TRY(inc)
-				 TRY(dec)
-				 TRY(jmp)
-				 TRY(bne)
-				 TRY(red)
-				 TRY(jsr)
-				 TRY(rts)
-				 TRY(stop)
-
-				 TRY_DOT(_extern)
-				 TRY_DOT(entry)
-				 TRY_DOT(data)
-				 TRY_DOT(string)
-				ELSE("no such command")
-				fflush(stdout);
-			}
-
-			context.lastAsmOffset = computeAsmOffset(&context.codeList, 100);
-			context.lastDataOffset = computeLabelOffset(&context.allLabels, context.lastAsmOffset);
-
-			if (execDeffered(&context.deferred) == 0) {
-
-				printAsm(&context.codeList);
-				printf("\n");
-				printData(&context.allLabels);
-
-				printf("\n");printf("\n");printf("\n");printf("\n");
-
-				sprintf(objfile,"%s.obj",argv[i]);
-				fwo = fopen(objfile,"w");
-				writeAsm(&context, fwo);
-				fclose(fwo);
-
-				sprintf(entfile,"%s.ent",argv[i]);
-				fwent = fopen(entfile,"w");
-				extractEntries(&context.allLabels, fwent);
-				fclose(fwent);
-
-				if(context.externlabels != NULL){
-					sprintf(extfile,"%s.ext",argv[i]);
-					fwex = fopen(extfile,"w");
-					writeExEnt(&context.externlabels, fwex);
-					fclose(fwex);
-				}
-			}
-		}
-	}
 	return 0;
 }

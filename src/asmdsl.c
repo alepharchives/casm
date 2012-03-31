@@ -52,34 +52,5 @@ CMD(stop) NONE(GEN0(stop))
 CMD(entry) ONE(DIRECT, GEN1(entry))
 CMD(_extern) ONE(DIRECT, GEN1(extern_))
 
-CMD(data) /*MANY_NUMBERS(CALL_DATA(data))*/
-{
-	char* l;
-	int* nums;
-	int i,count=0;
-	if (p==((void *)0)) return ((void *)0);
-	l = p = strip(p," ");
-	if (oneOf(l, "\n\r")) {
-		*err = EMPTY_DATA;
-		return NULL;;
-	}
-	do {
-		count++;
-		l = getInteger(strip(l," "), &i, err);
-		if (*err==NUMBER_ERR) {
-			*err = BAD_DATA;
-			return NULL;
-		}
-	} while (charIs(l, ','));
-	if (!oneOf(l, "\r\n")) {
-		*err = BAD_DATA;
-		return NULL;
-	}
-	nums = (int*)malloc(sizeof(int)*count);
-	i=0;
-	l=p;
-	while ((l=oneOf(getInteger(strip(l," "), &nums[i++], err), ",\n"))!=((void *)0));
-	data_gen(context, label, nums, count, lineNumber,originalLine);
-	return p;
-}
+CMD(data) MANY_NUMBERS(CALL_DATA(data))
 CMD(string) STRING(CALL_STRING(string))

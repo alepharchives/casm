@@ -25,7 +25,7 @@ typedef struct {
 	addrVal* into;
 	Context* cont;
 	int lineNumber;
-	char origLine[100];
+	char origLine[MAXLINE];
 	char label[MAX_LABEL];
 	asm_node* asmNode;
 }defered_node;
@@ -55,7 +55,7 @@ typedef struct {
 	byte isExtern;
 	byte isEntry;
 	label_kind kind;
-	char origLine[1000];
+	char origLine[MAXLINE];
 	int origLineNuber;
 	union {
 		asm_node* code;
@@ -99,6 +99,6 @@ void printData(list* l);
 void writeAsm(Context* c, FILE *f);
 
 int extractEntries(list* l,FILE *f);
-
+void freeContext(Context* context);
 
 #endif

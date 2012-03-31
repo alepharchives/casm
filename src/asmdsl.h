@@ -29,6 +29,7 @@
 		};
 
 #define REMOVE_WARNS pi=val.get.constant;pi++;pi=a[0].get.constant; /* a silly line just to remove annoying "unused" warnings*/
+#define HANDLE_ERROR if (*err!=0) return NULL;
 
 #define OR2(A,B)   \
     /*OR2*/ 		    \
@@ -157,8 +158,9 @@
 		*err = SECOND_ARG_IS_INVALID;\
 		return NULL;\
 	} \
-	code;		\
 	VERIFY \
+	code;		\
+	HANDLE_ERROR \
 	REMOVE_WARNS		\
 	return p; \
 }
@@ -176,6 +178,7 @@
 		} \
 		VERIFY \
 		code;		\
+		HANDLE_ERROR \
 		REMOVE_WARNS		\
 		return p; \
 }
@@ -185,16 +188,31 @@
 #define MANY_NUMBERS(code) { \
 	char* l; \
 	int* nums;\
-	int i,count=1;\
-	if (p==NULL) return NULL; \
+	int i,count=0;\
+	if (p==((void *)0)) return ((void *)0);\
 	l = p = strip(p," ");\
-	while ((l=oneOf(getInteger(strip(l," "), &i, err), ",\n"))!=((void *)0)) {count++;}\
+	if (oneOf(l, "\n\r")) {\
+		*err = EMPTY_DATA;\
+		return NULL;\
+	}\
+	do {\
+		count++;\
+		l = getInteger(strip(l," "), &i, err);\
+		if (*err==NUMBER_ERR) {\
+			*err = BAD_DATA;\
+			return NULL;\
+		}\
+	} while (charIs(l, ','));\
+	if (!oneOf(l, "\r\n")) {\
+		*err = BAD_DATA;\
+		return NULL;\
+	}\
 	nums = (int*)malloc(sizeof(int)*count);\
 	i=0;\
 	l=p;\
 	while ((l=oneOf(getInteger(strip(l," "), &nums[i++], err), ",\n"))!=((void *)0));\
-	code; \
-	return p; \
+	code;\
+	return *err!=0?NULL:p;\
 }
 
 #define STRING(code) { \
@@ -213,8 +231,8 @@
 	if(!(isAlpha(line) && (l=charIs(getAllAlphasDigits(line, label), ':')))) { label[0]='\0'; l=o;} \
 }
 
-#define PARSE(line)  { \
-	int err=0, len; \
+#define PARSE  { \
+	int err=0,len; \
 	Label label;\
 	char*l;\
 	lineCounter++;\
@@ -225,12 +243,13 @@
 		line[len]='\n';\
 		line[len+1]='\0';\
 	}\
-	if(oneOf(l, "\n\r")) {}
+	if(oneOf(l, "\n\r;")) {}
 
 #define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &context, &err, label, lineCounter, line)) {}
 #define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &context, &err, label,lineCounter, line)) {}
-#define ELSE(msg)     else if (!err){ printf("error in line %d: '%s' %s\n",lineCounter,trimNewline(line),  msg);}\
+#define ELSE(msg)     else if (!err){ printf("Error at line %d '%s': %s\n",lineCounter,trimNewline(line),  msg);}\
 					  else if (err) { \
+						  dontGenerate = 1;\
 						  switch(err) { \
 						  	  case FIRST_ARG_IS_INVALID: printf("Error at line %d '%s':first argument is not valid\n", lineCounter, trimNewline(line));break; \
 						  	  case SECOND_ARG_IS_INVALID:printf("Error at line %d '%s': second argument is not valid\n",lineCounter,  trimNewline(line));break; \
@@ -240,14 +259,82 @@
 						  } \
 					  }}
 
+#define FOREACH_LINE(parse) while (fgets(line, MAXLINE-1, fr) != NULL) {parse;}
+
+#define	FOREACH_FILE(baseAddress, doWithFile) \
+	int i; \
+	for (i = 1; i < argc; i++) { \
+		int dontGenerate = 0;\
+		char line[MAXLINE];\
+		char file[20];\
+		char objfile[20];\
+		char entfile[20];\
+		char extfile[20];\
+		int lineCounter = 0;\
+		Context context = { NULL, NULL, NULL, NULL, -1 };\
+		FILE *fr, *fwo, *fwent, *fwex;\
+		sprintf(file, "%s.as", argv[i]);\
+		if ((fr = fopen(file, "r")) == NULL) {\
+			printf("error opening %s file!!", file);\
+		} else {\
+			printf("Assembling file %s...\n", file);\
+			doWithFile;\
+			fclose(fr);\
+			context.lastAsmOffset = computeAsmOffset(&context.codeList, baseAddress);\
+			context.lastDataOffset = computeLabelOffset(&context.allLabels,context.lastAsmOffset);\
+\
+			if (execDeffered(&context.deferred) == 0) {\
+				if (dontGenerate) {\
+					printf("Errors found in file %s, skipping...\n\n", file);\
+\
+				} else {\
+					printAsm(&context.codeList); \
+					printf("\n"); \
+					printData(&context.allLabels); \
+					sprintf(objfile, "%s.obj", argv[i]);\
+					if ((fwo = fopen(objfile, "w")) == NULL) {\
+						printf("Error: cannot open '%s' file\n\n", objfile);\
+					} else {\
+						writeAsm(&context, fwo);\
+						fclose(fwo);\
+\
+						sprintf(entfile, "%s.ent", argv[i]);\
+						if ((fwent = fopen(entfile, "w")) == NULL) {\
+							printf("Error: cannot open '%s' file\n\n", entfile);\
+						} else {\
+							extractEntries(&context.allLabels, fwent);\
+							fclose(fwent);\
+\
+							if (context.externlabels != NULL) {\
+								sprintf(extfile, "%s.ext", argv[i]);\
+								if ((fwex = fopen(extfile, "w")) == NULL) {\
+									printf("Error: cannot open '%s' file\n\n", entfile);\
+								} else {\
+									writeExEnt(&context.externlabels, fwex);\
+									fclose(fwex);\
+									printf("Finished Assembling file %s successfully.\n\n",file);\
+								}\
+							}\
+						}\
+					}\
+\
+				}\
+			} else {\
+				printf("Errors found in file %s, skipping...\n\n", file);\
+			}\
+			freeContext(&context); \
+		}\
+	}
+
+
 void func(Operand oper1, Operand oper2, Label label);
 void debugPrint(Operand oper);
 
-#define GEN2(gen)		 gen##_gen(context, VAL(1), VAL(2), label, lineNumber,originalLine)
-#define GEN1(gen) 		 gen##_gen(context, VAL(1), label, lineNumber,originalLine)
-#define GEN0(gen) 		 gen##_gen(context, label, lineNumber,originalLine)
-#define CALL_DATA(gen)   gen##_gen(context, label, nums, count, lineNumber,originalLine)
-#define CALL_STRING(gen) gen##_gen(context, label, text, lineNumber,originalLine)
+#define GEN2(gen)		 gen##_gen(context, VAL(1), VAL(2), label, err, lineNumber,originalLine)
+#define GEN1(gen) 		 gen##_gen(context, VAL(1), label, err,lineNumber,originalLine)
+#define GEN0(gen) 		 gen##_gen(context, label, err, lineNumber,originalLine)
+#define CALL_DATA(gen)   gen##_gen(context, label, err, nums, count, lineNumber,originalLine)
+#define CALL_STRING(gen) gen##_gen(context, label, err, text, lineNumber,originalLine)
 
 #define MOV(OP1, OP2) OPER2(0,OP1,OP2)
 #define CMP(OP1, OP2) OPER2(1,OP1,OP2)

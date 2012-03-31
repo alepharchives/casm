@@ -18,6 +18,7 @@
 #define COMMAND_NOT_TERMINATED 4003
 #define EMPTY_DATA 4004
 #define BAD_DATA 4005
+#define GEN_ERROR 4006
 
 
 int  deferLabelDistanceResolution(Context* l, addrVal* into, asm_node* asm_node,  char* label, int lineNumber, char* origLine);
@@ -123,9 +124,9 @@ int  deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node, cha
 }
 
 
-#define GEN_CMD_2(cmd) void cmd(Context* context, Operand operand1, Operand operand2, char* label, int lineNumber, char* originalLine)
-#define GEN_CMD_1(cmd) void cmd(Context* context, Operand operand1, char* label, int lineNumber, char* originalLine)
-#define GEN_CMD_0(cmd) void cmd(Context* context, char* label, int lineNumber, char* originalLine)
+#define GEN_CMD_2(cmd) void cmd(Context* context, Operand operand1, Operand operand2, char* label, int* err, int lineNumber, char* originalLine)
+#define GEN_CMD_1(cmd) void cmd(Context* context, Operand operand1, char* label, int* err, int lineNumber, char* originalLine)
+#define GEN_CMD_0(cmd) void cmd(Context* context, char* label, int* err, int lineNumber, char* originalLine)
 #define START {if(0){}
 #define DO2(kind1, kind2, op) else if (operand1.kind == kind1 && operand2.kind == kind2){op}
 #define DO1(kind1, op) else if (operand1.kind == kind1){op}
@@ -158,7 +159,7 @@ int  deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node, cha
 		DO2(label_with_two_indices,	direct, 							CMD(LABEL_2D(source), 			DIRECT_LABEL(dest))) \
 		DO2(label_with_two_indices,	label_with_index,					CMD(LABEL_2D(source), 			LABEL_1D(dest))) \
 		DO2(label_with_two_indices,	label_with_two_indices,				CMD(LABEL_2D(source), 			LABEL_2D(dest))) \
-	END(asmLabel(context, label, lineNumber, originalLine))
+	END(asmLabel(context, label, err, lineNumber, originalLine))
 
 #define ASSIGN1(name, CMD) GEN_CMD_1(name##_gen) \
 	START \
@@ -167,17 +168,17 @@ int  deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node, cha
 		DO1(direct, 							CMD(DIRECT_LABEL(dest))) \
 		DO1(label_with_index,					CMD(LABEL_1D(dest))) \
 		DO1(label_with_two_indices,				CMD(LABEL_2D(dest))) \
-	END(asmLabel(context, label, lineNumber, originalLine))
+	END(asmLabel(context, label, err, lineNumber, originalLine))
 
-#define ASSIGN0(name, op) GEN_CMD_0(name##_gen){ {op} asmLabel(context, label, lineNumber, originalLine);}
+#define ASSIGN0(name, op) GEN_CMD_0(name##_gen){ {op} asmLabel(context, label, err, lineNumber, originalLine);}
 
-void extern__gen(Context* context, Operand operand1, char* label, int lineNumber, char* originalLine);
-void entry_gen(Context* context, Operand operand1, char* label, int lineNumber, char* originalLine);
+void extern__gen(Context* context, Operand operand1, char* label, int* err, int lineNumber, char* originalLine);
+void entry_gen(Context* context, Operand operand1, char* label, int* err, int lineNumber, char* originalLine);
 
-void data_gen(Context* context, char* label, int* nums, int count, int lineNum, char* origLine);
-void string_gen(Context* context, char* label, char* str, int lineNum, char* origLine);
+void data_gen(Context* context, char* label, int* err, int* nums, int count, int lineNum, char* origLine);
+void string_gen(Context* context, char* label, int* err,  char* str, int lineNum, char* origLine);
 
-void asmLabel(Context* context, char* label,int lineNum, char* origLine);
+void asmLabel(Context* context, char* label, int* err, int lineNum, char* origLine);
 
 void nothing(addrVal* i);
 

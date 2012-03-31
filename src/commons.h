@@ -10,6 +10,8 @@
 
 #include "DoubleLinkedList.h"
 
+#define MAXLINE 82
+
 typedef unsigned char byte;
 #define MAX_LABEL 30
 
