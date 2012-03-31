@@ -232,24 +232,25 @@
 
 /* this one is used by .data, as it parses the input for multiple numbers, and calls code which should save the result in the AST */
 #define MANY_NUMBERS(code) { \
-	char* l; \
+	char* l, *n; \
 	int* nums;\
 	int i,count=0;\
 	if (p==((void *)0)) return ((void *)0);\
-	l = p = strip(p," ");\
+	n=l=p=strip(p," ");\
 	if (oneOf(l, "\n\r")) {\
 		*err = EMPTY_DATA;\
 		return NULL;\
 	}\
 	do {\
+		l=n;\
 		count++;\
 		l = getInteger(strip(l," "), &i, err);\
 		if (*err==NUMBER_ERR) {\
 			*err = BAD_DATA;\
 			return NULL;\
 		}\
-	} while (charIs(l, ','));\
-	if (!oneOf(l, "\r\n")) {\
+	} while ((n=charIs(l, ',')));\
+	if (!oneOf(strip(l," "), "\r\n")) {\
 		*err = BAD_DATA;\
 		return NULL;\
 	}\

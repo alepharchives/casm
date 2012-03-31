@@ -59,8 +59,11 @@ PARSER(jsr) ONE(DIRECT,																				GEN1(jsr))
 PARSER(rts)  NONE(GEN0(rts))
 PARSER(stop) NONE(GEN0(stop))
 
+/* these two are slightly different, notice that we didnt define entry or extern_ in the assign2 statements above,
+ * that is because we arent REALLY generating code here, so the abstractions made above did not fit here. */
 PARSER(entry) ONE(DIRECT, GEN1(entry))
 PARSER(_extern) ONE(DIRECT, GEN1(extern_))
 
+/* these two are evern more different, since they cant be handled with ONE or GEN directives, so they are a special case.. */
 PARSER(data) MANY_NUMBERS(CALL_DATA(data))
 PARSER(string) STRING(CALL_STRING(string))

@@ -1,8 +1,10 @@
 /*
  * commons.h
  *
- *  Created on: 18 ���� 2012
- *      Author: ypsw
+ *  Created on: Mar 17, 2012
+ *      Author: shlomi.v
+ *
+ *  This file contains the definitions the data structures, enums and constants used in this project.
  */
 
 #ifndef COMMONS_H_
@@ -11,10 +13,11 @@
 #include "DoubleLinkedList.h"
 
 #define MAXLINE 82
-
-typedef unsigned char byte;
 #define MAX_LABEL 30
 
+typedef unsigned char byte;
+
+/* this enum is used to define the kind of addressing used */
 typedef enum {
 	constant=0,
 	direct=1,
@@ -24,6 +27,7 @@ typedef enum {
 	none=7
 } addr;
 
+/* we typedef each different thing, to help the type-checker help us */
 typedef int Reg;
 typedef int Constant;
 typedef char Label[MAX_LABEL];
@@ -62,6 +66,7 @@ typedef struct {
 		addrType type;
 } addrVal;
 
+/* this is an actual op-code structure. it is using bit-fields for cooler bit access */
 typedef
 	union {
 	unsigned int code;
@@ -74,6 +79,8 @@ typedef
 	}bit;
 } OpCode ;
 
+/* this is the context for an assembly generation. everything that is going on is stored in this structure, and this is the structure that
+ * gets passed around to most of the functions */
 typedef struct {
 	list codeList;
 	list allLabels;

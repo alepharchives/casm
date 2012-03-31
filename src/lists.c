@@ -285,9 +285,12 @@ void writeAsm(Context* c, FILE *f) {
 	node* n2;
 	OffsetBits  lastoff;
 	OffsetBits lastdataoff;
+	int delta = c->lastDataOffset - c->lastAsmOffset;
 
-	intToBin8(c->lastAsmOffset - 100, lastoff);
-	intToBin4(c->lastDataOffset - c->lastAsmOffset, lastdataoff);
+	intToBin8(c->lastAsmOffset - ASM(c->codeList)->offset, lastoff);
+	if (delta < 16) intToBin4(delta, lastdataoff);
+	else intToBin8(delta, lastdataoff);
+
 	fprintf(f,"%s %s \n",lastoff, lastdataoff);
 
 	while (*scan!= NULL) {

@@ -27,8 +27,8 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.2042558255" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
 								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1816178027" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
 								<option id="gnu.c.compiler.option.debugging.level.471197327" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.misc.ansi.742626809" superClass="gnu.c.compiler.option.misc.ansi" value="true" valueType="boolean"/>
-								<option id="gnu.c.compiler.option.warnings.pedantic.779834717" superClass="gnu.c.compiler.option.warnings.pedantic" value="true" valueType="boolean"/>
+								<option id="gnu.c.compiler.option.misc.ansi.742626809" name="Support ANSI programs (-ansi)" superClass="gnu.c.compiler.option.misc.ansi" value="true" valueType="boolean"/>
+								<option id="gnu.c.compiler.option.warnings.pedantic.779834717" name="Pedantic (-pedantic)" superClass="gnu.c.compiler.option.warnings.pedantic" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1718048271" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1963057438" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base">
@@ -43,8 +43,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.1594054238.140276515" name="matdsl.h" rcbsApplicability="disable" resourcePath="src/matdsl.h" toolsToInvoke=""/>
-					<fileInfo id="cdt.managedbuild.config.gnu.exe.debug.1594054238.539747016" name="mat.h" rcbsApplicability="disable" resourcePath="src/mat.h" toolsToInvoke=""/>
 					<sourceEntries>
 						<entry excluding="mat.c|mat.h|matdsl.h|matdsl.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>
 					</sourceEntries>
