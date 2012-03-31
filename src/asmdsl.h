@@ -224,6 +224,10 @@
 	if (p==NULL) return NULL; \
 	p = strip(p," "); \
 	l = charIs(allString(charIs(p, '"')), '"') ; \
+	if (l==NULL) { \
+		*err = FIRST_ARG_IS_INVALID;\
+		return NULL;\
+	} \
 	text = malloc((int)l-(int)p); \
 	l = charIs(getAllString(charIs(p, '"'), text), '"') ; \
 	code; \

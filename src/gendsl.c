@@ -164,7 +164,6 @@ void string_gen(Context* context, char* label, int* err, char* str, int lineNum,
 	if (label[0]=='\0') {
 		n = newLabel("",  lineNum, trimNewline(origLine));
 		context->allLabels = append(context->allLabels, n);
-		context->allLabels = append(context->allLabels, n);
 	} else {
 		n = find(context->allLabels, findLabelText, label);
 		if (n!=NULL) {
