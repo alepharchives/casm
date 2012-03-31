@@ -2,11 +2,15 @@
  * gendsl.c
  *
  *  Created on: Mar 17, 2012
- *      Author: shlomi
+ *      Author: shlomi.v
+ *      Author: tal.a
+ *
+ * This file contains the implementation of the functions which actually generates the info into our AST
  */
 
 #include  "gendsl.h"
 
+/* A helper function for removing newlines, used for error reporting */
 char* trimNewline(char* line)
 {
 	int l = strlen(line);
@@ -19,6 +23,7 @@ char* trimNewline(char* line)
 	return line;
 }
 
+/* These function will resolve a label's location after the entire input file has been consumed */
 int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 	if (n==NULL||(LABEL(n)->kind==NOT_INIT && !LABEL(n)->isExtern)) {
@@ -28,6 +33,7 @@ int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  cha
 		into->val = LABEL(n)->offset;
 		into->type = LABEL(n)->isExtern ? e : r;
 
+		/* in case we are dealing with an extern label, save its position for the .ext file */
 		if(LABEL(n)->isExtern){
 			int i;
 			int delta=1;
@@ -40,6 +46,7 @@ int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  cha
 	return 0;
 }
 
+/* this function resolves the distance between a label and the last code offset of the program */
 int  deferLabelDistanceResolution(Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 		if (n==NULL) {
@@ -51,6 +58,7 @@ int  deferLabelDistanceResolution(Context* l, addrVal* into, asm_node* asm_node,
 			 * so we have to go back one word..*/
 
 			if (LABEL(n)->isExtern) {
+				/* if an extern label was used, notify the user that this cant be done. */
 				printf(" Error at line %d '%s': cannot use extern label '%s' in an absolute form, defined at %d '%s'.\n", lineNumber, trimNewline(origLine), label, LABEL(n)->origLineNuber, LABEL(n)->origLine);
 				return -1;
 			}
@@ -60,6 +68,8 @@ int  deferLabelDistanceResolution(Context* l, addrVal* into, asm_node* asm_node,
 	return 0;
 }
 
+/* This function is used to make sure all labels has actually been resolved, so if a label was not defined, an error message will be
+ * printed to the user */
 int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
 	if (n==NULL) {
@@ -73,6 +83,9 @@ int  deferMakeSureLabelHasAddress(Context* l, addrVal* into, asm_node* asm_node,
 	return 0;
 }
 
+/* the next *_gen functions are used specifically by the dot_try commands (.entry, .data, etc..) */
+
+/* this function gets called when an .extern line was read, it makes sure that */
 void extern__gen(Context* context, Operand oper, char* label, int* err,  int lineNumber, char* originalLine){
 	node* n = find(context->allLabels, findLabelText, oper.get.direct);
 	if (n!=NULL) {

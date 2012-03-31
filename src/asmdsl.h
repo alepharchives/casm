@@ -63,7 +63,7 @@
 
 #define DIRECT \
 	if (l==NULL) /*DIRECT*/ { \
-		l = strip(getAllAlphas(strip(p," "), a[pi].get.direct), " "); \
+		l = strip(getAllAlphasDigits(strip(p," "), a[pi].get.direct), " "); \
 		l = oneOf(l,",\n\r"); \
 		if (l!=NULL && l!=strip(p," ")) { \
 				a[pi].kind = direct; \
@@ -75,7 +75,7 @@
 
 #define LABEL1 \
 	if (l==NULL) /*LABEL1*/ { \
-		l = charIs(getAllAlphasDigits(charIs(charIs(getAllAlphas(strip(p," "), a[pi].get.oneIndex.label), '[') ,'%'), a[pi].get.oneIndex.index), ']'); \
+		l = charIs(getAllAlphasDigits(charIs(charIs(getAllAlphasDigits(strip(p," "), a[pi].get.oneIndex.label), '[') ,'%'), a[pi].get.oneIndex.index), ']'); \
 		l = oneOf(l,",\n\r"); \
 		if (l!=NULL && l!=strip(p," ")) { \
 				a[pi].kind = label_with_index; \
@@ -146,6 +146,7 @@
 	int pi=0;\
 	char* l=NULL;	\
 	theVals[0].kind=none;theVals[1].kind=none;\
+	val.kind=none;\
 	if (p==NULL) return NULL; \
 	{A;theVals[0]=val;} \
 	l=NULL;				\
@@ -153,6 +154,7 @@
 		*err = FIRST_ARG_IS_INVALID;\
 		return NULL;\
 	} \
+	val.kind=none;\
 	{B;theVals[1]=val;}	\
 	if (theVals[1].kind==none) { \
 		*err = SECOND_ARG_IS_INVALID;\
@@ -170,6 +172,8 @@
 		Operand a[1];\
 		int pi=0;\
 		char* l=NULL;	\
+		theVals[0].kind=none;\
+		val.kind=none;\
 		if (p==NULL) return NULL; \
 		{A;theVals[0]=val;} \
 		if (theVals[0].kind==none) { \
@@ -251,11 +255,11 @@
 					  else if (err) { \
 						  dontGenerate = 1;\
 						  switch(err) { \
-						  	  case FIRST_ARG_IS_INVALID: printf("Error at line %d '%s':first argument is not valid\n", lineCounter, trimNewline(line));break; \
-						  	  case SECOND_ARG_IS_INVALID:printf("Error at line %d '%s': second argument is not valid\n",lineCounter,  trimNewline(line));break; \
-						  	  case COMMAND_NOT_TERMINATED:printf("Error at line %d '%s': command has extra parameters\n", lineCounter,  trimNewline(line));break; \
-						  	  case EMPTY_DATA:printf("Error at line %d '%s': data is empty\n", lineCounter,  trimNewline(line));break; \
-						  	  case BAD_DATA: printf("Error at line %d '%s': data needs another number\n", lineCounter,  trimNewline(line));break; \
+						  	  case FIRST_ARG_IS_INVALID: printf(" Error at line %d '%s': first argument is not valid\n", lineCounter, trimNewline(line));break; \
+						  	  case SECOND_ARG_IS_INVALID:printf(" Error at line %d '%s': second argument is not valid\n",lineCounter,  trimNewline(line));break; \
+						  	  case COMMAND_NOT_TERMINATED:printf(" Error at line %d '%s': command has extra parameters\n", lineCounter,  trimNewline(line));break; \
+						  	  case EMPTY_DATA:printf(" Error at line %d '%s': data is empty\n", lineCounter,  trimNewline(line));break; \
+						  	  case BAD_DATA: printf(" Error at line %d '%s': data needs another number\n", lineCounter,  trimNewline(line));break; \
 						  } \
 					  }}
 
