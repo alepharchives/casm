@@ -38,7 +38,6 @@ int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  cha
 
 			i = asm_node->offset+delta;
 
-			i = asm_node->offset;
 			l->externlabels = append(l->externlabels,newExEntWord(label,i));
 		}
 	}
