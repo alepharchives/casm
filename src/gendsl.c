@@ -21,13 +21,11 @@ char* trimNewline(char* line)
 
 int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  char* label, int lineNumber, char* origLine) {
 	node* n = find(l->allLabels, findLabelText, label);
-	int i;
 	if (n==NULL||(LABEL(n)->kind==NOT_INIT && !LABEL(n)->isExtern)) {
 		printf("Error at line %d '%s': label %s not defined!\n", lineNumber, trimNewline(origLine), label);
 		return -1;
 	} else {
 		into->val = LABEL(n)->offset;
-		i = LABEL(n)->offset;
 		into->type = LABEL(n)->isExtern ? e : r;
 
 		if(LABEL(n)->isExtern){
@@ -35,10 +33,7 @@ int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  cha
 			for (i=0;i<4 && (&asm_node->word[i] !=  into);i++) {
 				delta++;
 			}
-
-			i = asm_node->offset+delta;
-
-			l->externlabels = append(l->externlabels,newExEntWord(label,i));
+			l->externlabels = append(l->externlabels,newExEntWord(label,asm_node->offset+delta));
 		}
 	}
 	return 0;
