@@ -251,7 +251,7 @@
 
 #define TRY(cmd)      else if (cmd (matchWordD(l, #cmd) , &context, &err, label, lineCounter, line)) {}
 #define TRY_DOT(cmd)  else if (cmd (matchWordD(charIs(l, '.'), or(charIs(#cmd,'_'),#cmd)), &context, &err, label,lineCounter, line)) {}
-#define ELSE(msg)     else if (!err){ printf(" Error at line %d '%s': %s\n",lineCounter,trimNewline(line),  msg);}\
+#define ELSE(msg)     else if (!err){ printf(" Error at line %d '%s': %s\n",lineCounter,trimNewline(line),  msg);  dontGenerate = 1;}\
 					  else if (err) { \
 						  dontGenerate = 1;\
 						  switch(err) { \
