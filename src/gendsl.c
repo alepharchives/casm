@@ -35,11 +35,14 @@ int deferLabelAddrResolution(Context* l, addrVal* into, asm_node* asm_node,  cha
 
 		/* in case we are dealing with an extern label, save its position for the .ext file */
 		if(LABEL(n)->isExtern){
-			int i;
 			int delta=1;
+			/*int i;
 			for (i=0;i<4 && (&asm_node->word[i] != into);i++) {
 				delta++;
 			}
+			 */
+			/* a cooler trick: */
+			delta = into - &asm_node->word[0] + 1;
 			l->externlabels = append(l->externlabels,newExEntWord(label,asm_node->offset+delta));
 		}
 	}
