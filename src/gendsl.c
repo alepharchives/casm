@@ -160,6 +160,10 @@ void data_gen(Context* context, char* label, int* err, int* nums, int count, int
 				*err = GEN_ERROR;
 				return;
 			}
+			else if (LABEL(n)->isEntry == 1) {
+				LABEL(n)->origLineNuber = lineNum;
+				strcpy(LABEL(n)->origLine, trimNewline(origLine));
+			}
 		}
 		else {
 			n = newLabel(label,  lineNum, origLine);
@@ -190,6 +194,10 @@ void string_gen(Context* context, char* label, int* err, char* str, int lineNum,
 				printf(" Error at line %d '%s': label '%s' already defined in line %d '%s'.\n", lineNum, trimNewline(origLine), label, LABEL(n)->origLineNuber, LABEL(n)->origLine);
 				*err = GEN_ERROR;
 				return;
+			}
+			else if (LABEL(n)->isEntry == 1) {
+				LABEL(n)->origLineNuber = lineNum;
+				strcpy(LABEL(n)->origLine, trimNewline(origLine));
 			}
 		}
 		else {

@@ -59,7 +59,6 @@ char* allDigits(char *p);
  * it succeeds iff the input line contains a floating point number. if successful, the result
  * is given in res, if fails, the error is given in error and return value is NULL.*/
 char* getNumber(char*p, float* res, int* err);
-
 char* getInteger(char*p, int* res, int* err);
 
 /* a special helper function, that returns true if character c is contained by string p */
@@ -76,14 +75,32 @@ char* strip(char* p,char* c);
 /* a parser that succeeds iff either parsers that were given to it as parameters succeeded */
 char* or (char* p1, char* p2);
 
+/* get the next digit */
 char* getDigit(char* p, char* d);
+
+/* consume all alpha characters */
 char* allAlphas(char *p);
+
+/* isAlpha succeeds iff head of p is a an alpha character */
 char* isAlpha(char* p);
+
+/* consume all alphas and get them too */
 char* getAllAlphas(char *p, char* out);
+
+/* consume all alpha and digits, and get back the result.
+ * BUT! this function makes sure that the first character is an alpha and NOT a digit! */
 char* getAllAlphasDigits(char *p, char* out);
+
+/* consume all alphas or digits */
 char* allAlphasOrDigit(char *p);
+
+/* consume all printable characters, and get the consumed part */
 char* getAllString(char *p, char* out);
+
+/* consume all printable characters */
 char* allString(char *p);
+
+/* checks if the next character is printable */
 char* isStringChar(char* p);
 
 #endif /* PARSER_H_ */

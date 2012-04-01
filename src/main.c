@@ -36,8 +36,9 @@
 #include "parser.h"
 
 int main(int argc, char *argv[]) {
+	int baseAddress = 100;
+
 	FOREACH_FILE(
-		100,
 		FOREACH_LINE(
 			PARSE
 				TRY(cmp)

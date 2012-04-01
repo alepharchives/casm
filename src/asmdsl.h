@@ -305,6 +305,13 @@
 	}\
 	if(oneOf(l, "\n\r;")) {}
 
+/* defines the main entry of the assembler */
+#define PROGRAM_ENTRY(base, code) int main(int argc, char *argv[]) { \
+	int baseAddress = base; \
+	code; \
+	return 0; \
+}
+
 /* The following macros:
  * TRY: attempt a parser by the name cmd, if it fails, it moves on to the next parser
  * TRY_DOT: attempt a parser for the dot commands, such as .extern, .string etc.. notice the use of or in there. that is because extern is a reserved word in c
@@ -329,7 +336,7 @@
 
 /* this macro will run doWithFile on each file given to the application
  * baseAddress is the base address for the code generation. usually 100.*/
-#define	FOREACH_FILE(baseAddress, doWithFile) \
+#define	FOREACH_FILE(doWithFile) \
 	int i; \
 	for (i = 1; i < argc; i++) { \
 		int dontGenerate = 0;\

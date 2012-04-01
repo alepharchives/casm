@@ -66,6 +66,7 @@ char* isDigit(char* p) {
 	return NULL;
 }
 
+/* get that digit */
 char* getDigit(char* p, char* d) {
 	if (p==NULL || *p == '\0') return NULL;
 	if (*p>='0'&&*p<='9') {
@@ -75,26 +76,28 @@ char* getDigit(char* p, char* d) {
 	return NULL;
 }
 
-/* isDigit succeeds iff head of p is a digit */
-
+/* isAlpha succeeds iff head of p is a an alpha character */
 char* isAlpha(char* p) {
 	if (*p == '\0') return NULL;
 	if ((*p>='a'&&*p<='z') || (*p>='A'&&*p<='Z') ) return p+1;
 	return NULL;
 }
 
+/* consume all alpha characters */
 char* allAlphas(char *p) {
 	if (p==NULL || *p=='\0') return NULL;
 	if (!isAlpha(p)) return p;
 	return allAlphas(p+1);
 }
 
+/* consume all alphas or digits */
 char* allAlphasOrDigit(char *p) {
 	if (p==NULL || *p=='\0') return NULL;
 	if (!(isAlpha(p) || isDigit(p))) return p;
 	return allAlphasOrDigit(p+1);
 }
 
+/* consume all alphas and get them too */
 char* getAllAlphas(char *p, char* out) {
 	char *e = p, o;
 	if (p==NULL || *p=='\0') return NULL;
@@ -107,6 +110,8 @@ char* getAllAlphas(char *p, char* out) {
 	return p;
 }
 
+/* consume all alpha and digits, and get back the result.
+ * BUT! this function makes sure that the first character is an alpha and NOT a digit! */
 char* getAllAlphasDigits(char *p, char* out) {
 	char *e = p, o;
 	if (p==NULL || *p=='\0') return NULL;
@@ -120,18 +125,21 @@ char* getAllAlphasDigits(char *p, char* out) {
 	return p;
 }
 
+/* checks if the next character is printable */
 char* isStringChar(char* p) {
 	if (*p == '\0' || *p=='"') return NULL;
 	if ((isprint(*p)) ) return p+1;
 	return NULL;
 }
 
+/* consume all printable characters */
 char* allString(char *p) {
 	if (p==NULL || *p=='\0') return NULL;
 	if (!isStringChar(p)) return p;
 	return allString(p+1);
 }
 
+/* consume all printable characters, and get the consumed part */
 char* getAllString(char *p, char* out) {
 	char *e = p, o;
 	if (p==NULL || *p=='\0') return NULL;

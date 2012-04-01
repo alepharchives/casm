@@ -13,7 +13,7 @@
 
 #include "asmdsl.h"
 
-/* assign the functions that will actually generate the codes for each command*/
+/* assign the functions that will actually generate the codes for each command */
 ASSIGN2(mov, MOV)
 ASSIGN2(cmp, CMP)
 ASSIGN2(add, ADD)
