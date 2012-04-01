@@ -323,7 +323,7 @@ void writeAsm(Context* c, FILE *f) {
 	if (delta < 16) intToBin4(delta, lastdataoff);
 	else intToBin8(delta, lastdataoff);
 
-	fprintf(f,"%s %s \n",lastoff, lastdataoff);
+	fprintf(f,"   %s %s \n",lastoff, lastdataoff);
 
 	/* Write all the code information */
 	while (*scan!= NULL) {
@@ -364,19 +364,28 @@ void writeExEnt(list* l, FILE *f) {
 }
 
 /* Write to file the enrty parameters from the list */
-int extractEntries(list* l,FILE *f) {
+int extractEntriesToFile(list* l,char *filename) {
+	FILE* f = NULL;
 	node** scan = l, *n;
 	OffsetBits off;
 
 	while (*scan!= NULL) {
 		n = *scan;
 		if (LABEL(n)->isEntry) {
+			if (f==NULL) {
+				if ((f = fopen(filename, "w")) == NULL) {
+					printf("Error: cannot open '%s' file\n\n", filename);
+					return 0;
+				}
+			}
 			intToBin8(LABEL(n)->offset,off);
 			fprintf(f,"%s   %s \n",LABEL(n)->label, off);
 		}
 		scan = &(*scan)->next;
 	}
-	return 0;
+
+	if (f!=NULL) fclose(f);
+	return 1;
 }
 
 /* Free the context saved memory */

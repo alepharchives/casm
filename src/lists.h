@@ -115,7 +115,7 @@ void printData(list* l);
 void writeAsm(Context* c, FILE *f);
 
 /* Write to file the enrty parameters from the list */
-int extractEntries(list* l,FILE *f);
+int extractEntriesToFile(list* l,char *filename);
 
 /* Free the context saved memory */
 void freeContext(Context* context);

@@ -347,10 +347,10 @@
 		char extfile[20];\
 		int lineCounter = 0;\
 		Context context = { NULL, NULL, NULL, NULL, -1 };\
-		FILE *fr, *fwo, *fwent, *fwex;\
+		FILE *fr, *fwo, *fwex;\
 		sprintf(file, "%s.as", argv[i]);\
 		if ((fr = fopen(file, "r")) == NULL) {\
-			printf("error opening %s file!!", file);\
+			printf("Error: cannot open '%s' file\n\n", file);\
 		} else {\
 			printf("Assembling file %s...\n", file);\
 			doWithFile;\
@@ -361,11 +361,10 @@
 			if (execDeffered(&context.deferred) == 0) {\
 				if (dontGenerate) {\
 					printf("Errors found in file %s, skipping...\n\n", file);\
-\
 				} else {\
-					printAsm(&context.codeList); \
-					printf("\n"); \
-					printData(&context.allLabels); \
+					/*printAsm(&context.codeList); */\
+					/*printf("\n"); */\
+					/*printData(&context.allLabels);*/ \
 					sprintf(objfile, "%s.obj", argv[i]);\
 					if ((fwo = fopen(objfile, "w")) == NULL) {\
 						printf("Error: cannot open '%s' file\n\n", objfile);\
@@ -374,12 +373,7 @@
 						fclose(fwo);\
 \
 						sprintf(entfile, "%s.ent", argv[i]);\
-						if ((fwent = fopen(entfile, "w")) == NULL) {\
-							printf("Error: cannot open '%s' file\n\n", entfile);\
-						} else {\
-							extractEntries(&context.allLabels, fwent);\
-							fclose(fwent);\
-\
+						if (extractEntriesToFile(&context.allLabels, entfile)) {\
 							if (context.externlabels != NULL) {\
 								sprintf(extfile, "%s.ext", argv[i]);\
 								if ((fwex = fopen(extfile, "w")) == NULL) {\
@@ -389,7 +383,9 @@
 									fclose(fwex);\
 									printf("Finished Assembling file %s successfully.\n\n",file);\
 								}\
-							}\
+							} else printf("Finished Assembling file %s successfully.\n\n",file);\
+						}else {\
+							printf("Errors found in file %s, skipping...\n\n", file);\
 						}\
 					}\
 \
