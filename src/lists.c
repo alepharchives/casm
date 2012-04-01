@@ -363,6 +363,7 @@ void writeExEnt(list* l, FILE *f) {
 	return;
 }
 
+/* Write to file the enrty parameters from the list */
 int extractEntries(list* l,FILE *f) {
 	node** scan = l, *n;
 	OffsetBits off;
@@ -378,6 +379,7 @@ int extractEntries(list* l,FILE *f) {
 	return 0;
 }
 
+/* Free the context saved memory */
 void freeContext(Context* context) {
 
 	node** scan = &context->allLabels;

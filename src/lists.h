@@ -81,27 +81,43 @@ typedef struct {
 
 #define INVOKE(n) DEFERRED(n)->f(((Context*)(DEFERRED(n)->cont)), DEFERRED(n)->into,DEFERRED(n)->asmNode, DEFERRED(n)->label, DEFERRED(n)->lineNumber, DEFERRED(n)->origLine)
 
+/* Create a node to the defer list */
 node* newDeferedNode(int  (*f)(Context* l, addrVal*, asm_node*, char*, int, char*), Context* l, addrVal* into, asm_node* asmNode, char* label, int lineNumber, char* origLine);
+
+/* Create a new Asm node that initialize with default parameters */
 node* newAsmNode();
 node* newLabel(char* label , int origLineCount, char* origLine);
 node* newExtern(char* label, int origLineCount, char* origLine);
 node* newEntry(char* label, int origLineCount, char* origLine);
+
+/* Create new Extern Entry node for the list that saves them for the output .ext, .ent files  */
 node* newExEntWord(char* label, int offset);
 void writeExEnt(list* l, FILE *f) ;
 
-
+/* Returns the find function for each type of nodes */
 int findLabelText(node* n, void* label);
 int findLabelEntry(node* n, void* label);
 int findLabelExtern(node* n, void* label);
 int findLabelExEntText(node* n, void* label);
+
+/* This function will set all the offsets of the AST, and return the last offset */
 int computeAsmOffset(list* l, int initial);
 int computeLabelOffset(list* l, int lastAsmOffset);
+
+/* Invoke the function that was given to the defer node to get the information for the asm node
+ * in the "second transfer" */
 int execDeffered(list* l);
+
+/* The function creates obj file using the lists of the context and the writeOneAsm,
+ * printOneDataToFilewrite functions  */
 void printAsm(list* l);
 void printData(list* l);
 void writeAsm(Context* c, FILE *f);
 
+/* Write to file the enrty parameters from the list */
 int extractEntries(list* l,FILE *f);
+
+/* Free the context saved memory */
 void freeContext(Context* context);
 
 #endif
