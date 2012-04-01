@@ -1,9 +1,13 @@
 /*
  * lists.h
  *
- *  Created on: 18 ���� 2012
- *      Author: ypsw
+ *  Created on: Mar 8, 2012
+ *      Author: shlomi.v
+ *      Author: Tal.a
+ *
+ *  This file defines all the list structures and functions that the context struct will be able to use
  */
+
 #ifndef LISTS_H
 #define LISTS_H
 #include <stdio.h>
@@ -20,6 +24,7 @@ typedef struct {
 	int offset;
 } asm_node ;
 
+/* This struct is to keep all the commands that with need to handle in the "second transform" */
 typedef struct {
 	int (*f)(Context* l, addrVal*, asm_node*, char*, int, char*);
 	addrVal* into;
@@ -67,8 +72,6 @@ typedef struct {
 	char label[MAX_LABEL];
 	int offset;
 }exent_node;
-
-
 
 #define LABEL(n) ((label_node*)n->data)
 #define ASM(n) ((asm_node*)n->data)

@@ -1,5 +1,17 @@
+/*
+ * lists.h
+ *
+ *  Created on: Mar 8, 2012
+ *      Author: shlomi.v
+ *      Author: Tal.a
+ *
+ * This file contains the implementation of the functions that handles our variety of out lists
+ */
+
+
 #include "lists.h"
 
+/* Returns the find function for each type of nodes */
 int findLabelText(node* n, void* label) {
 	return strcmp(LABEL(n)->label, (char*)label);
 }
@@ -16,6 +28,8 @@ int findLabelExtern(node* n, void* label) {
 	return LABEL(n)->isExtern==1 && strcmp(LABEL(n)->label, (char*)label) ;
 }
 
+
+/* Create new general label node for out list and initialize the node parameters */
 node* _newLabel(char* label, int offset, byte isExtern, byte isEntry,int origLineCount, char* origLine ) {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
@@ -31,6 +45,7 @@ node* _newLabel(char* label, int offset, byte isExtern, byte isEntry,int origLin
 	return n;
 }
 
+/* Create a specific label node using the general create function */
 node* newLabel(char* label, int origLineCount, char* origLine) {
 	return _newLabel(label, -1, 0,0, origLineCount, origLine);
 }
@@ -43,6 +58,7 @@ node* newEntry(char* label, int origLineCount, char* origLine) {
 	return _newLabel(label,-1,0,1, origLineCount, origLine);
 }
 
+/* Create a new string node */
 node* newString(char* str) {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
@@ -53,6 +69,7 @@ node* newString(char* str) {
 	return n;
 }
 
+/* Create new Extern Entry node for the list that saves them for the output .ext, .ent files  */
 node* newExEntWord(char* label, int offset){
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
@@ -62,6 +79,7 @@ node* newExEntWord(char* label, int offset){
 	return n;
 }
 
+/* Create a new Asm node that initialize with default parameters */
 node* newAsmNode() {
 	node* n = malloc(sizeof(node));
 	n->prev=NULL;
@@ -80,6 +98,7 @@ node* newAsmNode() {
 	return n;
 }
 
+/* Create a node to the defer list */
 node* newDeferedNode(int (*f)(Context* l, addrVal*, asm_node* , char*, int, char*), Context* l, addrVal* into, asm_node* asm_node, char* label, int lineNumber, char* origLine) {
 	node* n = malloc(sizeof(node));
 	defered_node* d = malloc(sizeof(defered_node));
@@ -110,6 +129,7 @@ int computeAsmOffset(list* l, int initial) {
 	return offset;
 }
 
+/*  */
 int computeLabelOffset(list* l, int lastAsmOffset) {
 	node** scan = l, *n;
 	int offset = lastAsmOffset;
@@ -128,6 +148,8 @@ int computeLabelOffset(list* l, int lastAsmOffset) {
 	return offset;
 }
 
+/* Invoke the function that was given to the defer node to get the information for the asm node
+ * in the "second transfer" */
 int execDeffered(list* l) {
 	node** scan = l;
 	node* n;
@@ -142,6 +164,7 @@ int execDeffered(list* l) {
 	return i;
 }
 
+/* Gets an Int type and returns the binary value in string format */
 void intToBin(int i, char* out) {
 	int j;
 	for (j=0;j<20;j++) {
@@ -154,6 +177,7 @@ void intToBin(int i, char* out) {
 	out[20]='\0';
 }
 
+/* The same but with 8 bits */
 void intToBin8(int i, char* out) {
 	int j;
 	for (j=0;j<8;j++) {
@@ -163,6 +187,7 @@ void intToBin8(int i, char* out) {
 	out[8]='\0';
 }
 
+/* 4 bits */
 void intToBin4(int i, char* out) {
 	int j;
 	for (j=0;j<4;j++) {
@@ -172,6 +197,8 @@ void intToBin4(int i, char* out) {
 	out[4]='\0';
 }
 
+
+/*  */
 void printOneAsm(asm_node* n) {
 	OffsetBits off;
 	AsmBits bits;
@@ -200,6 +227,8 @@ void printAsm(list* l) {
 	return;
 }
 
+/* Get a single label node and a file pointer, the function writes to the files all the data of this
+ * specific node*/
 void printOneDataToFile(label_node* n, FILE *f) {
 	OffsetBits off;
 	AsmBits bits;
@@ -261,7 +290,7 @@ void printData(list* l) {
 	return;
 }
 
-
+/* Gets an asm node with all data include and write it to the file pointer for the obj file. */
 void writeOneAsmToFile(asm_node* n, FILE *f) {
 	OffsetBits off;
 	AsmBits bits;
@@ -269,6 +298,7 @@ void writeOneAsmToFile(asm_node* n, FILE *f) {
 	intToBin8(n->offset, off);
 	intToBin(n->op_code, bits);
 	fprintf(f ,"%s   %s a\n", off, bits);
+	/* Run over all the size of current command in the asm node */
 	for (j=1;j<n->size;j++) {
 		int of = n->offset+j;
 		intToBin8(of, off);
@@ -277,7 +307,8 @@ void writeOneAsmToFile(asm_node* n, FILE *f) {
 	}
 }
 
-
+/* The function creates obj file using the lists of the context and the writeOneAsm,
+ * printOneDataToFilewrite functions  */
 void writeAsm(Context* c, FILE *f) {
 	node** scan = &c->codeList;
 	node** scan2 = &c->allLabels;
@@ -287,18 +318,21 @@ void writeAsm(Context* c, FILE *f) {
 	OffsetBits lastdataoff;
 	int delta = c->lastDataOffset - c->lastAsmOffset;
 
+	/* Calculate the size of the code and the data for the first line in obj file */
 	intToBin8(c->lastAsmOffset - ASM(c->codeList)->offset, lastoff);
 	if (delta < 16) intToBin4(delta, lastdataoff);
 	else intToBin8(delta, lastdataoff);
 
 	fprintf(f,"%s %s \n",lastoff, lastdataoff);
 
+	/* Write all the code information */
 	while (*scan!= NULL) {
 		n = *scan;
 		writeOneAsmToFile(ASM(n), f);
 		scan = &(*scan)->next;
 	}
 
+	/* Write all the data details */
 	while (*scan2!= NULL) {
 		n2 = *scan2;
 		printOneDataToFile(LABEL(n2),f);
@@ -308,12 +342,14 @@ void writeAsm(Context* c, FILE *f) {
 	return;
 }
 
+/* Writes a single node data to the ent\ext files */
 void writeOneExEnt(exent_node* n, FILE *f){
 	char offset[20];
 	intToBin8(n->offset,offset);
 	fprintf(f,"%s   %s \n",n->label, offset);
 }
 
+/* Writes the Extern\Entry files */
 void writeExEnt(list* l, FILE *f) {
 	node** scan = l;
 	node* n;
